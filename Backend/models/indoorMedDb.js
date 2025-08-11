@@ -3,8 +3,10 @@ import mongoose from "mongoose";
 
 const IndoorMedSchema = new mongoose.Schema({
   Medname: String,
-  quntity: String,
-  Exp_date: {
+  company: String,
+  quntity: Number,
+  current: Number,
+  expdate: {
     type: Date,
   },
   date: {

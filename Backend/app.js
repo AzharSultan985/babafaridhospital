@@ -8,7 +8,9 @@ import DelMedById from "./routes/delmed.js";
 import EditMedId from "./routes/editmed.js";
 import SearchName from "./routes/seacrhname.js";
 import handleAdmin from "./routes/AuthAdmin.js";
+import IndoorStaffAuth from "./routes/indoorstaffAuth.js";
 import cookieParser from "cookie-parser";
+
 
 const app = express();
 
@@ -20,11 +22,13 @@ app.use(cookieParser())
 connectDB();
 
 // CORS
+
+
 app.use(cors({
-  origin: 'http://localhost:3000',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  origin: "http://localhost:3000", // frontend ka URL
   credentials: true
 }));
+
 
 // Delete by ID
 
@@ -37,6 +41,8 @@ app.use("/api/", handleindoorMed);
 app.use("/api/",updateIndoorMed );
 // Auth
 app.use("/api/",handleAdmin );
+// StaffAuth
+app.use("/api/",IndoorStaffAuth );
 
 
 app.get("/api/fetchallmed", Fetchallmed);
@@ -47,6 +53,11 @@ app.get("/api/searchbyname/:name", SearchName); // ✅ Correct method
 // logout
 app.post("/api/logout", (req, res) => {
   res.clearCookie("adminToken"); // or your session cookie name
+  res.json({ message: "Logged out" });
+});
+// LogoutIndoor
+app.post("/api/LogoutIndoor", (req, res) => {
+  res.clearCookie("S_I_token"); // or your session cookie name
   res.json({ message: "Logged out" });
 });
 

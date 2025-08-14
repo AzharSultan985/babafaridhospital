@@ -9,6 +9,7 @@ import EditMedId from "./routes/editmed.js";
 import SearchName from "./routes/seacrhname.js";
 import handleAdmin from "./routes/AuthAdmin.js";
 import IndoorStaffAuth from "./routes/indoorstaffAuth.js";
+import UpdateCurrentMedd from "./routes/UsedMEd.js";
 import cookieParser from "cookie-parser";
 
 
@@ -39,6 +40,8 @@ app.get("/", (req, res) => {
 app.use("/api/", handleindoorMed);
 // update MEd data
 app.use("/api/",updateIndoorMed );
+// update Used MEd data
+app.use("/api/",UpdateCurrentMedd );
 // Auth
 app.use("/api/",handleAdmin );
 // StaffAuth

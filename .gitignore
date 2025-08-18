@@ -1,6 +1,8 @@
-# Node modules (ignore both frontend and backend)
+# Ignore node_modules in the main project
 node_modules/
+
+# Ignore node_modules in any subdirectory (like frontend/backend)
 **/node_modules/
 
-# Env files
+# Ignore environment files
 .env

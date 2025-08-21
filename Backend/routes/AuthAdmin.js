@@ -9,6 +9,8 @@ dotenv.config();
 const router = express.Router();
 router.use(cookieParser());
 
+
+
 // 🔹 Admin Login Route
 router.post("/loginadmin", async (req, res) => {
   const { username, password } = req.body;
@@ -36,7 +38,7 @@ router.post("/loginadmin", async (req, res) => {
     // Send JWT in HTTP-only cookie
     res.cookie("adminToken", token, {
       httpOnly: true,
-      secure: false, // set to true if using https
+      secure: true, // set to true if using https
       sameSite: "strict",
       maxAge: 60 * 60 * 1000 // 1 hour
     });
@@ -44,7 +46,7 @@ router.post("/loginadmin", async (req, res) => {
     return res.status(200).json({ message: "Login successful" });
 
   } catch (error) {
-    console.error("❌ Login error:", error.message);
+    //console.log.error("❌ Login error:", error.message);
     return res.status(500).json({ message: "Server error" });
   }
 });

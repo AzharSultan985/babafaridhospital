@@ -16,10 +16,10 @@ const Fetchallmed = async (req, res) => {
       filter.date = { $gte: currentMonthStart, $lt: nextMonthStart };
     }
 
-    const meds = await IndoorMedModel.find(filter);
+    const meds = await IndoorMedModel.find(filter).sort({ date: -1 });
     res.status(200).json(meds);
   } catch (err) {
-    console.error(err);
+    //console.log.error(err);
     res.status(500).json({ error: "Server error" });
   }
 };

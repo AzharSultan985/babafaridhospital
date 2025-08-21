@@ -7,6 +7,7 @@ import ProtectedRoute from "./components/protectroute";
 import StaffIndoorLogin from "./StaffMangment/staffIndoorComponents/staffLogin";
 import IndoorMedManage from "./StaffMangment/staffIndoorComponents/indoorMedMange";
 import StaffIndoorProtectedRoute from "./ProtectedRoutes/staffindoorProtect";
+import Mainpage from "./components/Mainpage";
 
 function App() {
   return (
@@ -15,7 +16,7 @@ function App() {
  
       <Routes>
        
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<Mainpage />} />
         <Route path="/addindoormed" element={<IndoorMedAdd />} />
         <Route path="/login" element={<Login />} />
         <Route path="/stafflogin" element={< StaffIndoorLogin />} />

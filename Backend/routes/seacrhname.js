@@ -4,7 +4,7 @@ import IndoorMedModel from "../models/indoorMedDb.js";
 const SearchName = async (req, res) => {
   try {
     const { name } = req.params;
-    // console.log("Received Med name:", name);
+    // //console.log.log("Received Med name:", name);
 
     if (!name) {
       return res.status(400).json({ error: "Name is required" });
@@ -16,7 +16,7 @@ const SearchName = async (req, res) => {
 
     return res.json({ success: true, data });
   } catch (err) {
-    console.error(err);
+    //console.log.error(err);
     res.status(500).json({ success: false, error: err.message });
   }
 };

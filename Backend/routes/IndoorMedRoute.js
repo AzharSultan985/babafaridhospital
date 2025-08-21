@@ -13,10 +13,10 @@ const data = await IndoorMedModel.create({ Medname,company, quntity,current, exp
 if(data){
  res.status(200).send({
   success: true,
-  message: "Medicine deleted successfully",
+  message: "Medicine Added successfully",
 });
 
-  console.log("added successfully");
+ ////console.log.log("added successfully");
   
 }
 

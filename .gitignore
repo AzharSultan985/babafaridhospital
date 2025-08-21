@@ -3,6 +3,7 @@ node_modules/
 
 # Ignore node_modules in any subdirectory (like frontend/backend)
 **/node_modules/
+**/node_modules/
 
 # Ignore environment files
 .env

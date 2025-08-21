@@ -10,7 +10,7 @@ export const AuthContext = createContext();
 const [loggedinRes,setloggedinRes]=useState()
    const LoginIndoor = async () => {
     try {
-      const res = await fetch("http://localhost:3002/api/loginadmin", {
+      const res = await fetch("https://babafaridhospital.online/api/loginadmin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -29,20 +29,20 @@ setloggedinRes(data.message)
         throw new Error("Failed to logged admin");
       }
     } catch (err) {
-      console.error("Error:", err);
+      //console.log.error("Error:", err);
     }
   };
  // 🚀 New logout function
   const LogoutAdmin = async () => {
     try {
-      await fetch("http://localhost:3002/api/logout", {
+      await fetch("https://babafaridhospital.online/api/logout", {
         method: "POST",
         credentials: "include"
       });
       setloggedinRes(""); // clear login state
       window.location.href = "/login";
     } catch (err) {
-      console.error("Logout failed:", err);
+      //console.log.error("Logout failed:", err);
     }
   };
 

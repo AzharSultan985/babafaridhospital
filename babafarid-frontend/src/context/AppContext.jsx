@@ -6,7 +6,7 @@ export const AppProvider = ({ children }) => {
   const [Indoor_Med_name, setIndoor_Med_name] = useState("");
   const [Indoor_Med_quntity, setIndoor_Med_quntity] = useState("");
   const [Indoor_Med_company, setIndoor_Med_company] = useState("");
-  const [Indoor_Med_current, setsetIndoor_Med_current] = useState("");
+  const [Indoor_Med_current, setIndoor_Med_current] = useState("");
   const [Indoor_Med_Exp_date, setIndoor_Med_Exp_date] = useState("");
   const [FetcAllMed, setFetchAllMed] = useState([]); 
   const [IsMedAddAlert ,setIsMedAddAlert]=useState(false)
@@ -24,11 +24,11 @@ const [EditMed_expdate,setEditMed_expdate]=useState()
   const location = useLocation();
   const Isdashboard = location.pathname === "/admindashboard";
   const Istaff_dashboard =location.pathname === "/indoormedmangment"
-console.log(Indoor_Med_current);
+//console.log(Indoor_Med_current);
 
   const IndoorMedSubmitHandle = async () => {
     try {
-      const res = await fetch("http://localhost:3002/api/addindoormed", {
+      const res = await fetch("https://babafaridhospital.online/api/addindoormed", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -43,11 +43,11 @@ console.log(Indoor_Med_current);
       });
       const data = await res.json();
 
-
-      setIsMedAddAlert(true)
-
-      if (data.success) {
-      } else {
+if (data.success) {
+  
+  setIsMedAddAlert(true)
+}
+else {
         throw new Error("Failed to create medicine record");
       }
     } catch (err) {
@@ -74,7 +74,7 @@ const FetchMedicine = useCallback(async (option) => {
       endDate = null;
     }
 
-    let url = `http://localhost:3002/api/fetchallmed`;
+    let url = `https://babafaridhospital.online/api/fetchallmed`;
     if (startDate && endDate) {
       url += `?start=${startDate.toISOString()}&end=${endDate.toISOString()}`;
     }
@@ -92,15 +92,18 @@ const DelMedByID=async (id)=>{
  
   
   // alert(id)677
-  const res = await fetch(`http://localhost:3002/api/delmed/${id}`)
+  const res = await fetch(`https://babafaridhospital.online/api/delmed/${id}`)
   const delOK= await res.json()
-if (!res) {
-  alert("Error in fetching")
-}
+// if (!delOK.success) {
+//   alert("Error in deleting medicine");
+// }
+
  
-if (delOK) {
+if (delOK.success) {
   FetchMedicine()
  setIsMedDelAlert(true)
+} else {
+  alert("Error deleting medicine");
 }
 }
 
@@ -109,18 +112,20 @@ if (delOK) {
 
 // fetch with specific id for edit
 const FetchwitIdforEdit=async (id)=>{
-  const res = await fetch(`http://localhost:3002/api/edit/${id}`)
+  const res = await fetch(`https://babafaridhospital.online/api/edit/${id}`)
    const Editdata =await res.json()
-   if (res.ok) {
-     setEditMedData(Editdata?Editdata.data:"");
-    setEditMed_MedId(id)
-    
-   }
+  if (res.ok && Editdata) {
+  setEditMedData(Editdata.data ||   '');
+  setEditMed_MedId(id);
+} else {
+  console.error("Failed to fetch data for edit");
+}
+
 }
 
 const HandleEditModal =async()=>{
-  const res = await fetch(`http://localhost:3002/api/updatemed/${EditMed_MedId}`,{
-    method:"POST",
+  const res = await fetch(`https://babafaridhospital.online/api/updatemed/${EditMed_MedId}`,{
+    method:"post",
       headers: {
           "Content-Type": "application/json",
         },
@@ -134,7 +139,7 @@ const HandleEditModal =async()=>{
     
   })
    const updatedata =await res.json()
-  //  console.log(updatedata);
+  //  //console.log(updatedata);
    
    if (updatedata.success) {
     FetchMedicine()
@@ -149,9 +154,9 @@ const HandleEditModal =async()=>{
     return;
   }
   const delayDebounce = setTimeout(async () => {
-    const resSearch = await fetch(`http://localhost:3002/api/searchbyname/${searchTerm}`);
+    const resSearch = await fetch(`https://babafaridhospital.online/api/searchbyname/${searchTerm}`);
     const dataSearch = await resSearch.json();
-    console.log(dataSearch.data);
+    //console.log(dataSearch.data);
     
     setResults(Array.isArray(dataSearch.data) ? dataSearch.data : []);
   }, 300);
@@ -163,14 +168,11 @@ const HandleEditModal =async()=>{
 
 
 
-  useEffect(() => {
-    if (Isdashboard || !results || Istaff_dashboard ) {
+ useEffect(() => {
+    if (Isdashboard  || Istaff_dashboard ) {
       FetchMedicine();
     }
-
-  
-  }, [Isdashboard, FetchMedicine,results,Istaff_dashboard]);
-
+}, [Isdashboard, FetchMedicine,Istaff_dashboard]);
 
 
 
@@ -201,7 +203,7 @@ IsMedDelAlert,
 setSearchTerm,
 results,
  setIndoor_Med_company,
-setsetIndoor_Med_current,
+setIndoor_Med_current,
 setEditMed_company,
 setEditMed_current,
 FetchMedicine

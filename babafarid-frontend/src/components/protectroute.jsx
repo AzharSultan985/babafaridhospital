@@ -13,7 +13,7 @@ export default function ProtectedRoute({ children }) {
       setLoadingState(true); // local loading start
 
       try {
-        const res = await fetch("http://localhost:3002/api/checkAuth", {
+        const res = await fetch("https://babafaridhospital.online/api/checkAuth", {
           credentials: "include",
         });
         const data = await res.json();

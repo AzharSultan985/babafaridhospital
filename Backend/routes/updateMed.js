@@ -30,7 +30,7 @@ if(updatedatares){
   message: "Medicine update successfully",
 });
 
-  console.log("update successfully");
+  //console.log.log("update successfully");
 
 }
 })

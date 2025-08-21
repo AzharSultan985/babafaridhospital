@@ -30,13 +30,13 @@ const {setUsername,setPassword ,LoginStaffIndoor,loggedin_Indoor_Res } =useConte
           </a> */}
 <div className=" w-full flex justify-center my-4 items-center">
 
-          <img src='/logo.png' className="h-18 w-20 mx-2" alt="babafarid" srcset=""/>
+          <img src='/logo.png' className="h-18 w-20 mx-2" alt="babafarid" />
 
 <h1 className="text-4xl font-bold ">Baba Farid Hospital</h1>
 
 </div>
           <div className="p-6 sm:p-8 rounded-2xl bg-white border border-gray-200 shadow-sm">
-            <h1 className="text-slate-900 text-center text-3xl font-semibold">Sign in to Manage Indoor Maedicine</h1>
+            <h1 className="text-slate-900 text-center text-3xl font-semibold">Sign in to Manage Indoor Medicine</h1>
             <form className="mt-12 space-y-6">
               <div>
                 <label className="text-slate-900 text-sm font-medium mb-2 block">User name</label>

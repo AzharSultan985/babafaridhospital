@@ -14,23 +14,10 @@ const
 router = express.Router();
 router.use(cookieParser());
 router.use(cors({
-  origin: "http://localhost:3000", // frontend ka URL
+  origin: process.env.FRONTEND_URL, // frontend ka URL
   credentials: true
 }));
-// ✅ Staff Registration (for first time setup)
-// router.get("/newstaff",async(req,res)=>{
-//     const hashedPassword = await bcrypt.hash("Indoor@12345", 10);
-//     const newStaff = await IndoorStaffAuthModel.create({
-//       username:"indoor_admin",
-//       password: hashedPassword,
-//       role:"staff_indoor"
-//     });
-//   if(newStaff){
-//     console.log(newStaff);
-    
-//   }
-//     res.status(201).json({ message: "Indoor staff registered successfully" });
-// })
+
 
 
 // ✅ Staff Login
@@ -56,7 +43,7 @@ router.post("/loginstaffindoor", async (req, res) => {
 
     res.cookie("S_I_token", token, {
       httpOnly: true,
-      secure: false, // change to true in production
+      secure: true, // change to true in production
       sameSite: "lax",
       maxAge: 1 * 60 * 60 * 1000
 
@@ -78,7 +65,7 @@ router.get("/staffindoorverify", (req, res) => {
       return res.json({ loggedIn: false });
     }
   } else {
-    res.json({ loggedIn: false });
+    res.json({ loggedIn: false  });
   }
 });
 

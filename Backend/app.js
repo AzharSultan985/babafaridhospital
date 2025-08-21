@@ -11,6 +11,7 @@ import handleAdmin from "./routes/AuthAdmin.js";
 import IndoorStaffAuth from "./routes/indoorstaffAuth.js";
 import UpdateCurrentMedd from "./routes/UsedMEd.js";
 import cookieParser from "cookie-parser";
+import DefaultUsercreated from "./routes/defaultusercreated.js";
 
 
 const app = express();
@@ -25,8 +26,19 @@ connectDB();
 // CORS
 
 
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  "http://localhost:3000" // dev
+];
+
 app.use(cors({
-  origin: "http://localhost:3000", // frontend ka URL
+  origin: function(origin, callback) {
+    if (!origin) return callback(null, true); // postman/curl
+    if (allowedOrigins.indexOf(origin) === -1) {
+      return callback(new Error("CORS policy block"), false);
+    }
+    return callback(null, true);
+  },
   credentials: true
 }));
 
@@ -46,6 +58,10 @@ app.use("/api/",UpdateCurrentMedd );
 app.use("/api/",handleAdmin );
 // StaffAuth
 app.use("/api/",IndoorStaffAuth );
+
+
+app.use("/api", DefaultUsercreated);
+
 
 
 app.get("/api/fetchallmed", Fetchallmed);
@@ -68,5 +84,5 @@ app.post("/api/LogoutIndoor", (req, res) => {
 // Server
 const PORT = 3002;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  //console.log.log(`Server is running on port ${PORT}`);
 });

@@ -3,7 +3,7 @@ import IndoorMedModel from "../models/indoorMedDb.js";
 const EditMedId = async(req, res)=>{
   try {
     const { id } = req.params;
-    console.log("Received Edit Med ID:", id);
+    //console.log.log("Received Edit Med ID:", id);
 
     if (!id) {
       return res.status(400).json({ error: "ID is required" });
@@ -17,7 +17,7 @@ const EditMedId = async(req, res)=>{
 
     res.json({ data });
   } catch (err) {
-    console.error(err);
+    //console.log.error(err);
     res.status(500).json({ error: err.message });
   }
 

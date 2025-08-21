@@ -18,7 +18,7 @@ if (!id) {
   if (currentquntityMed>= updateUsedMed) {
     
       const  finalCurrentMed = currentquntityMed - updateUsedMed
-console.log("final ",finalCurrentMed);
+//console.log.log("final ",finalCurrentMed);
 
    const updatedatares = await IndoorMedModel.findOneAndUpdate(
       { _id: id },
@@ -32,7 +32,7 @@ if(updatedatares){
   message: "Medicine update successfully",
 });
 
-//   console.log("update successfully");
+//   //console.log.log("update successfully");
 
 }
 

@@ -3,7 +3,7 @@ import IndoorMedModel from "../models/indoorMedDb.js";
 const DelMedById = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log("Received ID:", id);
+    ////console.log.log.log("Received ID:", id);
 
     if (!id) {
       return res.status(400).json({ error: "ID is required" });
@@ -17,7 +17,7 @@ const DelMedById = async (req, res) => {
 
     res.json({ message: "Deleted successfully" });
   } catch (err) {
-    console.error(err);
+    ////console.log.log.error(err);
     res.status(500).json({ error: err.message });
   }
 };

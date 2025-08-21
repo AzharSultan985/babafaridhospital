@@ -39,7 +39,7 @@ setEditMed_current,FetchMedicine} =useContext(AppContext)
   const handleDeleteClick = (id) => {
     setSelectedMedId(id);
     setShowModal(true);
-console.log("del id ",selectedMedId);
+//console.log.log("del id ",selectedMedId);
 
   };
 
@@ -147,6 +147,10 @@ return(
          </li>
         
       </ul>
+<div className="h-[22rem]  font-serif flex items-end ">
+
+   <h1 className="text-white ">Build By CodeTrust By Azhar</h1>
+</div>
    </div>
 </aside>
 

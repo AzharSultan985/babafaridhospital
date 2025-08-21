@@ -15,7 +15,7 @@ const navigate = useNavigate();
 
   const LoginStaffIndoor = async () => {
   try {
-      const res = await fetch("http://localhost:3002/api/loginstaffindoor", {
+      const res = await fetch("https://babafaridhospital.online/api/loginstaffindoor", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -34,7 +34,7 @@ const navigate = useNavigate();
         throw new Error("Failed to logged admin");
       }
     } catch (err) {
-      console.error("Error:", err);
+      //console.log.error("Error:", err);
     }
   };
 
@@ -43,7 +43,7 @@ const navigate = useNavigate();
 
 
 const HandleUsedMed =async()=>{
-  const res = await fetch(`http://localhost:3002/api/usedmed/${UsedMedId}`,{
+  const res = await fetch(`https://babafaridhospital.online/api/usedmed/${UsedMedId}`,{
     method:"POST",
       headers: {
           "Content-Type": "application/json",
@@ -56,10 +56,10 @@ const HandleUsedMed =async()=>{
     
   })
    const updatedata =await res.json()
-  //  console.log(updatedata);
+  //  //////console.log.log(updatedata);
    
    if (updatedata.success ) {
-// console.log("used successful");
+// //////console.log.log("used successful");
 setAlertResofCurMed(updatedata.message)
    }
 
@@ -70,17 +70,17 @@ setAlertResofCurMed(updatedata.message)
    // 🚀 New logout function
   const LogoutIndoor = async () => {
     try {
-console.log("logout clicked");
+//////console.log.log("logout clicked");
 
 
-      await fetch("http://localhost:3002/api/LogoutIndoor", {
+      await fetch("https://babafaridhospital.online/api/LogoutIndoor", {
         method: "POST",
         credentials: "include"
       });
    
       window.location.href = "/stafflogin";
     } catch (err) {
-      console.error("Logout failed:", err);
+      //console.log.error("Logout failed:", err);
     }
   };
 

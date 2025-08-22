@@ -27,8 +27,7 @@ connectDB();
 
 
 const allowedOrigins = [
-  process.env.FRONTEND_URL,
-  "http://localhost:3000" // dev
+  process.env.FRONTEND_URL
 ];
 
 app.use(cors({
@@ -84,5 +83,5 @@ app.post("/api/LogoutIndoor", (req, res) => {
 // Server
 const PORT = 3002;
 app.listen(PORT, () => {
-  //console.log.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });

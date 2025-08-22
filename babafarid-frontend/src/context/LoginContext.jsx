@@ -10,7 +10,7 @@ export const AuthContext = createContext();
 const [loggedinRes,setloggedinRes]=useState()
    const LoginIndoor = async () => {
     try {
-      const res = await fetch("https://babafaridhospital.online/api/loginadmin", {
+      const res = await fetch("/api/loginadmin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -35,7 +35,7 @@ setloggedinRes(data.message)
  // 🚀 New logout function
   const LogoutAdmin = async () => {
     try {
-      await fetch("https://babafaridhospital.online/api/logout", {
+      await fetch("/api/logout", {
         method: "POST",
         credentials: "include"
       });

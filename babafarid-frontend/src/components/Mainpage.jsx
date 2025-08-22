@@ -12,14 +12,14 @@ const Mainpage= ()=>{
 
     <h1 className="text-3xl font-bold mx-auto" >Baba Farid Hospital</h1>
     <div className="   p-[2rem] flex flex-col justify-center items-center">
-    <button type="button" class="text-white w-[20rem] bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+    
             
-        <Link to={'/admindashboard'}> Admin</Link>
-        </button>
-<button type="button" class="text-white w-[20rem] bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">
+        <Link  class="text-white w-[20rem] flex justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" to={'/admindashboard'}> Admin</Link>
+       
 
-<Link to={'/indoormedmangment'}> Indoor Medicine Manage</Link>
-</button>
+
+<Link type="button" class="text-white w-[20rem]  flex justify-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" to={'/indoormedmangment'}> Indoor Medicine Manage</Link>
+
 
    
  </div>

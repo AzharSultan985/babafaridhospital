@@ -13,10 +13,7 @@ const
 
 router = express.Router();
 router.use(cookieParser());
-router.use(cors({
-  origin: process.env.FRONTEND_URL, // frontend ka URL
-  credentials: true
-}));
+
 
 
 

@@ -6,7 +6,7 @@ export const AppProvider = ({ children }) => {
   const [Indoor_Med_name, setIndoor_Med_name] = useState("");
   const [Indoor_Med_quntity, setIndoor_Med_quntity] = useState("");
   const [Indoor_Med_company, setIndoor_Med_company] = useState("");
-  const [Indoor_Med_current, setIndoor_Med_current] = useState("");
+  const [, setIndoor_Med_current] = useState("");
   const [Indoor_Med_Exp_date, setIndoor_Med_Exp_date] = useState("");
   const [FetcAllMed, setFetchAllMed] = useState([]); 
   const [IsMedAddAlert ,setIsMedAddAlert]=useState(false)
@@ -24,11 +24,11 @@ const [EditMed_expdate,setEditMed_expdate]=useState()
   const location = useLocation();
   const Isdashboard = location.pathname === "/admindashboard";
   const Istaff_dashboard =location.pathname === "/indoormedmangment"
-//console.log(Indoor_Med_current);
+// console.log(Indoor_Med_current);
 
   const IndoorMedSubmitHandle = async () => {
     try {
-      const res = await fetch("https://babafaridhospital.online/api/addindoormed", {
+      const res = await fetch("/api/addindoormed", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -74,7 +74,7 @@ const FetchMedicine = useCallback(async (option) => {
       endDate = null;
     }
 
-    let url = `https://babafaridhospital.online/api/fetchallmed`;
+    let url = `/api/fetchallmed`;
     if (startDate && endDate) {
       url += `?start=${startDate.toISOString()}&end=${endDate.toISOString()}`;
     }
@@ -92,7 +92,7 @@ const DelMedByID=async (id)=>{
  
   
   // alert(id)677
-  const res = await fetch(`https://babafaridhospital.online/api/delmed/${id}`)
+  const res = await fetch(`/api/delmed/${id}`)
   const delOK= await res.json()
 // if (!delOK.success) {
 //   alert("Error in deleting medicine");
@@ -112,7 +112,7 @@ if (delOK.success) {
 
 // fetch with specific id for edit
 const FetchwitIdforEdit=async (id)=>{
-  const res = await fetch(`https://babafaridhospital.online/api/edit/${id}`)
+  const res = await fetch(`/api/edit/${id}`)
    const Editdata =await res.json()
   if (res.ok && Editdata) {
   setEditMedData(Editdata.data ||   '');
@@ -124,7 +124,7 @@ const FetchwitIdforEdit=async (id)=>{
 }
 
 const HandleEditModal =async()=>{
-  const res = await fetch(`https://babafaridhospital.online/api/updatemed/${EditMed_MedId}`,{
+  const res = await fetch(`/api/updatemed/${EditMed_MedId}`,{
     method:"post",
       headers: {
           "Content-Type": "application/json",
@@ -154,7 +154,7 @@ const HandleEditModal =async()=>{
     return;
   }
   const delayDebounce = setTimeout(async () => {
-    const resSearch = await fetch(`https://babafaridhospital.online/api/searchbyname/${searchTerm}`);
+    const resSearch = await fetch(`/api/searchbyname/${searchTerm}`);
     const dataSearch = await resSearch.json();
     //console.log(dataSearch.data);
     

@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
-import cors from "cors";
+// import cors from "cors";
 
 
 

@@ -18,13 +18,14 @@ const [EditMed_MedId,setEditMed_MedId]=useState()
 const [EditMed_quntity,setEditMed_quntity]=useState()
 const [EditMed_current,setEditMed_current]=useState()
 const [EditMed_expdate,setEditMed_expdate]=useState()
+const [loading,setloading]=useState(false)
 
   const [searchTerm, setSearchTerm] = useState("");
   const [results, setResults] = useState([]);
   const location = useLocation();
   const Isdashboard = location.pathname === "/admindashboard";
   const Istaff_dashboard =location.pathname === "/indoormedmangment"
-// console.log(Indoor_Med_current);
+// //console.log(Indoor_Med_current);
 
   const IndoorMedSubmitHandle = async () => {
     try {
@@ -51,7 +52,7 @@ else {
         throw new Error("Failed to create medicine record");
       }
     } catch (err) {
-      console.error("Error:", err);
+      //console.error("Error:", err);
     }
   };
 
@@ -83,29 +84,30 @@ const FetchMedicine = useCallback(async (option) => {
     const allMed = await res.json();
     if (Array.isArray(allMed)) setFetchAllMed(allMed);
   } catch (err) {
-    console.error(err);
+    //console.error(err);
   }
 }, [setFetchAllMed]);
 // Delect Row using ID
 
-const DelMedByID=async (id)=>{
- 
-  
-  // alert(id)677
-  const res = await fetch(`/api/delmed/${id}`)
-  const delOK= await res.json()
-// if (!delOK.success) {
-//   alert("Error in deleting medicine");
-// }
+const DelMedByID = async (id) => {
+  try {
+    const res = await fetch(`/api/delmed/${id}`, {
+      method: "DELETE",   // ✅ correct method
+    });
+    const delOK = await res.json();
 
- 
-if (delOK.success) {
-  FetchMedicine()
- setIsMedDelAlert(true)
-} else {
-  alert("Error deleting medicine");
-}
-}
+    if (res.ok && delOK.message === "Deleted successfully") {
+      FetchMedicine();
+      setIsMedDelAlert(true);
+    } else {
+      alert(delOK.error || "Error deleting medicine");
+    }
+  } catch (err) {
+    //console.error("Delete failed:", err);
+    alert("Something went wrong while deleting");
+  }
+};
+
 
 
 
@@ -118,7 +120,7 @@ const FetchwitIdforEdit=async (id)=>{
   setEditMedData(Editdata.data ||   '');
   setEditMed_MedId(id);
 } else {
-  console.error("Failed to fetch data for edit");
+  //console.error("Failed to fetch data for edit");
 }
 
 }
@@ -139,7 +141,7 @@ const HandleEditModal =async()=>{
     
   })
    const updatedata =await res.json()
-  //  //console.log(updatedata);
+  //  ////console.log(updatedata);
    
    if (updatedata.success) {
     FetchMedicine()
@@ -153,10 +155,11 @@ const HandleEditModal =async()=>{
     setResults([]);
     return;
   }
+  
   const delayDebounce = setTimeout(async () => {
     const resSearch = await fetch(`/api/searchbyname/${searchTerm}`);
     const dataSearch = await resSearch.json();
-    //console.log(dataSearch.data);
+    ////console.log(dataSearch.data);
     
     setResults(Array.isArray(dataSearch.data) ? dataSearch.data : []);
   }, 300);
@@ -206,7 +209,8 @@ results,
 setIndoor_Med_current,
 setEditMed_company,
 setEditMed_current,
-FetchMedicine
+FetchMedicine,
+loading,setloading
       }}
     >
       {children}

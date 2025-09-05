@@ -1,13 +1,17 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-dotenv.config();
+import path from "path"
 
+dotenv.config({ path: path.resolve("./.env") });
 const connectDB = async () => {
+
   try {
-    //console.log("Mongo URI:", process.env.MongoDb_URL); // debug
-    await mongoose.connect(process.env.MongoDb_URL, {
+    
+ 
+
+    await mongoose.connect("mongodb://127.0.0.1:27017/BabafaridIndooMed", {
       useNewUrlParser: true,
-      useUnifiedTopology: true,
+      // useUnifiedTopology: true,
     });
     console.log("✅ MongoDB connected");
   } catch (error) {

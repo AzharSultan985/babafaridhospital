@@ -2,6 +2,7 @@ import { useEffect, useState, useContext } from "react";
 import { Navigate } from "react-router-dom";
 import { AuthContext } from "../context/LoginContext";
 
+
 export default function ProtectedRoute({ children }) {
   const [isAuth, setIsAuth] = useState(false);
   const [loading, setLoadingState] = useState(true); // local loading
@@ -13,7 +14,9 @@ export default function ProtectedRoute({ children }) {
       setLoadingState(true); // local loading start
 
       try {
-        const res = await fetch("https://babafaridhospital.online/api/checkAuth", {
+        // alert(import.meta.env.backend_Fetch_URl);
+        
+        const res = await fetch(`/api/checkAuth`, {
           credentials: "include",
         });
         const data = await res.json();

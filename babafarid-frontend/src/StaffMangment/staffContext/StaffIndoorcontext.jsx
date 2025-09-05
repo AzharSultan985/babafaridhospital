@@ -78,7 +78,7 @@ setAlertResofCurMed(updatedata.message)
         credentials: "include"
       });
    
-      window.location.href = "/stafflogin";
+     navigate( "/stafflogin");
     } catch (err) {
       //console.log.error("Logout failed:", err);
     }

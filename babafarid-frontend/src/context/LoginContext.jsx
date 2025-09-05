@@ -1,55 +1,80 @@
-// context/LoginContext.js (or AuthContext.js)
+// context/LoginContext.js
 import { createContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const AuthContext = createContext();
 
- export const AuthProvider = ({ children }) => {
+export const AuthProvider = ({ children }) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-const [loggedinRes,setloggedinRes]=useState()
-   const LoginIndoor = async () => {
+  const [loggedinRes, setloggedinRes] = useState("");
+
+  const navigate = useNavigate(); // ✅ React Router hook
+
+  const LoginIndoor = async () => {
     try {
+      setLoading(true);
       const res = await fetch("/api/loginadmin", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({
-          username: username,
-          password: password
-        }),  credentials: "include" 
+          username,
+          password,
+        }),
       });
+
       const data = await res.json();
-// alert(data.message)
-setloggedinRes(data.message)
-        if (data.message === "Login successful") {
-        window.location.href = "/admindashboard"; 
+      setloggedinRes(data.message);
+
+      if (data.message === "Login successful") {
+        navigate("/admindashboard"); // ✅ Correct way
       } else {
-        throw new Error("Failed to logged admin");
+        throw new Error("Failed to log admin");
       }
     } catch (err) {
-      //console.log.error("Error:", err);
+      //console.error("Login error:", err);
+    } finally {
+      setLoading(false);
     }
   };
- // 🚀 New logout function
+
+  // 🚀 Logout function
   const LogoutAdmin = async () => {
     try {
-      await fetch("/api/logout", {
-        method: "POST",
-        credentials: "include"
-      });
-      setloggedinRes(""); // clear login state
-      window.location.href = "/login";
-    } catch (err) {
-      //console.log.error("Logout failed:", err);
+let res = await fetch("/api/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+
+    let data = await res.json(); // ✅ parse response JSON
+    //console.log("Logout response:", data);
+
+    if (data.message === "Logged out") {
+      setLoading(false)
+      navigate("/login"); // ✅ Correct way
+    } 
+  }catch (err) {
+      //console.error("Logout failed:", err);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ setUsername, setPassword,LoginIndoor,setLoading,loggedinRes,loading,LogoutAdmin }}>
+    <AuthContext.Provider
+      value={{
+        setUsername,
+        setPassword,
+        LoginIndoor,
+        setLoading,
+        loggedinRes,
+        loading,
+        LogoutAdmin,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 };
-

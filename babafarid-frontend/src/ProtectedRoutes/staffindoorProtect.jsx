@@ -11,11 +11,11 @@ export default function ProtectedRoute({ children }) {
           credentials: "include", // send cookies with request
         });
         const data = await res.json();
-        console.log(data.loggedIn);
+        // console.log(data.loggedIn);
         
         setIsAuth(data.loggedIn);
       } catch (error) {
-        console.error("Auth check failed:", error);
+        // console.error("Auth check failed:", error);
         setIsAuth(false);
       }
     };

@@ -7,14 +7,18 @@ import { AppProvider } from './context/AppContext';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider }from './context/LoginContext';
 import { StaffIndoorMangmentProvider } from './StaffMangment/staffContext/StaffIndoorcontext';
+import { PharmacyProvider } from './Pharmacy/ContextPharma/PharmaContext';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <BrowserRouter>
 <AppProvider>
   <AuthProvider>
     <StaffIndoorMangmentProvider>
+     
+ <PharmacyProvider>
 
     <App />
+ </PharmacyProvider>
     </StaffIndoorMangmentProvider>
   </AuthProvider>
   </AppProvider>

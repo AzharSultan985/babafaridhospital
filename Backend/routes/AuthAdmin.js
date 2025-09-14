@@ -39,7 +39,7 @@ router.post("/loginadmin", async (req, res) => {
     // Send JWT in HTTP-only cookie
     res.cookie("adminToken", token, {
       httpOnly: true,
-      secure: true, // set to true if using https
+      secure: false, // set to true if using https
       sameSite: "strict",
       maxAge: 60 * 60 * 1000 // 1 hour
     });

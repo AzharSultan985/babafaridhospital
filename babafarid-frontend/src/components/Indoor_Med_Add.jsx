@@ -15,7 +15,6 @@ const IndoorMedAdd=()=>{
     }
   }, [IsMedAddAlert, setIsMedAddAlert]);
     return(
-
         <>
 
 <section className="w-full flex justify-center mt-3 h-[8vh] ">

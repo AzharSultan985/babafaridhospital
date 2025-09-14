@@ -8,8 +8,9 @@ import { StaffIndoorMedCotext } from "../staffContext/StaffIndoorcontext";
 const IndoorMedManage =()=>{
 
   const [isEditModalOpen, setisEditModalOpen] = useState(false);
-  const {FetcAllMed,FetchwitIdforEdit,EditMedData,
-IsMedAddAlert,setIsMedAddAlert,setSearchTerm,results,FetchMedicine} =useContext(AppContext)
+  const [MedDataForModal, setMedDataForModal] = useState(false);
+  const {FetcAllMed,
+IsMedAddAlert,setIsMedAddAlert,setSearchTerm,results,FetchMedicine,  startDate,EndDate} =useContext(AppContext)
 
 const {LogoutIndoor ,setUsedMEd,setUsedMedId,HandleUsedMed,setCurrentMed,AlertResofCurMed,setAlertResofCurMed} =useContext(StaffIndoorMedCotext)
  
@@ -48,10 +49,19 @@ function getDaysLeft(expdate) {
 
 
 //Edit Modal
-const EditModal=(editid)=>{
-  FetchwitIdforEdit(editid)
-setUsedMedId(editid)
-setisEditModalOpen(true)
+const EditModal=(usedMedid)=>{
+// find data from already fetched medicine
+console.log("id ",usedMedid);
+
+  const medToUsed = results && results.length > 0 
+    ? results.find((med) => med._id === usedMedid)
+    :FetcAllMed.find((med) => med._id === usedMedid);
+setMedDataForModal(medToUsed)
+
+console.log(medToUsed);
+
+    setisEditModalOpen(true)
+setUsedMedId(usedMedid)
 
 }
     return (<>
@@ -109,7 +119,7 @@ setisEditModalOpen(true)
   <div className="relative overflow-auto">
 
 <div className="w-full flex justify-end"> 
-  
+  <h1 className="text-2xl  mr-4">{  startDate} <span className="text-3xl font-bold">To</span>  {EndDate} </h1>
   <div className="flex px-4 h-10  rounded-md border-2 border-blue-500 overflow-hidden max-w-md  mx-2">
         <input type="text" placeholder="Search Medicine..." onChange={(e)=>setSearchTerm(e.target.value)}
           className="w-full outline-none bg-transparent text-gray-600 text-sm" />
@@ -124,7 +134,8 @@ setisEditModalOpen(true)
     <form class="w-40 cursor-pointer">
  
   <select id="countries" onChange={(e)=>FetchMedicine(e.target.value)} class="bg-gray-50 border cursor-pointer border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-    <option selected>Choose a Month</option>
+    
+    <option selected value="current">Current Month</option>
     <option value="lastMonth">Last Month</option>
     <option value="lastTwoMonths">Last two Month</option>
  
@@ -144,7 +155,6 @@ setisEditModalOpen(true)
             <th className="p-0">
               <span className="block py-2 px-3 border-r border-gray-300">Company </span>
             </th>
-           
             <th className="p-4 text-xs md:text-sm">
                <span className="block py-2 px-3 border-r border-gray-300">Expire date</span></th>
                 <th className="p-0">
@@ -276,13 +286,13 @@ setisEditModalOpen(true)
                 <div className="grid gap-4 mb-4 sm:grid-cols-2">
                     <div>
                         <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
-                        <input type="text" name="name" disabled id="name"  defaultValue={EditMedData?.Medname || ""} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder=""/>
+                        <input type="text" name="name" disabled id="name"  Value={MedDataForModal?.Medname || ""   } className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder=""/>
                     </div>
                
      
                     <div>
                         <label htmlFor="number" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">How many used </label>
-                        <input type="number" name="brand" id="brand" onChange={(e)=> {setUsedMEd(e.target.value) }}   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder=""/>
+                        <input type="number" placeholder={`Available ${MedDataForModal.current || ""} `} onChange={(e)=> {setUsedMEd(e.target.value) }}   className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" />
                     </div>
           
                 

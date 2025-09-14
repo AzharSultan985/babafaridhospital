@@ -7,10 +7,16 @@ import { useContext } from "react"
 export default function IndoorMed() {
 
   const [isEditModalOpen, setisEditModalOpen] = useState(false);
-  const {FetcAllMed,DelMedByID,FetchwitIdforEdit,EditMedData,setEditMed_Medname,
+  const {FetcAllMed,DelMedByID,setEditMed_Medname,
 setEditMed_quntity,
 setEditMed_expdate,HandleEditModal,IsMedAddAlert,setIsMedAddAlert,setIsMedDelAlert,IsMedDelAlert,setSearchTerm,results,setEditMed_company,
-setEditMed_current,FetchMedicine} =useContext(AppContext)
+setEditMed_current,FetchMedicine,  // ✅ edit fields
+        setEditMed_MedId,
+        EditMed_Medname,
+        EditMed_company,
+        EditMed_quntity,
+        EditMed_current,
+        EditMed_expdate, startDate,EndDate,} =useContext(AppContext)
  const [showModal, setShowModal] = useState(false);
   const [selectedMedId, setSelectedMedId] = useState(null);
      // Auto-hide toast after 2 seconds
@@ -51,12 +57,26 @@ setEditMed_current,FetchMedicine} =useContext(AppContext)
   };
 
 //Edit Modal
-const EditModal=(editid)=>{
-  FetchwitIdforEdit(editid)
+const EditModal = (editid) => {
+  // find data from already fetched medicine
+  const medToEdit = results && results.length > 0 
+    ? results.find((med) => med._id === editid)
+    : FetcAllMed.find((med) => med._id === editid);
 
-setisEditModalOpen(true)
+  if (medToEdit) {
+    // set data in state instead of fetching from API
+    setEditMed_Medname(medToEdit.Medname);
+    setEditMed_company(medToEdit.company);
+    setEditMed_quntity(medToEdit.quntity);
+    setEditMed_current(medToEdit.current);
+    setEditMed_expdate(medToEdit.expdate);
+  }
+  setEditMed_MedId(editid)
 
-}
+  // open modal
+  setisEditModalOpen(true);
+};
+
  // Function to get remaining days
 
 const getDaysLeft = (date) => {
@@ -84,7 +104,7 @@ const getDaysLeft = (date) => {
   <div className="relative overflow-auto">
 
 <div className="w-full flex justify-end"> 
-  
+   <h1 className="text-2xl  mr-4">{  startDate} <span className="text-3xl font-bold">To</span>  {EndDate} </h1>
   <div className="flex px-4 h-10  rounded-md border-2 border-blue-500 overflow-hidden max-w-md  mx-2">
         <input type="text" placeholder="Search Medicine..." onChange={(e)=>setSearchTerm(e.target.value)}
           className="w-full outline-none bg-transparent text-gray-600 text-sm" />
@@ -96,12 +116,14 @@ const getDaysLeft = (date) => {
       </div>
   
     <button type="button" className="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"> <Link to="/addindoormed">Add Medicine</Link> </button>
+
+<button type="button" class="text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">Add a New stock</button>
     
 
 <form class="w-40 cursor-pointer">
  
   <select id="countries" onChange={(e)=>FetchMedicine(e.target.value)} class="bg-gray-50 border cursor-pointer border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-    <option selected>Choose a Month</option>
+    <option selected>Current Month</option>
     <option value="lastMonth">Last Month</option>
     <option value="lastTwoMonths">Last two Month</option>
  
@@ -111,9 +133,6 @@ const getDaysLeft = (date) => {
 
     <div className="overflow-x-auto rounded-lg">
    
-
-
-
 <table className="w-full bg-white border mb-20">
   <thead>
     <tr className="bg-[#2B4DC994] text-center text-xs md:text-sm font-thin text-white">
@@ -139,6 +158,7 @@ const getDaysLeft = (date) => {
   
 {results && results.length > 0 ? (
   results.map((item, index) => {
+ 
     const daysLeft = getDaysLeft(item.expdate);
     const isSoonToExpire = daysLeft !== null && daysLeft <= 30;
     
@@ -270,73 +290,94 @@ const getDaysLeft = (date) => {
         </div>
       )}
 {/* Edit modal */}
-{isEditModalOpen && (
-  <>
-    {/* Main modal */}
-    <div
-      id="updateProductModal"
-      tabIndex="-1"
-     
-      className="fixed inset-0 z-50 flex justify-center items-center bg-black bg-opacity-50"
-    >
-      <div className="relative p-4 w-full max-w-2xl h-full md:h-auto">
-        {/* Modal content */}
-        <div className="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
-          {/* Modal header */}
-          <div className="flex justify-between items-center pb-4 mb-4 border-b dark:border-gray-600">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Update Product
-            </h3>
-            
-            <button
-              type="button"
-              onClick={() => setisEditModalOpen(false)}
-              className="text-gray-400 hover:text-gray-900 dark:hover:text-white"
-            >
-              ❌
-            </button>
-          </div>
 
-          {/* Modal body */}
-            <form>
-            
-                <div className="grid gap-4 mb-4 sm:grid-cols-2">
-                    <div>
-                        <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
-                        <input type="text" name="name" id="name" onChange={(e)=>{setEditMed_Medname(e.target.value);}} defaultValue={EditMedData?.Medname || ""} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder=""/>
-                    </div>
-                    <div>
-                        <label htmlFor="name" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Company</label>
-                        <input type="text" name="name" id="name" onChange={(e)=>{setEditMed_company(e.target.value);}} defaultValue={EditMedData?.company || ""} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder=""/>
-                    </div>
-                    <div>
-                        <label htmlFor="number" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Total</label>
-                        <input type="number" name="brand" id="brand" onChange={(e)=>setEditMed_quntity(e.target.value)}  defaultValue={EditMedData?.quntity || ""} className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder=""/>
-                    </div>
-                    <div>
-                        <label htmlFor="number" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Available</label>
-                        <input type="number" name="brand" id="brand" onChange={(e)=>setEditMed_current(e.target.value)}  defaultValue={EditMedData?.current || ""}className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder=""/>
-                    </div>
-                    <div>
-                        <label htmlFor="date" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Expire date</label>
-                        <input type="date" onChange={(e)=>setEditMed_expdate(e.target.value)}  defaultValue={EditMedData?.expdate || ""}name="price" id="price" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder=""/>
-                    </div>
-                
-                
-                </div>
-            </form>
-                <div className="flex items-center space-x-4">
-           
-                    <button onClick={HandleEditModal} className="bg-blue-500 text-white p-3 rounded-md text-xs md:text-sm">
-                        Update
-                    </button>
-                </div>
-        </div>
+
+{/* ✅ Edit Modal */}
+{isEditModalOpen && (
+  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="bg-white p-6 rounded-lg w-[400px] shadow-lg">
+      <h2 className="text-lg font-semibold mb-4">Edit Medicine</h2>
+
+      {/* Medicine Name */}
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        Medicine Name
+      </label>
+      <input
+        type="text"
+        value={EditMed_Medname || ""}
+        onChange={(e) => setEditMed_Medname(e.target.value)}
+        placeholder="Enter medicine name"
+        className="w-full border rounded p-2 mb-3 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+      />
+
+      {/* Company */}
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        Company
+      </label>
+      <input
+        type="text"
+        value={EditMed_company || ""}
+        onChange={(e) => setEditMed_company(e.target.value)}
+        placeholder="Enter company name"
+        className="w-full border rounded p-2 mb-3 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+      />
+
+      {/* Quantity */}
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        Total
+      </label>
+      <input
+        type="number"
+        value={EditMed_quntity || ""}
+        onChange={(e) => setEditMed_quntity(e.target.value)}
+        placeholder="Enter total quantity"
+        className="w-full border rounded p-2 mb-3 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+      />
+
+      {/* Current */}
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        Available
+      </label>
+      <input
+        type="number"
+        value={EditMed_current || ""}
+        onChange={(e) => setEditMed_current(e.target.value)}
+        placeholder="Enter current stock"
+        className="w-full border rounded p-2 mb-3 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+      />
+
+      {/* Expiry Date */}
+      <label className="block text-sm font-medium text-gray-700 mb-1">
+        Expiry Date
+      </label>
+      <input
+        type="date"
+        value={EditMed_expdate || ""}
+        onChange={(e) => setEditMed_expdate(e.target.value)}
+        className="w-full border rounded p-2 mb-4 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+      />
+
+      {/* Buttons */}
+      <div className="flex justify-end space-x-2">
+        <button
+          onClick={() => setisEditModalOpen(false)}
+          className="px-4 py-2 bg-gray-400 hover:bg-gray-500 text-white rounded"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={() => {
+            HandleEditModal();
+            setisEditModalOpen(false);
+          }}
+          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+        >
+          Update
+        </button>
       </div>
     </div>
-  </>
+  </div>
 )}
-
 
 
      

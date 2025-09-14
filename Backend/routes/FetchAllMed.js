@@ -19,7 +19,7 @@ const Fetchallmed = async (req, res) => {
     const meds = await IndoorMedModel.find(filter).sort({ date: -1 });
     res.status(200).json(meds);
   } catch (err) {
-    //console.log.error(err);
+    console.log(err);
     res.status(500).json({ error: "Server error" });
   }
 };

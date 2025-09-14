@@ -16,7 +16,7 @@ export default function ProtectedRoute({ children }) {
       try {
         // alert(import.meta.env.backend_Fetch_URl);
         
-        const res = await fetch(`/api/checkAuth`, {
+        const res = await fetch(`http://localhost:3002/api/checkAuth`, {
           credentials: "include",
         });
         const data = await res.json();

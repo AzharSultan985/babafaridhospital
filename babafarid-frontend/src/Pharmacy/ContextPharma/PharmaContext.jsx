@@ -135,7 +135,7 @@ const [EditPharmMed_expdate,setEditPharmMed_expdate]=useState()
     });
   } catch (error) {
     //console.log.error("❌ Error fetching medicines:", error);
-    setAlertMsg("❌ Failed to fetch medicines.");
+    // setAlertMsg("❌ Failed to fetch medicines.");
     setAlertType("error");
      setTimeout(() => {
     setAlertMsg("");
@@ -196,37 +196,6 @@ const [EditPharmMed_expdate,setEditPharmMed_expdate]=useState()
 
 
 
-// const FetchMedicineBYMonth = useCallback(async (option) => {
-//   try {
-//     const now = new Date();
-//     let startDate, endDate;
-
-//     if (option === "lastMonth") {
-//       startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-//       endDate = new Date(now.getFullYear(), now.getMonth(), 1);
-//     } else if (option === "lastTwoMonths") {
-//       startDate = new Date(now.getFullYear(), now.getMonth() - 2, 1);
-//       endDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-//     }
-
-//     let url = "/api/fetchpharmacymed";
-//     if (startDate && endDate) {
-//       url += `?start=${startDate.toISOString()}&end=${endDate.toISOString()}`;
-//     }
-
-//     const res = await fetch(url);
-//     const result = await res.json();
-
-//     if (Array.isArray(result.data)) {
-//       setPharmaMed(result.data);
-//     } else {
-//       setPharmaMed([]);
-//     }
-//   } catch (err) {
-//     //console.log.error("❌ Error in FetchMedicineBYMonth:", err);
-//   }
-// }, []);
-
 
 // invoice handle
 const InvoiceHandle = () => {
@@ -286,7 +255,7 @@ const HandlepharmaMedQuntity = async () => {
 const PharmaLogin = async () => {
   try {
     setSpiner(true)
-    const res = await fetch("/api/pharmalogin", {
+    const res = await fetch("http://localhost:3002/api/pharmalogin", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

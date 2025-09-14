@@ -12,20 +12,27 @@ export const AuthProvider = ({ children }) => {
 
   const navigate = useNavigate(); // ✅ React Router hook
 
-  const LoginIndoor = async () => {
-    try {
-      setLoading(true);
-      const res = await fetch("/api/loginadmin", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          username,
-          password,
-        }),
-      });
+const LoginIndoor = async () => {
+  try {
+    setLoading(true);
+
+    // const baseUrl =
+    //   process.env.REACT_APP_DEVELOP_PHASE === "development"
+    //     ? process.env.REACT_APP_BACKEND_URL
+    //     : "";
+// alert(baseUrl);
+
+    const res = await fetch(`http://localhost:3002/api/loginadmin`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        username,
+        password,
+      }),
+    });
 
       const data = await res.json();
       setloggedinRes(data.message);

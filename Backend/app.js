@@ -2,7 +2,7 @@ import express from "express";
 import handleindoorMed from './routes/IndoorMedRoute.js';
 import updateIndoorMed from "./routes/updateMed.js"
 import connectDB from "./models/db.js";
-// import cors from 'cors';
+import cors from 'cors';
 import Fetchallmed from "./routes/FetchAllMed.js";
 import DelMedById from "./routes/delmed.js";
 import EditMedId from "./routes/editmed.js";
@@ -43,10 +43,10 @@ connectDB();
 // CORS
   
 
-// app.use(cors({
-//   origin: "http://localhost:3000", // frontend origin
-//   credentials: true, // allow cookies / auth headers
-// }));
+app.use(cors({
+  origin: "http://localhost:3000", // frontend origin
+  credentials: true, // allow cookies / auth headers
+}));
 
 
 // // Serve frontend build
@@ -56,10 +56,7 @@ const frontendBuildPath = path.join(__dirname, "build");
 
 app.use(express.static(frontendBuildPath));
 
-// Catch-all for React SPA routing
-app.get("/", (req, res) => {
-  res.sendFile(path.join(frontendBuildPath, "index.html"));
-});
+
 
 // Delete by ID
 
@@ -115,7 +112,10 @@ app.post("/api/pharmalogout", (req, res) => {
   res.json({ message: "Logged out" });
 });
 // Serve frontend files directly from React's `public` folder
-
+// Catch-all for React SPA routing
+// app.get("/^\/(?!api).*/", (req, res) => {
+//   res.sendFile(path.join(frontendBuildPath, "index.html"));
+// });
 // Server
 const PORT = 3002;
 app.listen(PORT, () => {

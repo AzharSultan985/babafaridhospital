@@ -7,7 +7,7 @@ export default function ProtectedRoute({ children }) {
   useEffect(() => {
     const checkLoggedIn = async () => {
       try {
-        const res = await fetch("/api/staffindoorverify", {
+        const res = await fetch("http://localhost:3002/api/staffindoorverify", {
           credentials: "include", // send cookies with request
         });
         const data = await res.json();

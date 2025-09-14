@@ -7,7 +7,7 @@ export default function PharmacyProtectedRoute({ children }) {
   useEffect(() => {
     const checkLoggedIn = async () => {
       try {
-        const res = await fetch("/api/pharmacycheckAuth", {
+        const res = await fetch("http://localhost:3002/api/pharmacycheckAuth", {
           credentials: "include", // send cookies
         });
         const data = await res.json();

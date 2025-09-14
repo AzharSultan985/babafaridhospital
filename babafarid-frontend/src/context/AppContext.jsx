@@ -11,7 +11,6 @@ export const AppProvider = ({ children }) => {
   const [FetcAllMed, setFetchAllMed] = useState([]); 
   const [IsMedAddAlert ,setIsMedAddAlert]=useState(false)
   const [IsMedDelAlert ,setIsMedDelAlert]=useState(false)
-  const [EditMedData ,setEditMedData]=useState({})
 const [EditMed_Medname,setEditMed_Medname]=useState()
 const [EditMed_company,setEditMed_company]=useState()
 const [EditMed_MedId,setEditMed_MedId]=useState()
@@ -19,6 +18,8 @@ const [EditMed_quntity,setEditMed_quntity]=useState()
 const [EditMed_current,setEditMed_current]=useState()
 const [EditMed_expdate,setEditMed_expdate]=useState()
 const [loading,setloading]=useState(false)
+const [startDate,setstartDate]=useState("")
+const [EndDate,setendDate]=useState("")
 
   const [searchTerm, setSearchTerm] = useState("");
   const [results, setResults] = useState([]);
@@ -55,7 +56,16 @@ else {
       //console.error("Error:", err);
     }
   };
-
+  // Formatter dd-MMM yy (jaise 14-Aug 25)
+  const formatDate = (date) => {
+    return date
+      .toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "2-digit",
+      })
+      .replace(",", ""); // remove comma if any
+  };
 const FetchMedicine = useCallback(async (option) => {
    try {
     const now = new Date();
@@ -65,17 +75,34 @@ const FetchMedicine = useCallback(async (option) => {
       // current month se ek mahina pehle
       startDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
       endDate = new Date(now.getFullYear(), now.getMonth(), 1);
+ setstartDate(formatDate(startDate));
+  setendDate(formatDate(endDate));
+
     } else if (option === "lastTwoMonths") {
       // current month se do mahine pehle
       startDate = new Date(now.getFullYear(), now.getMonth() - 2, 1);
       endDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    } else {
+ setstartDate(formatDate(startDate));
+  setendDate(formatDate(endDate));
+   } else if (option === "current") {
+  // Current month ka 1st date
+  startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+  // Aaj ka date
+  endDate = now;
+  setstartDate(formatDate(startDate));
+  setendDate(formatDate(endDate));
+}
+else {
       // agar koi option select nahi hua
-      startDate = null;
-      endDate = null;
+
+ startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+  // Aaj ka date
+  endDate = now;
+  setstartDate(formatDate(startDate));
+  setendDate(formatDate(endDate));
     }
 
-    let url = `/api/fetchallmed`;
+    let url = `http://localhost:3002/api/fetchallmed`;
     if (startDate && endDate) {
       url += `?start=${startDate.toISOString()}&end=${endDate.toISOString()}`;
     }
@@ -84,7 +111,7 @@ const FetchMedicine = useCallback(async (option) => {
     const allMed = await res.json();
     if (Array.isArray(allMed)) setFetchAllMed(allMed);
   } catch (err) {
-    //console.error(err);
+    console.log(err);
   }
 }, [setFetchAllMed]);
 // Delect Row using ID
@@ -109,24 +136,8 @@ const DelMedByID = async (id) => {
 };
 
 
-
-
-
-// fetch with specific id for edit
-const FetchwitIdforEdit=async (id)=>{
-  const res = await fetch(`/api/edit/${id}`)
-   const Editdata =await res.json()
-  if (res.ok && Editdata) {
-  setEditMedData(Editdata.data ||   '');
-  setEditMed_MedId(id);
-} else {
-  //console.error("Failed to fetch data for edit");
-}
-
-}
-
 const HandleEditModal =async()=>{
-  const res = await fetch(`/api/updatemed/${EditMed_MedId}`,{
+  const res = await fetch(`http://localhost:3002/api/updatemed/${EditMed_MedId}`,{
     method:"post",
       headers: {
           "Content-Type": "application/json",
@@ -157,7 +168,7 @@ const HandleEditModal =async()=>{
   }
   
   const delayDebounce = setTimeout(async () => {
-    const resSearch = await fetch(`/api/searchbyname/${searchTerm}`);
+    const resSearch = await fetch(`http://localhost:3002/api/searchbyname/${searchTerm}`);
     const dataSearch = await resSearch.json();
     ////console.log(dataSearch.data);
     
@@ -195,8 +206,7 @@ const HandleEditModal =async()=>{
         IsMedAddAlert,
         DelMedByID,
         setIsMedAddAlert,
-     FetchwitIdforEdit,
-     EditMedData,
+
      setEditMed_Medname,
 setEditMed_quntity,
 setEditMed_expdate,
@@ -210,7 +220,18 @@ setIndoor_Med_current,
 setEditMed_company,
 setEditMed_current,
 FetchMedicine,
-loading,setloading
+loading,setloading,
+  // ✅ edit fields
+        EditMed_MedId,
+        EditMed_Medname,
+        EditMed_company,
+        EditMed_quntity,
+        EditMed_current,
+        EditMed_expdate,
+        setEditMed_MedId,
+
+        startDate,EndDate
+      
       }}
     >
       {children}

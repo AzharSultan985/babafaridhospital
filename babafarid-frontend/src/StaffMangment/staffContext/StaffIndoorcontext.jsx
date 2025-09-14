@@ -15,7 +15,7 @@ const navigate = useNavigate();
 
   const LoginStaffIndoor = async () => {
   try {
-      const res = await fetch("http://localhost:3002/api/loginstaffindoor", {
+      const res = await fetch("/api/loginstaffindoor", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -43,7 +43,7 @@ const navigate = useNavigate();
 
 
 const HandleUsedMed =async()=>{
-  const res = await fetch(`http://localhost:3002/api/usedmed/${UsedMedId}`,{
+  const res = await fetch(`/api/usedmed/${UsedMedId}`,{
     method:"POST",
       headers: {
           "Content-Type": "application/json",
@@ -73,7 +73,7 @@ setAlertResofCurMed(updatedata.message)
 //////console.log.log("logout clicked");
 
 
-      await fetch("http://localhost:3002/api/LogoutIndoor", {
+      await fetch("/api/LogoutIndoor", {
         method: "POST",
         credentials: "include"
       });

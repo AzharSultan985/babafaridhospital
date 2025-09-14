@@ -22,7 +22,7 @@ const LoginIndoor = async () => {
     //     : "";
 // alert(baseUrl);
 
-    const res = await fetch(`http://localhost:3002/api/loginadmin`, {
+    const res = await fetch(`/api/loginadmin`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -26,7 +26,7 @@ const [EndDate,setendDate]=useState("")
   const location = useLocation();
   const Isdashboard = location.pathname === "/admindashboard";
   const Istaff_dashboard =location.pathname === "/indoormedmangment"
-// //console.log(Indoor_Med_current);
+// ////console.log(Indoor_Med_current);
 
   const IndoorMedSubmitHandle = async () => {
     try {
@@ -53,7 +53,7 @@ else {
         throw new Error("Failed to create medicine record");
       }
     } catch (err) {
-      //console.error("Error:", err);
+      ////console.error("Error:", err);
     }
   };
   // Formatter dd-MMM yy (jaise 14-Aug 25)
@@ -102,7 +102,7 @@ else {
   setendDate(formatDate(endDate));
     }
 
-    let url = `http://localhost:3002/api/fetchallmed`;
+    let url = `/api/fetchallmed`;
     if (startDate && endDate) {
       url += `?start=${startDate.toISOString()}&end=${endDate.toISOString()}`;
     }
@@ -111,7 +111,7 @@ else {
     const allMed = await res.json();
     if (Array.isArray(allMed)) setFetchAllMed(allMed);
   } catch (err) {
-    console.log(err);
+    //console.log(err);
   }
 }, [setFetchAllMed]);
 // Delect Row using ID
@@ -130,14 +130,14 @@ const DelMedByID = async (id) => {
       alert(delOK.error || "Error deleting medicine");
     }
   } catch (err) {
-    //console.error("Delete failed:", err);
+    ////console.error("Delete failed:", err);
     alert("Something went wrong while deleting");
   }
 };
 
 
 const HandleEditModal =async()=>{
-  const res = await fetch(`http://localhost:3002/api/updatemed/${EditMed_MedId}`,{
+  const res = await fetch(`/api/updatemed/${EditMed_MedId}`,{
     method:"post",
       headers: {
           "Content-Type": "application/json",
@@ -152,7 +152,7 @@ const HandleEditModal =async()=>{
     
   })
    const updatedata =await res.json()
-  //  ////console.log(updatedata);
+  //  //////console.log(updatedata);
    
    if (updatedata.success) {
     FetchMedicine()
@@ -168,9 +168,9 @@ const HandleEditModal =async()=>{
   }
   
   const delayDebounce = setTimeout(async () => {
-    const resSearch = await fetch(`http://localhost:3002/api/searchbyname/${searchTerm}`);
+    const resSearch = await fetch(`/api/searchbyname/${searchTerm}`);
     const dataSearch = await resSearch.json();
-    ////console.log(dataSearch.data);
+    //////console.log(dataSearch.data);
     
     setResults(Array.isArray(dataSearch.data) ? dataSearch.data : []);
   }, 300);

@@ -50,7 +50,7 @@ router.post("/pharmalogin", async (req, res) => {
 
     res.cookie("pharmacyToken", token, {
       httpOnly: true,
-      secure: false, // localhost ke liye false rakho, production me true
+      secure: true, // localhost ke liye false rakho, production me true
       sameSite: "strict",
       maxAge: 60 * 60 * 1000,
     });

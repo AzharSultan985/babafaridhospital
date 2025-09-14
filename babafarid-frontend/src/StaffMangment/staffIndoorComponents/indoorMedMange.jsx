@@ -51,14 +51,14 @@ function getDaysLeft(expdate) {
 //Edit Modal
 const EditModal=(usedMedid)=>{
 // find data from already fetched medicine
-console.log("id ",usedMedid);
+// console.log("id ",usedMedid);
 
   const medToUsed = results && results.length > 0 
     ? results.find((med) => med._id === usedMedid)
     :FetcAllMed.find((med) => med._id === usedMedid);
 setMedDataForModal(medToUsed)
 
-console.log(medToUsed);
+// console.log(medToUsed);
 
     setisEditModalOpen(true)
 setUsedMedId(usedMedid)

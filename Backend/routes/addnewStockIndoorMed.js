@@ -31,8 +31,11 @@ router.post("/addnewstockindormed", async (req, res) => {
     // 3️⃣ Convert expdate to Date type for MongoDB
     const formattedMeds = medicines.map((m) => ({
       ...m,
+      Medname: m.Medname,
+  company: m.company,
       expdate: new Date(m.expdate), // 🔥 convert to Date object
-      current: m.current ?? m.quntity,
+     quntity:m.quntity,
+     current: Number(m.quntity) + (Number(m.remaining) || 0),
     }));
 
     // 4️⃣ Save in bulk

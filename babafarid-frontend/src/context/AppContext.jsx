@@ -87,6 +87,7 @@ const AddNewstock_Indoor = async () => {
 
     if (res.ok && data.success) {
       setIsMedAddAlert(true);
+      FetchMedicine()
       //console.log("✅ Medicines saved successfully!");
       // Optionally clear the list after save
       // setListOFNewstack([]);

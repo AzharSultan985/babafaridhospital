@@ -28,6 +28,7 @@ export default function AddANewStockIndoor() {
       company: rowInputs.company.value || "",
       expdate: rowInputs.expdate.value || "",
       quntity: rowInputs.quntity.value || "",
+      remaining: rowInputs.remaining.value || "",
     };
 
     // Only add if at least one field is filled to avoid empty entries
@@ -72,7 +73,8 @@ export default function AddANewStockIndoor() {
               <th className="py-3 px-4 border-r border-gray-300 text-center">Medicine</th>
               <th className="py-3 px-4 border-r border-gray-300 text-center">Company</th>
               <th className="py-3 px-4 border-r border-gray-300 text-center">Expire Date</th>
-              <th className="py-3 px-4 border-r border-gray-300 text-center">Available</th>
+              <th className="py-3 px-4 border-r border-gray-300 text-center">Quantity </th>
+              <th className="py-3 px-4 border-r border-gray-300 text-center">Remaining</th>
               <th className="py-3 px-4 text-center">Action</th>
             </tr>
           </thead>
@@ -118,11 +120,20 @@ export default function AddANewStockIndoor() {
 
                   <td className="py-2 px-4 text-center">
                     <input
-                      type="number"
-                      defaultValue={data.quntity || ""}
+                      type="number" 
+                     placeholder="Enter Medicine"
                       className="w-full text-center bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md 
                                  focus:ring-blue-500 focus:border-blue-500 p-2"
                       ref={(el) => (inputRefs.current[index] = { ...inputRefs.current[index], quntity: el })}
+                    />
+                  </td>
+                  <td className="py-2 px-4 text-center">
+                    <input
+                      type="number" disabled
+                      defaultValue={data.quntity || ""}
+                      className="w-full text-center bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md 
+                                 focus:ring-blue-500 focus:border-blue-500 p-2"
+                      ref={(el) => (inputRefs.current[index] = { ...inputRefs.current[index], remaining: el })}
                     />
                   </td>
 

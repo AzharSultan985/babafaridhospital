@@ -3,10 +3,8 @@ import { usePharmacy } from "../ContextPharma/PharmaContext";
 
 const PatientINFOModal=()=>{
 
-const { setPatientModal,
-setPatientAddress,
-setPatientName,
-setPatientNumber,patientModal,InvoiceHandle} = usePharmacy();
+const { setPatientModal,setPatientID,
+patientModal,InvoiceHandle} = usePharmacy();
 
 
 
@@ -23,27 +21,14 @@ return(<>
 
       <input
         type="text"
-        placeholder="Patient Name"
-       
-        onChange={(e) => setPatientName(e.target.value)}
+        placeholder="Patient ID"
+        onChange={(e) => setPatientID(e.target.value)}
         className="border rounded px-2 py-1 w-full mb-3"
       />
 
-      <input
-        type="text"
-        placeholder="Patient Number"
      
-        onChange={(e) => setPatientNumber(e.target.value)}
-        className="border rounded px-2 py-1 w-full mb-3"
-      />
 
-      <textarea
-        placeholder="Patient Address"
-     
-        onChange={(e) => setPatientAddress(e.target.value)}
-        className="border rounded px-2 py-1 w-full mb-3"
-      />
-
+    
       <div className="flex justify-end space-x-2">
         <button
           onClick={() => setPatientModal(false)}

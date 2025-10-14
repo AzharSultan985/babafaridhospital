@@ -1,16 +1,54 @@
+import { useState, useEffect } from "react";
 import { usePharmacy } from "../ContextPharma/PharmaContext";
+import { QRCodeCanvas } from "qrcode.react";
+import { Link } from "react-router-dom";
 
 const Invoice = () => {
-  const { InvoiceData } = usePharmacy();
+  const { InvoiceData ,ExtractMedForReport, setExtractMedForReport,HandlepharmaMedQuntity,SaveInvoiceData} = usePharmacy();
+  const [dataINVQR, setdataINVQR] = useState("");
+//console.log("InvoiceData",InvoiceData);
 
-  if (!InvoiceData || !InvoiceData.patient) {
+  // ✅ Extract medicines when InvoiceData updates
+  useEffect(() => {
+    if (InvoiceData?.medicines?.length) {
+      setExtractMedForReport(InvoiceData.medicines);
+    }
+  }, [InvoiceData,setExtractMedForReport]);
+//console.log(ExtractMedForReport);
+
+  // ✅ Prepare QR data once InvoiceData is available
+  useEffect(() => {
+    if (InvoiceData  && InvoiceData.medicines) {
+      const qrPayload = {
+        InvoiceNo: 2352,
+        Patient: {
+        ID: InvoiceData.PatientID || "N/A",
+      },
+        Date: InvoiceData.date,
+        Medicines: InvoiceData.medicines.map((m) => ({
+          Name: m.Medname,
+          Qty: m.quantity,
+          Price: m.PriceOFMedPerBuy,
+        })),
+        Bill: {
+          Total: InvoiceData.BillData.Total,
+          Discount: InvoiceData.BillData.DicountRate,
+          NetTotal: InvoiceData.BillData.NetTotal,
+        },
+      };
+      setdataINVQR(qrPayload);
+    }
+  }, [InvoiceData]);
+
+  const qrValue = JSON.stringify(dataINVQR);
+
+  if (!InvoiceData) {
     return <div>No Invoice Data Available</div>;
   }
 
   return (
     <>
-      <style>
-        {`
+      <style>{`
           @media print {
             body {
               display: flex;
@@ -28,12 +66,10 @@ const Invoice = () => {
             }
             .printable {
               position: relative;
-              width: 210mm; /* A4 width */
-              min-height: 297mm; /* A4 height */
+              width: 210mm;
+              min-height: 297mm;
               margin: 0 auto;
               padding: 1cm;
-              box-shadow: none !important;
-              border: none !important;
             }
             @page {
               size: A4;
@@ -44,36 +80,47 @@ const Invoice = () => {
       </style>
 
       <div className="bg-white border rounded-lg shadow-lg px-6 py-8 max-w-2xl mx-auto mt-8 printable">
-        {/* Hospital Header */}
         <h1 className="font-bold text-2xl my-4 text-center text-blue-600">
           BABA FARID HOSPITAL
         </h1>
+
         <hr className="mb-2" />
 
-        {/* Invoice Header */}
         <div className="flex justify-between mb-6">
-          <h1 className="text-lg font-bold">Invoice</h1>
-          <div className="text-gray-700">
-            <div>Date: {InvoiceData.date}</div>
-            <div>Invoice #: INV12345</div>
+          <h1 className="text-2xl font-bold">Invoice</h1>
+          <div className="qr-section ml-14" style={{ marginTop: "10px" }}>
+            <QRCodeCanvas
+              value={qrValue}
+              size={120}
+              includeMargin={true}
+              bgColor="#ffffff"
+              fgColor="#000000"
+            />
           </div>
         </div>
 
-        {/* Bill To */}
         <div className="mb-8">
           <h2 className="text-lg font-bold mb-4">Bill To</h2>
           <div className="text-gray-700 mb-2">
-            <span className="font-bold">Name:</span> {InvoiceData.patient.name}
+
+            <span className="font-bold mr-8">Patient ID:</span>  {InvoiceData.PatientID}
           </div>
           <div className="text-gray-700 mb-2">
-            <span className="font-bold">Number:</span> {InvoiceData.patient.number}
+
+            <span className="font-bold mr-8">Name:</span>
           </div>
           <div className="text-gray-700 mb-2">
-            <span className="font-bold">Address:</span> {InvoiceData.patient.address}
-          </div>    
+            <span className="font-bold mr-3">Number:</span> 
+          </div>
+         
+          <div className="text-gray-700 mb-2">
+            <span className="font-bold mr-8">Date:</span> {InvoiceData.date}
+          </div>
+          <div className="text-gray-700 mb-2">
+            <span className="font-bold mr-1">Invoice #:</span> {InvoiceData.InvoiceID}
+          </div>
         </div>
 
-        {/* Medicines Table */}
         <table className="w-full mb-8 border">
           <thead>
             <tr className="bg-gray-100">
@@ -93,6 +140,7 @@ const Invoice = () => {
               </tr>
             ))}
           </tbody>
+
           <tfoot className="border-t">
             <tr>
               <td className="text-left font-bold text-gray-700 px-2 py-1">Total</td>
@@ -118,9 +166,8 @@ const Invoice = () => {
           </tfoot>
         </table>
 
-        {/* Footer */}
         <div className="text-gray-700 mb-2 text-center">
-       Thank you for your trust. Get well soon!
+          Thank you for your trust. Get well soon!
         </div>
         <div className="text-gray-500 text-xs text-center mt-6 border-t pt-2">
           Powered By <span className="font-bold">CodeTrust By Azhar</span>
@@ -128,12 +175,17 @@ const Invoice = () => {
       </div>
 
       <div className="w-full flex justify-center">
-        {/* Print button (hidden in print) */}
         <button
-          onClick={() => window.print()}
+          onClick={() => {window.print(); HandlepharmaMedQuntity();SaveInvoiceData() }}
           className="px-4 my-4 py-2 w-[30%] bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition print:hidden mt-4"
         >
           Print Invoice
+        </button>
+        <button
+          
+          className="px-4 my-4 py-2 w-[30%] bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition print:hidden mt-4"
+        >
+         <Link to={'/pharmacy'}>Back to pharmacy </Link> 
         </button>
       </div>
     </>

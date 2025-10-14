@@ -50,6 +50,9 @@ const getDaysLeft = (date) => {
             {/* Search Bar */}
             <div className="w-full flex justify-end mb-4">
                   <button type="button" className="text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"> <Link to="/addpharmaMed">Add Pharmacy Medicine</Link> </button>
+
+                  
+                  <button type="button" className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"> <Link to="/returnmedicine">Return Medicine</Link> </button>
               <div className="flex px-4 h-10 rounded-md border-2 border-blue-500 overflow-hidden max-w-md mx-2">
                 <input
                   type="text"
@@ -90,6 +93,7 @@ const getDaysLeft = (date) => {
                     <th className="p-2">Available</th>
                     <th className="p-2">Price/Unit</th>
                     <th className="p-2">Box/Unit</th>
+                    <th className="p-2">Total/Units</th>
                     <th className="p-2">Expire Date</th>
                     <th className="p-2">Action</th>
                   </tr>
@@ -113,6 +117,7 @@ const getDaysLeft = (date) => {
         <td className="p-2 md:p-4">{med.available}</td>
         <td className="p-2 md:p-4">{Number(med.PricePerMed).toFixed(2)}</td>
         <td className="p-2 md:p-4">{Number(med.PharmaMedprice).toFixed(2)}</td>
+        <td className="p-2 md:p-4">{med.TotalTablets}</td>
 
         {/* Expiry Date with badge */}
         <td className="p-2 md:p-4 relative">

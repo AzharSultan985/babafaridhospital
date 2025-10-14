@@ -6,6 +6,9 @@ import Home from "./home";
 import HandlePharmacy from "./Pharmacy";
 import Alert from "./alert";
 import { usePharmacy } from "../Pharmacy/ContextPharma/PharmaContext";
+import AddANewStockIndoor from "./addANewStackIndoor";
+import AddANewStockPharmacy from "./addNewStockPharmacy";
+import PharmacyReport from "../Pharmacy/Report/pharmaReport";
 
 const Dashboard = () => {
   const { LogoutAdmin } = useContext(AuthContext)
@@ -13,8 +16,17 @@ const Dashboard = () => {
  const {alertMsg,alertType} = usePharmacy();
   const [IsIndoorMed, setIsIndoorMed] = useState(false)
   const [Ispharmacy, setIspharmacy] = useState(false)
+const [showStockMenu, setShowStockMenu] = useState(false);
+const [showReportMenu, setShowReportMenu] = useState(false);
+const [showAddIndoorStock, setShowAddIndoorStock] = useState(false);
+const [showAddIstockPharmacy, setShowAddstockPharmacy] = useState(false);
 
-  const isDashboard = !IsIndoorMed && !Ispharmacy;
+const [showPharmacyReport, setShowPharmacyReport] = useState(false);
+
+
+
+const isDashboard = !IsIndoorMed && !Ispharmacy && !showAddIndoorStock && !showAddIstockPharmacy && !showPharmacyReport;
+
 
   const navButtonClasses = (active) =>
     `flex items-center p-2 w-full rounded-lg transition-colors duration-200 
@@ -89,7 +101,7 @@ const Dashboard = () => {
           <ul className="space-y-2 font-medium">
             <li>
               <button
-                onClick={() => { setIsIndoorMed(false); setIspharmacy(false); }}
+                onClick={() => { setIsIndoorMed(false); setIspharmacy(false); setShowAddIndoorStock(false); setShowPharmacyReport(false)}}
                 className={navButtonClasses(isDashboard)}
               >
                 <span className="ms-3">Dashboard</span>
@@ -98,21 +110,136 @@ const Dashboard = () => {
 
             <li>
               <button
-                onClick={() => { setIsIndoorMed(true); setIspharmacy(false); }}
+                onClick={() => { setIsIndoorMed(true); setIspharmacy(false);setShowAddIndoorStock(false) ;
+
+                  setShowAddstockPharmacy(false); setShowPharmacyReport(false)
+                }}
                 className={navButtonClasses(IsIndoorMed)}
               >
                 <span className="ms-3">Indoor Medicine</span>
               </button>
             </li>
+                
 
             <li>
               <button
-                onClick={() => { setIspharmacy(true); setIsIndoorMed(false); }}
-                className={navButtonClasses(Ispharmacy)}
+                onClick={() => { setIspharmacy(true); setIsIndoorMed(false);setShowAddIndoorStock(false) ;
+                  setShowAddstockPharmacy(false); setShowPharmacyReport(false)
+                }}
+                className={navButtonClasses(Ispharmacy)
+
+
+                }
               >
                 <span className="ms-3">Pharmacy</span>
               </button>
             </li>
+        
+
+{/* Add New Stock Dropdown */}
+<li className="relative">
+  <button
+    onClick={() => setShowStockMenu((prev) => !prev)}
+    className="flex justify-between items-center w-full p-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition-colors duration-200"
+  >
+    <span className="ms-3">Add New Stock</span>
+    <svg
+      className={`w-4 h-4 transition-transform duration-200 ${
+        showStockMenu ? "rotate-180" : "rotate-0"
+      }`}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+    </svg>
+  </button>
+
+  <div
+    className={`transition-all duration-300 overflow-hidden ${
+      showStockMenu ? "max-h-32 mt-2" : "max-h-0"
+    }`}
+  >
+    <ul className="w-full bg-[#333] border border-gray-700 rounded-lg shadow-lg overflow-hidden">
+      <li>
+        <button      onClick={() => {
+          setIspharmacy(false);
+        setShowAddstockPharmacy(true)
+      setShowAddIndoorStock(false);
+      setIsIndoorMed(false);
+      setShowStockMenu(false); setShowPharmacyReport(false) // optional: close dropdown
+    
+    }}
+          className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-600 hover:text-white"
+        >
+          Pharmacy
+        </button>
+      </li>
+      <li>
+        <button
+
+         onClick={() => {
+      setShowAddIndoorStock(true);
+      setIsIndoorMed(false);
+      setIspharmacy(false);
+      setShowStockMenu(false);setShowAddstockPharmacy(false); setShowPharmacyReport(false)// optional: close dropdown
+    }}
+          className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-600 hover:text-white"
+        >
+          Indoor
+        </button>
+      </li>
+    </ul>
+  </div>
+</li>
+
+{/* Reports Dropdown */}
+<li className="relative">
+  <button
+    onClick={() => setShowReportMenu((prev) => !prev)}
+    className="flex justify-between items-center w-full p-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white transition-colors duration-200"
+  >
+    <span className="ms-3">Reports</span>
+    <svg
+      className={`w-4 h-4 transition-transform duration-200 ${
+        showReportMenu ? "rotate-180" : "rotate-0"
+      }`}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+    </svg>
+  </button>
+
+  <div
+    className={`transition-all duration-300 overflow-hidden ${
+      showReportMenu ? "max-h-32 mt-2" : "max-h-0"
+    }`}
+  >
+    <ul className="w-full bg-[#333] border border-gray-700 rounded-lg shadow-lg overflow-hidden">
+     <li>
+  <button
+    onClick={() => {
+      setShowPharmacyReport(true);
+      setIsIndoorMed(false);
+      setIspharmacy(false);
+      setShowAddIndoorStock(false);
+      setShowAddstockPharmacy(false);
+      setShowReportMenu(false); // close dropdown
+    }}
+    className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-600 hover:text-white"
+  >
+    Pharmacy Report
+  </button>
+</li>
+
+   
+    </ul>
+  </div>
+</li>
 
             <li>
               <button
@@ -136,6 +263,17 @@ const Dashboard = () => {
       {isDashboard && <Home />}
       {IsIndoorMed && <IndoorMed />}
       {Ispharmacy && <HandlePharmacy />}
+<div className="ml-64  p-2 ">
+  {showAddIndoorStock && <AddANewStockIndoor />}
+</div>
+<div className="ml-64 p-2 ">
+  {showAddIstockPharmacy && <AddANewStockPharmacy />}
+</div>
+<div className="ml-64 p-2 ">
+  {showPharmacyReport && <PharmacyReport />}
+</div>
+
+
     </>
   )
 }

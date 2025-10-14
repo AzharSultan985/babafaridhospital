@@ -2,7 +2,7 @@
   import handleindoorMed from './routes/IndoorMedRoute.js';
   import updateIndoorMed from "./routes/updateMed.js"
   import connectDB from "./models/db.js";
-  // import cors from 'cors';
+  import cors from 'cors';
   import Fetchallmed from "./routes/FetchAllMed.js";
   import DelMedById from "./routes/delmed.js";
   import EditMedId from "./routes/editmed.js";
@@ -24,6 +24,20 @@
   import UpdatePharmaMed from "./routes/updatePharmaMed.js";
   import DelpharmaMedById from "./routes/DelpharmacyMed.js";
 
+  // addnewstockindoorMEd
+  import addnewstockindoorMEd from "./routes/addnewStockIndoorMed.js";
+  // addnewstockpharmacyMEd
+  import addnewstockpharmacyMEd from "./routes/addstockphramacyMed.js";
+
+// fecth last month med for phamra
+  import FetchLastMonthPharmaMed from "./routes/fetchLastMonthPharmaMed.js";
+// fecth last month med for indoor
+  import FetchLastMonthindoorMed from "./routes/fetchlastmonthindoorMed.js";
+import InvoiceRoute from "./routes/SaveInvoice.js";
+import FetchInvoiceReports from "./routes/fetchinvoiceReport.js";
+import FetchInvoiceByID from "./routes/fetchinvoiceByID.js";
+import UpdateInvoiceData from "./routes/updateInvoiceData.js";
+
 
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
@@ -42,12 +56,10 @@
 
 
   // CORS
-    
-
-  // app.use(cors({
-  //   origin: "http://localhost:3000", // frontend origin
-  //   credentials: true, // allow cookies / auth headers
-  // }));
+  app.use(cors({
+    origin: "http://localhost:3000", // frontend origin
+    credentials: true, // allow cookies / auth headers
+  }));
 
 
   // // Serve frontend build
@@ -80,6 +92,14 @@
   app.use("/api", DefaultUsercreated);
 
 
+// handle new stock indoor medicine   
+  app.use("/api",addnewstockindoorMEd );
+// handle new stock pharmacy medicine   
+  app.use("/api",addnewstockpharmacyMEd );
+// saveinvoice 
+app.use("/api", InvoiceRoute);
+
+
 
   app.get("/api/fetchallmed", Fetchallmed);
   app.delete("/api/delmed/:id", DelMedById); // ✅ Correct method
@@ -91,9 +111,19 @@
   app.get("/api/searchpharmacymed/:pharmaMedname", SearchPharmaMedName);
   // fetchpharmacymed
   app.use("/api/",FetchPharmacyMEd ); // ✅ fetch med pharma method
+  // fetchlastmonthpharmacymed
+  app.use("/api/",FetchLastMonthPharmaMed ); // ✅ fetch med pharma method
+  // fetchlastmonth indoor med
+  app.use("/api/",FetchLastMonthindoorMed ); // ✅ fetch med pharma method
   // update pharma med
   app.use("/api/",UpdatePharmaMed ); // ✅ update med pharma method
+  // update invoice data
+  app.use("/api/",UpdateInvoiceData ); // ✅ update med pharma method
 
+// fetch invoices 
+   app.get("/api/fetchinvoicesreport/", FetchInvoiceReports); 
+// fetch invoices  by id 
+   app.get("/api/fetchinvoicesbyid/", FetchInvoiceByID); 
   // logout
   app.post("/api/logout", (req, res) => {
     res.clearCookie("adminToken"); // or your session cookie name
@@ -111,9 +141,9 @@
   });
   // Serve frontend files directly from React's `public` folder
   // Catch-all for React SPA routing
- app.get(/^\/(?!api).*/, (req, res) => {
-  res.sendFile(path.join(frontendBuildPath, "index.html"));
-});
+//  app.get(/^\/(?!api).*/, (req, res) => {
+//   res.sendFile(path.join(frontendBuildPath, "index.html"));
+// });
   // Server
   const PORT = 3002;
   app.listen(PORT, () => {

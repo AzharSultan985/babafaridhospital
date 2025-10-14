@@ -17,6 +17,8 @@ import HeartbeatLoader from "./components/spiner";
 import { usePharmacy } from "./Pharmacy/ContextPharma/PharmaContext";
 import { AppContext } from "./context/AppContext"
 import { useContext } from "react"
+import AddANewStack from "./components/addANewStackIndoor";
+import ReturnMedicine from "./Pharmacy/phrmaComp/ReturnMed";
 
 function App() {
   const {spiner } = usePharmacy();
@@ -46,6 +48,16 @@ function App() {
     </ProtectedRoute>
 
 }/>
+
+
+{/* addanewstack Route */}
+        <Route path="/addanewstack"   element={
+    <ProtectedRoute>
+      <AddANewStack />
+    </ProtectedRoute>
+
+}/>
+
 <Route path="/pharmacy" element={
   <PharmacyProtectedRoute>
     <Pharmacy />
@@ -63,6 +75,11 @@ function App() {
   <PharmacyProtectedRoute>
     <Invoice />
   </PharmacyProtectedRoute>
+} />
+<Route path="/returnmedicine" element={
+  <ProtectedRoute>
+    <ReturnMedicine />
+  </ProtectedRoute>
 } />
 
         <Route path="/pharmalogin" element={< PhramaLogin />} />

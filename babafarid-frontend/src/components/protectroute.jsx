@@ -16,13 +16,13 @@ export default function ProtectedRoute({ children }) {
       try {
         // alert(import.meta.env.backend_Fetch_URl);
         
-        const res = await fetch(`/api/checkAuth`, {
+        const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/checkAuth`, {
           credentials: "include",
         });
         const data = await res.json();
         setIsAuth(data.loggedIn);
       } catch (error) {
-        console.error("Auth check failed:", error);
+        //console.error("Auth check failed:", error);
         setIsAuth(false);
       }
 

@@ -20,17 +20,20 @@ const [EditMed_expdate,setEditMed_expdate]=useState()
 const [loading,setloading]=useState(false)
 const [startDate,setstartDate]=useState("")
 const [EndDate,setendDate]=useState("")
-
   const [searchTerm, setSearchTerm] = useState("");
   const [results, setResults] = useState([]);
   const location = useLocation();
   const Isdashboard = location.pathname === "/admindashboard";
   const Istaff_dashboard =location.pathname === "/indoormedmangment"
-// ////console.log(Indoor_Med_current);
+// //////console.log(Indoor_Med_current);
+const [ListOFNewstack,setListOFNewstack]=useState([])
+// //console.log(ListOFNewstack);
+// Medicines list
+  const [LastMonthindoorMed, setLastMonindoorMed] = useState([]);
 
   const IndoorMedSubmitHandle = async () => {
     try {
-      const res = await fetch("/api/addindoormed", {
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/addindoormed`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -53,9 +56,61 @@ else {
         throw new Error("Failed to create medicine record");
       }
     } catch (err) {
-      ////console.error("Error:", err);
+      //////console.error("Error:", err);
     }
   };
+
+
+
+// Add new stock medicines for indoor use
+const AddNewstock_Indoor = async () => {
+  try {
+    // Ensure ListOFNewstack is not empty
+    if (!Array.isArray(ListOFNewstack) || ListOFNewstack.length === 0) {
+      alert("Please add at least one medicine before saving.");
+      return;
+    }
+
+    // Prepare request body as object (to keep it clean and consistent)
+    const payload = { medicines: ListOFNewstack };
+//console.log(payload);
+
+    const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/addnewstockindormed`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.success) {
+      setIsMedAddAlert(true);
+      //console.log("✅ Medicines saved successfully!");
+      // Optionally clear the list after save
+      // setListOFNewstack([]);
+    } else {
+      //console.error("❌ Failed to create medicine record:", data.message || "Unknown error");
+      alert("Failed to save medicines. Please try again.");
+    }
+  } catch (err) {
+    //console.error("🚨 Error saving new stock:", err);
+    alert("Something went wrong while saving medicines.");
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
   // Formatter dd-MMM yy (jaise 14-Aug 25)
   const formatDate = (date) => {
     return date
@@ -102,7 +157,7 @@ else {
   setendDate(formatDate(endDate));
     }
 
-    let url = `/api/fetchallmed`;
+    let url = `${process.env.REACT_APP_BACKEND_URL}/api/fetchallmed`;
     if (startDate && endDate) {
       url += `?start=${startDate.toISOString()}&end=${endDate.toISOString()}`;
     }
@@ -111,14 +166,14 @@ else {
     const allMed = await res.json();
     if (Array.isArray(allMed)) setFetchAllMed(allMed);
   } catch (err) {
-    //console.log(err);
+    ////console.log(err);
   }
 }, [setFetchAllMed]);
 // Delect Row using ID
 
 const DelMedByID = async (id) => {
   try {
-    const res = await fetch(`/api/delmed/${id}`, {
+    const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/delmed/${id}`, {
       method: "DELETE",   // ✅ correct method
     });
     const delOK = await res.json();
@@ -130,14 +185,14 @@ const DelMedByID = async (id) => {
       alert(delOK.error || "Error deleting medicine");
     }
   } catch (err) {
-    ////console.error("Delete failed:", err);
+    //////console.error("Delete failed:", err);
     alert("Something went wrong while deleting");
   }
 };
 
 
 const HandleEditModal =async()=>{
-  const res = await fetch(`/api/updatemed/${EditMed_MedId}`,{
+  const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/updatemed/${EditMed_MedId}`,{
     method:"post",
       headers: {
           "Content-Type": "application/json",
@@ -152,7 +207,7 @@ const HandleEditModal =async()=>{
     
   })
    const updatedata =await res.json()
-  //  //////console.log(updatedata);
+  //  ////////console.log(updatedata);
    
    if (updatedata.success) {
     FetchMedicine()
@@ -168,9 +223,9 @@ const HandleEditModal =async()=>{
   }
   
   const delayDebounce = setTimeout(async () => {
-    const resSearch = await fetch(`/api/searchbyname/${searchTerm}`);
+    const resSearch = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/searchbyname/${searchTerm}`);
     const dataSearch = await resSearch.json();
-    //////console.log(dataSearch.data);
+    ////////console.log(dataSearch.data);
     
     setResults(Array.isArray(dataSearch.data) ? dataSearch.data : []);
   }, 300);
@@ -181,16 +236,48 @@ const HandleEditModal =async()=>{
 
 
 
+// Auto-refresh medicines every 10 seconds
+useEffect(() => {
+  if (Isdashboard || Istaff_dashboard) {
+    // Initial fetch on page load
+    FetchMedicine();
 
- useEffect(() => {
-    if (Isdashboard  || Istaff_dashboard ) {
+    // Set interval to auto-refresh every 10 seconds
+    const interval = setInterval(() => {
       FetchMedicine();
-    }
-}, [Isdashboard, FetchMedicine,Istaff_dashboard]);
+    }, 200000); // refresh every 10 seconds
 
+    // Cleanup when component unmounts
+    return () => clearInterval(interval);
+  }
+}, [Isdashboard, Istaff_dashboard, FetchMedicine]);
 
+  // ✅ Fetch for new stock  Medicines
+  const FetchlastMonthIndoorMed = async () => {
+  try {
+// Build query parameters if start and end are provided
+    
+    const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/fetchlastmonthindoormed`);
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
-
+    const result = await res.json();
+    //console.log(result);
+    
+    // ✅ Only update if different (avoid infinite re-renders)
+    setLastMonindoorMed((prev) => {
+      const newData = result.data || [];
+      return JSON.stringify(prev) === JSON.stringify(newData) ? prev : newData;
+    });
+  } catch (error) {
+    //console.log("❌ Error fetching medicines:", error);
+    // setAlertMsg("❌ Failed to fetch medicines.");
+  //   setAlertType("error");
+  //    setTimeout(() => {
+  //   setAlertMsg("");
+  //   setAlertType("");
+  // }, 2000);
+  }
+};
 
   return (
     <AppContext.Provider
@@ -230,9 +317,15 @@ loading,setloading,
         EditMed_expdate,
         setEditMed_MedId,
 
-        startDate,EndDate
-      
-      }}
+        startDate,EndDate,
+      setListOFNewstack,
+      ListOFNewstack,
+      AddNewstock_Indoor
+   ,
+  //  fetch last month medicine for indoor new stock added 
+  FetchlastMonthIndoorMed,
+  LastMonthindoorMed
+      }}  
     >
       {children}
     </AppContext.Provider>

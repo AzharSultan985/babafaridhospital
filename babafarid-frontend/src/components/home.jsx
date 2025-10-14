@@ -1,8 +1,8 @@
 const Home = () => {
   return (
     <>
-      <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
-        <div className="bg-white shadow-2xl rounded-3xl p-10 max-w-2xl text-center border border-gray-200 transform transition duration-500 hover:scale-[1.02]">
+      <div className="flex justify-end items-center min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
+        <div className="bg-white shadow-2xl mr-[6rem] rounded-3xl p-5 max-w-1xl text-center border border-gray-200 transform transition duration-500 hover:scale-[1.02]">
           {/* Logo */}
           <div className="flex justify-center">
             <img

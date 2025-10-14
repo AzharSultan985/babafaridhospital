@@ -22,7 +22,7 @@ const LoginIndoor = async () => {
     //     : "";
 // alert(baseUrl);
 
-    const res = await fetch(`/api/loginadmin`, {
+    const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/loginadmin`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -52,7 +52,7 @@ const LoginIndoor = async () => {
   // 🚀 Logout function
   const LogoutAdmin = async () => {
     try {
-let res = await fetch("/api/logout", {
+let res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/logout`, {
       method: "POST",
       credentials: "include",
     });

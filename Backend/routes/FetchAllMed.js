@@ -5,8 +5,8 @@ const Fetchallmed = async (req, res) => {
     const { start, end } = req.query;
     let filter = {};
 
+    // Determine the date range
     if (start && end) {
-      // Agar start & end query mile
       filter.date = { $gte: new Date(start), $lt: new Date(end) };
     } else {
       // Default: current month
@@ -16,10 +16,22 @@ const Fetchallmed = async (req, res) => {
       filter.date = { $gte: currentMonthStart, $lt: nextMonthStart };
     }
 
-    const meds = await IndoorMedModel.find(filter).sort({ date: -1 });
+    // Fetch medicines for the requested range
+    let meds = await IndoorMedModel.find(filter).sort({ date: -1 });
+
+    // If no medicines found, fallback to last month
+    if (meds.length === 0) {
+      const now = new Date();
+      const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+      const lastMonthFilter = { date: { $gte: lastMonthStart, $lt: currentMonthStart } };
+      meds = await IndoorMedModel.find(lastMonthFilter).sort({ date: -1 });
+    }
+
     res.status(200).json(meds);
   } catch (err) {
-    console.log(err);
+    console.error("Error fetching medicines:", err);
     res.status(500).json({ error: "Server error" });
   }
 };

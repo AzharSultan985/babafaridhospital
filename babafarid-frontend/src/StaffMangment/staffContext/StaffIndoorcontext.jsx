@@ -1,6 +1,8 @@
 
 import { createContext,useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react"
+import { AppContext } from "../../context/AppContext";
 export const StaffIndoorMedCotext = createContext();
 
  export const StaffIndoorMangmentProvider = ({ children }) => {
@@ -12,10 +14,11 @@ const [UsedMedId, setUsedMedId]=useState()
 const [CurrentMed, setCurrentMed]=useState()
 const [AlertResofCurMed, setAlertResofCurMed]=useState()
 const navigate = useNavigate();
+  const {FetchMedicine} =useContext(AppContext)
 
   const LoginStaffIndoor = async () => {
   try {
-      const res = await fetch("/api/loginstaffindoor", {
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/loginstaffindoor`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -38,12 +41,8 @@ const navigate = useNavigate();
     }
   };
 
-
-
-
-
 const HandleUsedMed =async()=>{
-  const res = await fetch(`/api/usedmed/${UsedMedId}`,{
+  const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/usedmed/${UsedMedId}`,{
     method:"POST",
       headers: {
           "Content-Type": "application/json",
@@ -59,6 +58,7 @@ const HandleUsedMed =async()=>{
   //  //////console.log.log(updatedata);
    
    if (updatedata.success ) {
+FetchMedicine()
 // //////console.log.log("used successful");
 setAlertResofCurMed(updatedata.message)
    }
@@ -73,7 +73,7 @@ setAlertResofCurMed(updatedata.message)
 //////console.log.log("logout clicked");
 
 
-      await fetch("/api/LogoutIndoor", {
+      await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/LogoutIndoor`, {
         method: "POST",
         credentials: "include"
       });

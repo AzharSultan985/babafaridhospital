@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { usePharmacy } from "../ContextPharma/PharmaContext";
 import PatientINFOModal from "../Modals/patientINFO";
+import Alert from "../../components/alert";
 
 export default function Pharmacy() {
   const [open, setOpen] = useState(false);
@@ -10,7 +11,8 @@ export default function Pharmacy() {
 const { fetchPharmacyMed, setSearchTerm,
           filteredMed,pharmacyMed,setPatientModal ,summary, setSummary,setBillingPriceRates,Logoutpharma} = usePharmacy();
 
-// console.log("Summary ",summary.Medname);
+// //console.log("Summary ",summary.Medname);
+const [alert, setAlert] = useState({ msg: "", type: "info" });
 
   // Calculate totals
   const total = summary.reduce((acc, item) => acc + item.PriceOFMedPerBuy, 0);
@@ -33,8 +35,18 @@ setBillingPriceRates(BillObj)
 
 
   const handleUse = (medicine) => {
+     // Ignore if available quantity is 0
+    if (medicine.available <= 0) {
+    setAlert({ msg: `${medicine.PharmaMedname} is out of stock!`, type: "error" });
+
+    // Auto hide alert after 3 seconds
+    setTimeout(() => setAlert({ msg: "", type: "info" }), 3000);
+    return;
+  }
+
+
     setSelectedMedicine(medicine);
-    setQuantity(1);
+    setQuantity(0);
     setOpen(true);
   };
 
@@ -47,7 +59,7 @@ setBillingPriceRates(BillObj)
   }, [stableFetch]);
 
   const handleConfirm = () => {
-    if (!selectedMedicine) return;
+    if (!selectedMedicine|| quantity <= 0) return;
 
     const existing = summary.find((item) => item.id === selectedMedicine._id);
     let updatedSummary;
@@ -103,7 +115,10 @@ function getDaysLeft(date) {
 
 
   return (
+
     <>
+    {alert.msg && <Alert alertMsg={alert.msg} type={alert.type} />}
+
       {/* Navbar */}
       <nav class="bg-[#282829] border-gray-200 dark:bg-gray-900">
         <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
@@ -329,8 +344,8 @@ function getDaysLeft(date) {
             <p className="mb-2">{selectedMedicine?.PharmaMedname}</p>
             <input
               type="number"
-              min={1}
-              max={selectedMedicine?.available || 1}
+             min={0}
+  max={selectedMedicine?.available || 0}
               onChange={(e) => setQuantity(Number(e.target.value))}
               className="border rounded px-2 py-1 w-full mb-4"
             />

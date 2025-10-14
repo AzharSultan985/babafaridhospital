@@ -1,6 +1,6 @@
 
 
-import { createContext, useContext, useState, useEffect} from "react";
+import { createContext, useContext, useState,useCallback, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 
 // 1. Create Context
@@ -23,6 +23,11 @@ export const PharmacyProvider = ({ children }) => {
   // Medicines list
   const [pharmacyMed, setPharmaMed] = useState([]);
 
+  // setInvoiceReport list
+  const [InvoiceReport, setInvoiceReport] = useState([]);
+  // Medicines list
+  const [LastMonthpharmacyMed, setLastMonthPharmaMed] = useState([]);
+
   // Search
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredMed, setFilteredMed] = useState([]);
@@ -33,16 +38,15 @@ export const PharmacyProvider = ({ children }) => {
 
 // patient info state
 const [patientModal, setPatientModal] = useState(false);
-const [patientName, setPatientName] = useState("");
-const [patientNumber, setPatientNumber] = useState("");
-const [patientAddress, setPatientAddress] = useState("");
+const [PatientID, setPatientID] = useState("");
+
 const [summary, setSummary] = useState([]);
 const [InvoiceData ,setInvoiceData]=useState({})
 const [BillingPriceRates,setBillingPriceRates]=useState({})
 const [username,setusername]=useState("")
 const [password,setpassword]=useState("")
 const [spiner,setSpiner]=useState(false)
-// //console.log.log(username,password);
+// ////console.log.log(username,password);
 // pharmacy edit 
 const [EditPharmMed_Medname,setEditPharmMed_Medname]=useState()
 const [EditPharmMed_company,setEditPharmMed_company]=useState()
@@ -58,6 +62,41 @@ const [EditPharmMed_expdate,setEditPharmMed_expdate]=useState()
   const [pharmaeditMedData, setEditpharmaMedData] = useState(false);
   const [forupdatemedid, setupdatepharmaMed_MedId] = useState(false);
 
+  const [InvoiceDataByID, setInvoiceDatabyID] = useState(null);
+
+    const [ListOfNewStock, setListOfNewStock] = useState([]);
+  const [ExtractMedForReport, setExtractMedForReport] = useState([]);
+
+
+const [updatedInvoiceData ,setupdatedInvoiceData]=useState()
+  const [alert, setAlert] = useState({ msg: "", type: "info" });
+
+
+
+  const [InvoiceID, setInvoiceID] = useState(() => {
+
+  // Initialize from localStorage (to persist after reload)
+  const saved = localStorage.getItem("lastInvoiceID");
+  return saved ? parseInt(saved) + 1 : 1000; // start from 1000
+});
+const generateNextInvoiceID = () => {
+  setInvoiceID((prev) => {
+    const next = prev + 1;
+    localStorage.setItem("lastInvoiceID", next);
+    return next;
+  });
+};
+
+// ✅ Auto-remove alert after 2 seconds
+useEffect(() => {
+  if (alertMsg) {
+    const timer = setTimeout(() => {
+      setAlertMsg("");
+      setAlertType("");
+    }, 2000);
+    return () => clearTimeout(timer);
+  }
+}, [alertMsg]);
   // ✅ Add Medicine
   const addPharmaMedicine = async () => {
     try {
@@ -75,7 +114,7 @@ const [EditPharmMed_expdate,setEditPharmMed_expdate]=useState()
       }
       setSpiner(true)
 
-      const response = await fetch("/api/addpharmamed", {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/addpharmamed`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -110,7 +149,7 @@ const [EditPharmMed_expdate,setEditPharmMed_expdate]=useState()
         setAlertType("error");
       }
     } catch (error) {
-      //console.log.error("❌ Error adding medicine:", error);
+      ////console.log.error("❌ Error adding medicine:", error);
       setAlertMsg("❌ Error adding medicine. Please try again.");
       setAlertType("error");
        setTimeout(() => {
@@ -123,18 +162,24 @@ const [EditPharmMed_expdate,setEditPharmMed_expdate]=useState()
   // ✅ Fetch Medicines
   const fetchPharmacyMed = async () => {
   try {
-    const res = await fetch("/api/fetchpharmacymed");
+// Build query parameters if start and end are provided
+    // let query = "";
+    // if (start && end) {
+    //   query = `?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`;
+    // }
+
+    const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/fetchpharmacymed`);
     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
     const result = await res.json();
-
+    
     // ✅ Only update if different (avoid infinite re-renders)
     setPharmaMed((prev) => {
       const newData = result.data || [];
       return JSON.stringify(prev) === JSON.stringify(newData) ? prev : newData;
     });
   } catch (error) {
-    //console.log.error("❌ Error fetching medicines:", error);
+    ////console.log.error("❌ Error fetching medicines:", error);
     // setAlertMsg("❌ Failed to fetch medicines.");
     setAlertType("error");
      setTimeout(() => {
@@ -159,14 +204,14 @@ const [EditPharmMed_expdate,setEditPharmMed_expdate]=useState()
       setSpiner(true)
 
         const resSearch = await fetch(
-          `/api/searchpharmacymed/${searchTerm}`
+          `${process.env.REACT_APP_BACKEND_URL}/api/searchpharmacymed/${searchTerm}`
         );
         const dataSearch = await resSearch.json();
         setFilteredMed(Array.isArray(dataSearch.data) ? dataSearch.data : []);
     setSpiner(false)
 
       } catch (error) {
-        //console.log.error("❌ Search failed:", error);
+        ////console.log.error("❌ Search failed:", error);
         setFilteredMed([]);
       }
     }, 300);
@@ -199,26 +244,24 @@ const [EditPharmMed_expdate,setEditPharmMed_expdate]=useState()
 
 // invoice handle
 const InvoiceHandle = () => {
-      setSpiner(true)
+  setSpiner(true);
 
+  // ✅ Prepare Invoice Object
   const invoiceObj = {
-    patient: {
-      name: patientName,
-      number: patientNumber,
-      address: patientAddress,
-    },
-    medicines: summary, // array of selected medicines with qty/price
+    PatientID: PatientID,
+    InvoiceID: InvoiceID,
+    medicines: summary, // selected medicines with qty/price
     date: new Date().toLocaleDateString(),
-    BillData:BillingPriceRates
+    BillData: BillingPriceRates,
   };
 
   setInvoiceData(invoiceObj);
-      setSpiner(false)
 
-    navigate("/invoice"); 
-  //console.log.log("✅ Final Invoice:", invoiceObj);
-  
-  HandlepharmaMedQuntity()
+  // ✅ Update for next invoice
+  generateNextInvoiceID();
+
+  setSpiner(false);
+  navigate("/invoice");
 };
 
 const HandlepharmaMedQuntity = async () => {
@@ -227,9 +270,12 @@ const HandlepharmaMedQuntity = async () => {
     const medicinesToSend = summary.map(item => ({
       id: item.id,
       quantity: item.quantity,
+      PricePerTablet: item.PricePerTablet,
+      PriceOFMedPerBuy: item.PriceOFMedPerBuy,
     }));
+//console.log("medicene to send",medicinesToSend);
 
-    const res = await fetch("/api/setquntitybypharmacyinvoice", {
+    const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/setquntitybypharmacyinvoice`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ medicineDetails: medicinesToSend }),
@@ -237,14 +283,48 @@ const HandlepharmaMedQuntity = async () => {
 
      await res.json();
     if (res.ok) {
-      //console.log.log("✅ Sent to backend:", result);
+      ////console.log.log("✅ Sent to backend:", result);
     } else {
-      //console.log.error("❌ Failed:", result);
+      ////console.log.error("❌ Failed:", result);
     }
   } catch (err) {
-    //console.log.log("❌ Error sending medicines:", err);
+    ////console.log.log("❌ Error sending medicines:", err);
+  }
+
+};
+
+
+// Invoice saved Api 
+const SaveInvoiceData = async () => {
+  try {
+
+
+    const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/saveinvoice`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ InvoiceDetails: InvoiceData }),
+    });
+
+     await res.json();
+    if (res.ok) {
+      ////console.log.log("✅ Sent to backend:", result);
+    } else {
+      ////console.log.error("❌ Failed:", result);
+    }
+  } catch (err) {
+    ////console.log.log("❌ Error sending medicines:", err);
   }
 };
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -255,7 +335,7 @@ const HandlepharmaMedQuntity = async () => {
 const PharmaLogin = async () => {
   try {
     setSpiner(true)
-    const res = await fetch("http://localhost:3002/api/pharmalogin", {
+    const res = await fetch( `${process.env.REACT_APP_BACKEND_URL}/api/pharmalogin `, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -268,7 +348,7 @@ const PharmaLogin = async () => {
     });
 
     const data = await res.json();
-    //console.log.log("Login response:", data);
+    ////console.log.log("Login response:", data);
 
     if (res.ok && data.message === "Login successful") {
       navigate("/pharmacy"); // ✅ redirect to pharmacy page
@@ -278,7 +358,7 @@ const PharmaLogin = async () => {
       setAlertType("error");
     }
   } catch (err) {
-    //console.log.error("Login error:", err);
+    ////console.log.error("Login error:", err);
     setAlertMsg("❌ Server error during login");
     setAlertType("error");
      setTimeout(() => {
@@ -294,13 +374,13 @@ const Logoutpharma = async () => {
   try {
       setSpiner(true)
 
-    let res = await fetch("/api/pharmalogout", {
+    let res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/pharmalogout`, {
       method: "POST",
       credentials: "include",
     });
 
     let data = await res.json(); // ✅ parse response JSON
-    //console.log.log("Logout response:", data);
+    ////console.log.log("Logout response:", data);
 
     if (data.message === "Logged out") {
       setSpiner(false)
@@ -308,20 +388,20 @@ const Logoutpharma = async () => {
       navigate("/pharmalogin"); // ✅ Redirect after logout
     }
   } catch (err) {
-    //console.log.error("Logout failed:", err);
+    ////console.log.error("Logout failed:", err);
   }
 };
 
 
 // fetch with specific id for edit
 const FetchwitIdforEdit=async (id)=>{
-  const res = await fetch(`/api/fetchpharmamededit/${id}`)
+  const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/fetchpharmamededit/${id}`)
    const Editdata =await res.json()
   if (res.ok && Editdata) {
   setEditpharmaMedData(Editdata.data ||   '');
   setupdatepharmaMed_MedId(id);
 } else {
-  //console.log.error("Failed to fetch data for edit");
+  ////console.log.error("Failed to fetch data for edit");
 }
 
 
@@ -330,7 +410,7 @@ const FetchwitIdforEdit=async (id)=>{
 }
 const UpdatePharmaEditModal=async ()=>{
 
- const res = await fetch(`/api/updatepharmamed/${forupdatemedid}`,{
+ const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/updatepharmamed/${forupdatemedid}`,{
     method:"post",
       headers: {
           "Content-Type": "application/json",
@@ -347,7 +427,7 @@ const UpdatePharmaEditModal=async ()=>{
     
   })
    const updatedata =await res.json()
-   ////console.log.log(updatedata);
+   //////console.log.log(updatedata);
    
    if (updatedata.success) {
     fetchPharmacyMed()
@@ -364,7 +444,7 @@ const UpdatePharmaEditModal=async ()=>{
 
 const DelPharmaMedByID= async(id)=>{
   try {
-    const res = await fetch(`/api/delpharmamed/${id}`, {
+    const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/delpharmamed/${id}`, {
       method: "DELETE",   // ✅ correct method
     });
     const delOK = await res.json();
@@ -376,12 +456,166 @@ const DelPharmaMedByID= async(id)=>{
       alert(delOK.error || "Error deleting medicine");
     }
   } catch (err) {
-    //console.log.error("Delete failed:", err);
+    ////console.log.error("Delete failed:", err);
     alert("Something went wrong while deleting");
   }
 }
 
 
+  // ✅ Fetch for new stock  Medicines
+  const FetchlastMonthPharmaMed = async () => {
+  try {
+// Build query parameters if start and end are provided
+    
+    const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/fetchlastmonthpharmacymed`);
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
+    const result = await res.json();
+    
+    // ✅ Only update if different (avoid infinite re-renders)
+    setLastMonthPharmaMed((prev) => {
+      const newData = result.data || [];
+      return JSON.stringify(prev) === JSON.stringify(newData) ? prev : newData;
+    });
+  } catch (error) {
+    ////console.log.error("❌ Error fetching medicines:", error);
+    // setAlertMsg("❌ Failed to fetch medicines.");
+    setAlertType("error");
+     setTimeout(() => {
+    setAlertMsg("");
+    setAlertType("");
+  }, 2000);
+  }
+};
+
+
+
+// Add new stock medicines for indoor use
+const AddNewstock_Pharmacy = async () => {
+  try {
+    // Ensure ListOFNewstack is not empty
+    if (!Array.isArray(ListOfNewStock) || ListOfNewStock.length === 0) {
+      alert("Please add at least one medicine before saving.");
+      return;
+    }
+
+    // Prepare request body as object (to keep it clean and consistent)
+    const payload = { medicines: ListOfNewStock };
+//console.log("payload",payload);
+
+    const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/addnewstockpharmamed`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.success) {
+      // setIsMedAddAlert(true);
+      //console.log("✅ Medicines saved successfully!");
+setAlertMsg("✅ Medicines saved successfully!");
+        setAlertType("success");
+      // Optionally clear the list after save
+      setListOfNewStock([]);
+    } else {
+      //console.error("❌ Failed to create medicine record:", data.message || "Unknown error");
+      setAlertMsg("❌ Failed to create medicine record");
+        setAlertType("warning");
+    }
+  } catch (err) {
+    //console.error("🚨 Error saving new stock:", err);
+    alert("Something went wrong while saving medicines.");
+  }
+};
+
+
+
+
+
+// Fetch Invoices
+
+
+
+  // ✅ Fetch Medicines
+ const FetchInvoicesReport =useCallback( async (start, end) => {
+  try {
+    let query = "";
+
+    // handle filter logic
+    if (start && end) {
+      query = `?start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`;
+    } else if (start && !end) {
+      query = `?start=${encodeURIComponent(start)}`;
+    }
+
+    const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/fetchinvoicesreport${query}`);
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
+    const result = await res.json();
+    setInvoiceReport(result.data || []);
+  } catch (error) {
+    //console.error("❌ Error fetching invoices:", error);
+  }
+},[])
+
+
+// fetch invoice by id
+
+
+  // ✅ Fetch Medicines
+ const FetchInvoicesByID =async (ID) => {
+  try {
+const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/fetchinvoicesbyid?InvoiceID=${ID}`);
+
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
+    const result = await res.json();
+    setInvoiceDatabyID(result.data || []);
+    //console.log("InvoiceDataByID",InvoiceDataByID);
+    
+  } catch (error) {
+    //console.error("❌ Error fetching invoices:", error);
+  }
+}
+
+
+// handle update invoice 
+
+const handleUdateInvoice = async (invoiceIDParam) => {
+  try {
+    if (!updatedInvoiceData) {
+      setAlert({ msg: "No data to update", type: "warning" });
+      return;
+    }
+
+    const response = await fetch(
+      `${process.env.REACT_APP_BACKEND_URL}/api/update-return/${invoiceIDParam}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedInvoiceData),
+      }
+    );
+
+    const data = await response.json();
+
+    if (response.ok) {
+      setAlert({ msg: "Invoice updated successfully!", type: "success" });
+      //console.log("Updated Invoice:", data.invoice);
+    } else {
+      setAlert({ msg: data.message, type: "error" });
+    }
+  } catch (error) {
+    //console.error(error);
+    setAlert({ msg: "Failed to update invoice", type: "error" });
+  }
+};
+  
   return (
     <PharmacyContext.Provider
       value={{
@@ -418,9 +652,9 @@ const DelPharmaMedByID= async(id)=>{
         filteredMed,
 // patientInfo
 setPatientModal,
-setPatientAddress,
-setPatientName,
-setPatientNumber,patientModal,
+setPatientID,
+
+patientModal,
 
 
 // summary
@@ -449,8 +683,32 @@ FetchwitIdforEdit,
 setEditPharmMed_Boxprice,
 pharmaeditMedData,
 UpdatePharmaEditModal,
-DelPharmaMedByID
-      }}
+DelPharmaMedByID,
+
+
+FetchlastMonthPharmaMed,
+LastMonthpharmacyMed,
+
+// list
+ListOfNewStock, setListOfNewStock
+,
+// add stock 
+AddNewstock_Pharmacy,
+
+ExtractMedForReport, setExtractMedForReport,
+
+HandlepharmaMedQuntity,
+
+// save invoice data 
+SaveInvoiceData,
+FetchInvoicesReport,
+InvoiceReport,
+InvoiceDataByID,
+FetchInvoicesByID,
+setupdatedInvoiceData,
+handleUdateInvoice,
+alert,setAlert
+}}
     >
       {children}
     </PharmacyContext.Provider>

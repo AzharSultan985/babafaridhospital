@@ -7,7 +7,7 @@ const PhramaLogin =()=>{
 
 const { setpassword,setusername,PharmaLogin,alertMsg,alertType} = usePharmacy();
 
-// console.log(loading);
+// //console.log(loading);
 // 
 
     return(<>

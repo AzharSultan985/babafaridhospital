@@ -254,7 +254,7 @@ const isDashboard = !IsIndoorMed && !Ispharmacy && !showAddIndoorStock && !showA
           {/* Footer */}
           <div className="absolute bottom-4 left-0 w-full px-3 text-center text-gray-400 text-sm">
             <p className="font-medium">Built with ❤️ by <span className="font-semibold text-white">CodeTrust by Azhar</span></p>
-            <p className="text-xs mt-1">Version 2.0.1</p>
+            <p className="text-xs mt-1">Version 3.1.2</p>
           </div>
         </div>
       </aside>

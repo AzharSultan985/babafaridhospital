@@ -37,6 +37,7 @@ import InvoiceRoute from "./routes/SaveInvoice.js";
 import FetchInvoiceReports from "./routes/fetchinvoiceReport.js";
 import FetchInvoiceByID from "./routes/fetchinvoiceByID.js";
 import UpdateInvoiceData from "./routes/updateInvoiceData.js";
+import checkInvoiceID from "./routes/checkInvoiceID.js";
 
 
   const __filename = fileURLToPath(import.meta.url);
@@ -119,6 +120,20 @@ app.use("/api", InvoiceRoute);
   app.use("/api/",UpdatePharmaMed ); // ✅ update med pharma method
   // update invoice data
   app.use("/api/",UpdateInvoiceData ); // ✅ update med pharma method
+
+
+
+
+
+app.use("/api", checkInvoiceID);
+
+
+
+
+
+
+
+
 
 // fetch invoices 
    app.get("/api/fetchinvoicesreport/", FetchInvoiceReports); 

@@ -4,9 +4,9 @@ import { QRCodeCanvas } from "qrcode.react";
 import { Link } from "react-router-dom";
 
 const Invoice = () => {
-  const { InvoiceData ,ExtractMedForReport, setExtractMedForReport,HandlepharmaMedQuntity,SaveInvoiceData} = usePharmacy();
+  const { InvoiceData , setExtractMedForReport,HandlepharmaMedQuntity,SaveInvoiceData} = usePharmacy();
   const [dataINVQR, setdataINVQR] = useState("");
-//console.log("InvoiceData",InvoiceData);
+////console.log("InvoiceData",InvoiceData);
 
   // ✅ Extract medicines when InvoiceData updates
   useEffect(() => {
@@ -14,7 +14,7 @@ const Invoice = () => {
       setExtractMedForReport(InvoiceData.medicines);
     }
   }, [InvoiceData,setExtractMedForReport]);
-//console.log(ExtractMedForReport);
+////console.log(ExtractMedForReport);
 
   // ✅ Prepare QR data once InvoiceData is available
   useEffect(() => {
@@ -167,26 +167,24 @@ const Invoice = () => {
         </table>
 
         <div className="text-gray-700 mb-2 text-center">
-          Thank you for your trust. Get well soon!
-        </div>
+  Thank you for your purchase. Medicines cannot be returned without the original bill.
+</div>
+
         <div className="text-gray-500 text-xs text-center mt-6 border-t pt-2">
           Powered By <span className="font-bold">CodeTrust By Azhar</span>
         </div>
       </div>
 
-      <div className="w-full flex justify-center">
+      <div className="w-full flex gap-2 justify-center">
         <button
           onClick={() => {window.print(); HandlepharmaMedQuntity();SaveInvoiceData() }}
           className="px-4 my-4 py-2 w-[30%] bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition print:hidden mt-4"
         >
           Print Invoice
         </button>
-        <button
-          
-          className="px-4 my-4 py-2 w-[30%] bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition print:hidden mt-4"
-        >
-         <Link to={'/pharmacy'}>Back to pharmacy </Link> 
-        </button>
+         <Link className="px-4 my-4 py-2 w-[20%] items-center flex justify-center bg-green-600 text-white rounded-lg hover:bg-green-700 transition print:hidden mt-4"
+       
+          to={'/pharmacy'}>Back to pharmacy </Link> 
       </div>
     </>
   );

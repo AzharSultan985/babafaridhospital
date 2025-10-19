@@ -85,7 +85,15 @@ const netTotal = InvoiceReport.reduce(
             } hover:bg-blue-50 transition`}
           >
             <td className="py-2 px-4">{index + 1}</td>
-            <td className="py-2 px-4">{item.InvoiceID}</td>
+          <td className="py-2 px-4 flex items-center gap-2">
+  {item.InvoiceID}
+  {item.status === "Updated" && (
+    <span className="bg-blue-100 text-blue-600 text-xs font-semibold px-2 py-1 rounded-full">
+      Updated
+    </span>
+  )}
+</td>
+
             <td className="py-2 px-4 text-center">
               {new Date(item.createdAt).toLocaleDateString()}
             </td>

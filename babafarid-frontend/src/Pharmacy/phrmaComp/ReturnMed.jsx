@@ -14,6 +14,8 @@ export default function ReturnMedicine() {
   } = usePharmacy();
 
   const [summary, setSummary] = useState([]);
+  const [originalQuantities, setOriginalQuantities] = useState({});
+  const [difference, setDifference] = useState({});
 
   // Populate summary when invoice data changes
   useEffect(() => {
@@ -23,31 +25,45 @@ export default function ReturnMedicine() {
         PriceOFMedPerBuy: med.PricePerTablet * med.quantity,
       }));
       setSummary(medicines);
+
+      // Store original quantities for difference calculation
+      const originals = {};
+      medicines.forEach((m) => (originals[m.id] = m.quantity));
+      setOriginalQuantities(originals);
+      setDifference({});
     } else {
       setSummary([]);
+      setOriginalQuantities({});
+      setDifference({});
     }
   }, [InvoiceDataByID]);
 
-  // Decrease quantity of a medicine
+  // Decrease quantity of a medicine and auto-calc difference
   const handleDecrease = (id) => {
     setSummary((prev) =>
-      prev
-        .map((med) => {
-          if (med.id === id && med.quantity > 0) {
-            const newQty = med.quantity - 1;
-            return {
-              ...med,
-              quantity: newQty,
-              PriceOFMedPerBuy: newQty * med.PricePerTablet,
-            };
-          }
-          return med;
-        })
-        .filter((med) => med.quantity > 0)
+      prev.map((med) => {
+        if (med.id === id && med.quantity > 0) {
+          const newQty = med.quantity - 1;
+          const newPrice = newQty * med.PricePerTablet;
+
+          const diff = (originalQuantities[id] || 0) - newQty;
+          setDifference((prevDiff) => ({
+            ...prevDiff,
+            [id]: diff,
+          }));
+
+          return {
+            ...med,
+            quantity: newQty,
+            PriceOFMedPerBuy: newPrice,
+          };
+        }
+        return med;
+      })
     );
   };
 
-  // Calculate totals
+  // Totals
   const total = summary.reduce((acc, item) => acc + item.PriceOFMedPerBuy, 0);
   const discountRate = InvoiceDataByID?.[0]?.BillData?.DicountRate || 0;
   const discountAmount = (total * discountRate) / 100;
@@ -62,7 +78,7 @@ export default function ReturnMedicine() {
     FetchInvoicesByID(Number(invoiceID));
   };
 
-  // Save Return
+  // Save returned medicines and update refill data
   const handleSave = async () => {
     if (!invoiceID) {
       setAlert({ msg: "Please enter an Invoice ID", type: "warning" });
@@ -73,7 +89,14 @@ export default function ReturnMedicine() {
       return;
     }
 
-    // Prepare object matching backend schema
+    // Map differences to refillData using 'id' field
+    const refillData = summary
+      .filter((med) => difference[med.id] > 0)
+      .map((med) => ({
+        id: med.id,
+        refillQty: difference[med.id],
+      }));
+
     const updatedReturn = {
       returnedMedicines: summary,
       BillData: {
@@ -81,12 +104,10 @@ export default function ReturnMedicine() {
         DicountRate: discountRate,
         NetTotal: netTotal,
       },
+      refillData,
     };
 
-    // Set in context
     setupdatedInvoiceData(updatedReturn);
-
-    // Call backend
     await handleUdateInvoice(Number(invoiceID));
   };
 
@@ -112,20 +133,23 @@ export default function ReturnMedicine() {
         </button>
       </div>
 
-      {/* Summary table */}
+      {/* Summary Table */}
       {summary.length > 0 && (
         <div className="bg-white p-4 rounded shadow w-full max-w-3xl">
           <table className="w-full border-collapse">
             <thead>
               <tr className="bg-gray-100">
+                <th className="p-2 border">ID</th>
                 <th className="p-2 border">Medicine</th>
                 <th className="p-2 border">Qty</th>
                 <th className="p-2 border">Price</th>
+                <th className="p-2 border text-red-600">Decreased</th>
               </tr>
             </thead>
             <tbody>
               {summary.map((med) => (
                 <tr key={med.id} className="text-center border">
+                  <td>{med.id}</td>
                   <td className="p-2 border flex justify-center items-center gap-2">
                     <button
                       onClick={() => handleDecrease(med.id)}
@@ -137,12 +161,15 @@ export default function ReturnMedicine() {
                   </td>
                   <td className="p-2 border">{med.quantity}</td>
                   <td className="p-2 border">{med.PriceOFMedPerBuy.toFixed(2)}</td>
+                  <td className="p-2 border text-red-600 font-semibold">
+                    {difference[med.id] || 0}
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
 
-          {/* Footer totals */}
+          {/* Totals */}
           <div className="mt-4 space-y-1">
             <div className="flex justify-between font-bold">
               <span>Total</span>
@@ -158,6 +185,7 @@ export default function ReturnMedicine() {
             </div>
           </div>
 
+          {/* Save Button */}
           <div className="flex justify-end mt-4">
             <button
               onClick={handleSave}

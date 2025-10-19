@@ -36,10 +36,17 @@ const InvoiceSchema = new mongoose.Schema(
         Medname: { type: String, required: true },
         PricePerTablet: { type: Number, required: true, min: 0 },
         PriceOFMedPerBuy: { type: Number, required: true, min: 0 },
-        quantity: { type: Number, required: true, min: 1 },
+        quantity: { type: Number, required: true, min: 0 },
       },
     ],
+      status: {
+    type: String,
+    enum: ["New", "Updated"],
+    default: "New",
   },
+  },
+
+  
   { timestamps: true }
 );
 

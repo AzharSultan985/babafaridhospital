@@ -19,6 +19,7 @@ import { AppContext } from "./context/AppContext"
 import { useContext } from "react"
 import AddANewStack from "./components/addANewStackIndoor";
 import ReturnMedicine from "./Pharmacy/phrmaComp/ReturnMed";
+import PharmacyReport from "./Pharmacy/Report/pharmaReport";
 
 function App() {
   const {spiner } = usePharmacy();
@@ -26,9 +27,11 @@ function App() {
   return (
     <>
 {
-  (spiner || loading) && 
-    <HeartbeatLoader></HeartbeatLoader>
+  (spiner || loading) && <HeartbeatLoader></HeartbeatLoader>
+ 
 }
+
+
       <Routes>
 
         <Route path="/" element={<Mainpage />} />
@@ -77,9 +80,14 @@ function App() {
   </PharmacyProtectedRoute>
 } />
 <Route path="/returnmedicine" element={
-  <ProtectedRoute>
+  <PharmacyProtectedRoute>
     <ReturnMedicine />
-  </ProtectedRoute>
+  </PharmacyProtectedRoute>
+} />
+<Route path="/pharmacyreport" element={
+  <PharmacyProtectedRoute>
+    <PharmacyReport />
+  </PharmacyProtectedRoute>
 } />
 
         <Route path="/pharmalogin" element={< PhramaLogin />} />

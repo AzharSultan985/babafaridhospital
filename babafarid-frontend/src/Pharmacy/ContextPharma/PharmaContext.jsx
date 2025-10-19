@@ -46,7 +46,7 @@ const [BillingPriceRates,setBillingPriceRates]=useState({})
 const [username,setusername]=useState("")
 const [password,setpassword]=useState("")
 const [spiner,setSpiner]=useState(false)
-// ////console.log.log(username,password);
+// //////console.log.log(username,password);
 // pharmacy edit 
 const [EditPharmMed_Medname,setEditPharmMed_Medname]=useState()
 const [EditPharmMed_company,setEditPharmMed_company]=useState()
@@ -72,13 +72,31 @@ const [updatedInvoiceData ,setupdatedInvoiceData]=useState()
   const [alert, setAlert] = useState({ msg: "", type: "info" });
 
 
-
+// ✅ Fetch from backend instead of relying only on localStorage
+useEffect(() => {
+  const fetchLastInvoiceID = async () => {
+    try {
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/last-invoice-id`);
+      const data = await res.json();
+      const nextID = data.lastID + 1;
+      setInvoiceID(nextID);
+      localStorage.setItem("lastInvoiceID", nextID); // optional for local speed
+    } catch (error) {
+      console.error("❌ Failed to fetch last invoice ID:", error);
+      // fallback to localStorage if backend fails
+      const saved = localStorage.getItem("lastInvoiceID");
+      setInvoiceID(saved ? parseInt(saved) + 1 : 1000);
+    }
+  };
+  fetchLastInvoiceID();
+}, []);
   const [InvoiceID, setInvoiceID] = useState(() => {
 
   // Initialize from localStorage (to persist after reload)
   const saved = localStorage.getItem("lastInvoiceID");
   return saved ? parseInt(saved) + 1 : 1000; // start from 1000
 });
+
 const generateNextInvoiceID = () => {
   setInvoiceID((prev) => {
     const next = prev + 1;
@@ -86,6 +104,7 @@ const generateNextInvoiceID = () => {
     return next;
   });
 };
+
 
 // ✅ Auto-remove alert after 2 seconds
 useEffect(() => {
@@ -96,7 +115,7 @@ useEffect(() => {
     }, 2000);
     return () => clearTimeout(timer);
   }
-}, [alertMsg]);
+}, [alertMsg,setAlertMsg]);
   // ✅ Add Medicine
   const addPharmaMedicine = async () => {
     try {
@@ -149,7 +168,7 @@ useEffect(() => {
         setAlertType("error");
       }
     } catch (error) {
-      ////console.log.error("❌ Error adding medicine:", error);
+      //////console.log.error("❌ Error adding medicine:", error);
       setAlertMsg("❌ Error adding medicine. Please try again.");
       setAlertType("error");
        setTimeout(() => {
@@ -179,7 +198,7 @@ useEffect(() => {
       return JSON.stringify(prev) === JSON.stringify(newData) ? prev : newData;
     });
   } catch (error) {
-    ////console.log.error("❌ Error fetching medicines:", error);
+    //////console.log.error("❌ Error fetching medicines:", error);
     // setAlertMsg("❌ Failed to fetch medicines.");
     setAlertType("error");
      setTimeout(() => {
@@ -211,7 +230,7 @@ useEffect(() => {
     setSpiner(false)
 
       } catch (error) {
-        ////console.log.error("❌ Search failed:", error);
+        //////console.log.error("❌ Search failed:", error);
         setFilteredMed([]);
       }
     }, 300);
@@ -273,7 +292,7 @@ const HandlepharmaMedQuntity = async () => {
       PricePerTablet: item.PricePerTablet,
       PriceOFMedPerBuy: item.PriceOFMedPerBuy,
     }));
-//console.log("medicene to send",medicinesToSend);
+////console.log("medicene to send",medicinesToSend);
 
     const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/setquntitybypharmacyinvoice`, {
       method: "POST",
@@ -283,12 +302,12 @@ const HandlepharmaMedQuntity = async () => {
 
      await res.json();
     if (res.ok) {
-      ////console.log.log("✅ Sent to backend:", result);
+      //////console.log.log("✅ Sent to backend:", result);
     } else {
-      ////console.log.error("❌ Failed:", result);
+      //////console.log.error("❌ Failed:", result);
     }
   } catch (err) {
-    ////console.log.log("❌ Error sending medicines:", err);
+    //////console.log.log("❌ Error sending medicines:", err);
   }
 
 };
@@ -307,12 +326,12 @@ const SaveInvoiceData = async () => {
 
      await res.json();
     if (res.ok) {
-      ////console.log.log("✅ Sent to backend:", result);
+      //////console.log.log("✅ Sent to backend:", result);
     } else {
-      ////console.log.error("❌ Failed:", result);
+      //////console.log.error("❌ Failed:", result);
     }
   } catch (err) {
-    ////console.log.log("❌ Error sending medicines:", err);
+    //////console.log.log("❌ Error sending medicines:", err);
   }
 };
 
@@ -348,7 +367,7 @@ const PharmaLogin = async () => {
     });
 
     const data = await res.json();
-    ////console.log.log("Login response:", data);
+    //////console.log.log("Login response:", data);
 
     if (res.ok && data.message === "Login successful") {
       navigate("/pharmacy"); // ✅ redirect to pharmacy page
@@ -358,7 +377,7 @@ const PharmaLogin = async () => {
       setAlertType("error");
     }
   } catch (err) {
-    ////console.log.error("Login error:", err);
+    //////console.log.error("Login error:", err);
     setAlertMsg("❌ Server error during login");
     setAlertType("error");
      setTimeout(() => {
@@ -380,7 +399,7 @@ const Logoutpharma = async () => {
     });
 
     let data = await res.json(); // ✅ parse response JSON
-    ////console.log.log("Logout response:", data);
+    //////console.log.log("Logout response:", data);
 
     if (data.message === "Logged out") {
       setSpiner(false)
@@ -388,7 +407,7 @@ const Logoutpharma = async () => {
       navigate("/pharmalogin"); // ✅ Redirect after logout
     }
   } catch (err) {
-    ////console.log.error("Logout failed:", err);
+    //////console.log.error("Logout failed:", err);
   }
 };
 
@@ -401,7 +420,7 @@ const FetchwitIdforEdit=async (id)=>{
   setEditpharmaMedData(Editdata.data ||   '');
   setupdatepharmaMed_MedId(id);
 } else {
-  ////console.log.error("Failed to fetch data for edit");
+  //////console.log.error("Failed to fetch data for edit");
 }
 
 
@@ -427,7 +446,7 @@ const UpdatePharmaEditModal=async ()=>{
     
   })
    const updatedata =await res.json()
-   //////console.log.log(updatedata);
+   ////////console.log.log(updatedata);
    
    if (updatedata.success) {
     fetchPharmacyMed()
@@ -456,7 +475,7 @@ const DelPharmaMedByID= async(id)=>{
       alert(delOK.error || "Error deleting medicine");
     }
   } catch (err) {
-    ////console.log.error("Delete failed:", err);
+    //////console.log.error("Delete failed:", err);
     alert("Something went wrong while deleting");
   }
 }
@@ -478,7 +497,7 @@ const DelPharmaMedByID= async(id)=>{
       return JSON.stringify(prev) === JSON.stringify(newData) ? prev : newData;
     });
   } catch (error) {
-    ////console.log.error("❌ Error fetching medicines:", error);
+    //////console.log.error("❌ Error fetching medicines:", error);
     // setAlertMsg("❌ Failed to fetch medicines.");
     setAlertType("error");
      setTimeout(() => {
@@ -501,7 +520,7 @@ const AddNewstock_Pharmacy = async () => {
 
     // Prepare request body as object (to keep it clean and consistent)
     const payload = { medicines: ListOfNewStock };
-//console.log("payload",payload);
+////console.log("payload",payload);
 
     const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/addnewstockpharmamed`, {
       method: "POST",
@@ -515,7 +534,7 @@ const AddNewstock_Pharmacy = async () => {
 
     if (res.ok && data.success) {
       // setIsMedAddAlert(true);
-      //console.log("✅ Medicines saved successfully!");
+      ////console.log("✅ Medicines saved successfully!");
 setAlertMsg("✅ Medicines saved successfully!");
         setAlertType("success");
       // Optionally clear the list after save
@@ -574,7 +593,7 @@ const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/fetchinvoicesb
 
     const result = await res.json();
     setInvoiceDatabyID(result.data || []);
-    //console.log("InvoiceDataByID",InvoiceDataByID);
+    ////console.log("InvoiceDataByID",InvoiceDataByID);
     
   } catch (error) {
     //console.error("❌ Error fetching invoices:", error);
@@ -605,16 +624,28 @@ const handleUdateInvoice = async (invoiceIDParam) => {
     const data = await response.json();
 
     if (response.ok) {
-      setAlert({ msg: "Invoice updated successfully!", type: "success" });
-      //console.log("Updated Invoice:", data.invoice);
+      // ✅ Success alert
+      setAlert({ msg: "Return confirmed successfully!", type: "success" });
+
+      // ✅ After 3 seconds -> clear alert & reset page
+      setTimeout(() => {
+        setAlert({ msg: "", type: "" });
+        setInvoiceDatabyID(null);  // clear fetched invoice data
+        setupdatedInvoiceData(null);
+        setSummary([]);
+      }, 3000);
     } else {
-      setAlert({ msg: data.message, type: "error" });
+      setAlert({ msg: data.message || "Failed to update invoice", type: "error" });
+
+      // auto-clear alert
+      setTimeout(() => setAlert({ msg: "", type: "" }), 3000);
     }
   } catch (error) {
-    //console.error(error);
     setAlert({ msg: "Failed to update invoice", type: "error" });
+    setTimeout(() => setAlert({ msg: "", type: "" }), 3000);
   }
 };
+
   
   return (
     <PharmacyContext.Provider

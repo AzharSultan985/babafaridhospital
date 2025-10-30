@@ -81,7 +81,7 @@ const Invoice = () => {
 
       <div className="bg-white border rounded-lg shadow-lg px-6 py-8 max-w-2xl mx-auto mt-8 printable">
         <h1 className="font-bold text-2xl my-4 text-center text-blue-600">
-          BABA FARID HOSPITAL
+          BABA FARID Medical Store
         </h1>
 
         <hr className="mb-2" />
@@ -167,7 +167,7 @@ const Invoice = () => {
         </table>
 
         <div className="text-gray-700 mb-2 text-center">
-  Thank you for your purchase. Medicines cannot be returned without the original bill.
+ آپ کی خریداری کا شکریہ۔ اصل بل کے بغیر دوائیاں واپس نہیں کی جا سکتیں۔
 </div>
 
         <div className="text-gray-500 text-xs text-center mt-6 border-t pt-2">

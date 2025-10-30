@@ -38,6 +38,10 @@ import FetchInvoiceReports from "./routes/fetchinvoiceReport.js";
 import FetchInvoiceByID from "./routes/fetchinvoiceByID.js";
 import UpdateInvoiceData from "./routes/updateInvoiceData.js";
 import checkInvoiceID from "./routes/checkInvoiceID.js";
+import Fetchcurrentmonthindoormed from "./routes/fetchCurrentIndoorMed.js";
+import updatestockindoorMEd from "./routes/updateCurrentIndoorStock.js";
+import FetchCurrentPharmaMed from "./routes/fetchcurrentMonthPharmaMed.js";
+import updatestockpharmacystock from "./routes/updatecurrentPharmastock.js";
 
 
   const __filename = fileURLToPath(import.meta.url);
@@ -58,7 +62,7 @@ import checkInvoiceID from "./routes/checkInvoiceID.js";
 
   // CORS
   app.use(cors({
-    origin: "http://localhost:3000", // frontend origin
+    origin: true, // frontend origin
     credentials: true, // allow cookies / auth headers
   }));
 
@@ -95,10 +99,16 @@ import checkInvoiceID from "./routes/checkInvoiceID.js";
 
 // handle new stock indoor medicine   
   app.use("/api",addnewstockindoorMEd );
+// handle update stock indoor medicine   
+  app.use("/api",updatestockindoorMEd );
 // handle new stock pharmacy medicine   
   app.use("/api",addnewstockpharmacyMEd );
+// handle update stock pharmacy medicine   
+  app.use("/api",updatestockpharmacystock );
 // saveinvoice 
 app.use("/api", InvoiceRoute);
+// saveinvoice 
+app.use("/api", FetchCurrentPharmaMed);
 
 
 
@@ -116,6 +126,8 @@ app.use("/api", InvoiceRoute);
   app.use("/api/",FetchLastMonthPharmaMed ); // ✅ fetch med pharma method
   // fetchlastmonth indoor med
   app.use("/api/",FetchLastMonthindoorMed ); // ✅ fetch med pharma method
+  // fetch  current  month indoor med
+  app.use("/api/",Fetchcurrentmonthindoormed ); // ✅ fetch med pharma method
   // update pharma med
   app.use("/api/",UpdatePharmaMed ); // ✅ update med pharma method
   // update invoice data

@@ -27,6 +27,7 @@ export const PharmacyProvider = ({ children }) => {
   const [InvoiceReport, setInvoiceReport] = useState([]);
   // Medicines list
   const [LastMonthpharmacyMed, setLastMonthPharmaMed] = useState([]);
+  const [currentMonthpharmacyMed, setcurrentMonthPharmaMed] = useState([]);
 
   // Search
   const [searchTerm, setSearchTerm] = useState("");
@@ -507,6 +508,32 @@ const DelPharmaMedByID= async(id)=>{
   }
 };
 
+  // ✅ Fetch for currennt stock  Medicines
+  const FetchCurrentMonthPharmaMed = async () => {
+  try {
+// Build query parameters if start and end are provided
+    
+    const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/fetchcurrentmonthpharmacymed`);
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
+    const result = await res.json();
+    
+    // ✅ Only update if different (avoid infinite re-renders)
+    setcurrentMonthPharmaMed((prev) => {
+      const newData = result.data || [];
+      return JSON.stringify(prev) === JSON.stringify(newData) ? prev : newData;
+    });
+  } catch (error) {
+    //////console.log.error("❌ Error fetching medicines:", error);
+    // setAlertMsg("❌ Failed to fetch medicines.");
+    setAlertType("error");
+     setTimeout(() => {
+    setAlertMsg("");
+    setAlertType("");
+  }, 2000);
+  }
+};
+
 
 
 // Add new stock medicines for indoor use
@@ -547,6 +574,47 @@ setAlertMsg("✅ Medicines saved successfully!");
   } catch (err) {
     //console.error("🚨 Error saving new stock:", err);
     alert("Something went wrong while saving medicines.");
+  }
+};
+
+
+
+
+// Add new stock medicines for indoor use
+const UpdateNewstock_Pharmacy = async () => {
+  try {
+
+
+   
+    // Prepare request body as object (to keep it clean and consistent)
+    const payload = { medicines: ListOfNewStock };
+////console.log("payload",payload);
+
+    const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/updatecurrentpharma_stock`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.success) {
+      // setIsMedAddAlert(true);
+      ////console.log("✅ Medicines saved successfully!");
+setAlertMsg("✅ Medicines saved successfully!");
+        setAlertType("success");
+      // Optionally clear the list after save
+      setListOfNewStock([]);
+    } else {
+      //console.error("❌ Failed to create medicine record:", data.message || "Unknown error");
+      setAlertMsg("❌ Failed to create medicine record");
+        setAlertType("warning");
+    }
+  } catch (err) {
+    //console.error("🚨 Error saving new stock:", err);
+    setAlert("Something went wrong while saving medicines.");
   }
 };
 
@@ -719,6 +787,7 @@ DelPharmaMedByID,
 
 FetchlastMonthPharmaMed,
 LastMonthpharmacyMed,
+currentMonthpharmacyMed,
 
 // list
 ListOfNewStock, setListOfNewStock
@@ -738,7 +807,7 @@ InvoiceDataByID,
 FetchInvoicesByID,
 setupdatedInvoiceData,
 handleUdateInvoice,
-alert,setAlert
+alert,setAlert,FetchCurrentMonthPharmaMed,UpdateNewstock_Pharmacy
 }}
     >
       {children}

@@ -30,6 +30,7 @@ const [ListOFNewstack,setListOFNewstack]=useState([])
 // //console.log(ListOFNewstack);
 // Medicines list
   const [LastMonthindoorMed, setLastMonindoorMed] = useState([]);
+  const [currentMonthindoorMed, setcurrentMonindoorMed] = useState([]);
 
   const IndoorMedSubmitHandle = async () => {
     try {
@@ -103,6 +104,44 @@ const AddNewstock_Indoor = async () => {
 
 
 
+// update indoor medicines
+const Updatestock_Indoor = async () => {
+  try {
+    // Ensure ListOFNewstack is not empty
+    if (!Array.isArray(ListOFNewstack) || ListOFNewstack.length === 0) {
+      alert("Please add at least one medicine before saving.");
+      return;
+    }
+
+    // Prepare request body as object (to keep it clean and consistent)
+    const payload = { medicines: ListOFNewstack };
+//console.log(payload);
+
+    const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/updatestockindormed`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.success) {
+      setIsMedAddAlert(true);
+      FetchMedicine()
+      //console.log("✅ Medicines saved successfully!");
+      // Optionally clear the list after save
+      // setListOFNewstack([]);
+    } else {
+      //console.error("❌ Failed to create medicine record:", data.message || "Unknown error");
+      alert("Failed to save medicines. Please try again.");
+    }
+  } catch (err) {
+    //console.error("🚨 Error saving new stock:", err);
+    alert("Something went wrong while saving medicines.");
+  }
+};
 
 
 
@@ -279,6 +318,32 @@ useEffect(() => {
   // }, 2000);
   }
 };
+  // ✅ Fetch for current  Medicines
+  const FetchcurrentMonthIndoorMed = async () => {
+  try {
+// Build query parameters if start and end are provided
+    
+    const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/fetchcurrentmonthindoormed`);
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
+    const result = await res.json();
+    //console.log(result);
+    
+    // ✅ Only update if different (avoid infinite re-renders)
+    setcurrentMonindoorMed((prev) => {
+      const newData = result.data || [];
+      return JSON.stringify(prev) === JSON.stringify(newData) ? prev : newData;
+    });
+  } catch (error) {
+    //console.log("❌ Error fetching medicines:", error);
+    // setAlertMsg("❌ Failed to fetch medicines.");
+  //   setAlertType("error");
+  //    setTimeout(() => {
+  //   setAlertMsg("");
+  //   setAlertType("");
+  // }, 2000);
+  }
+};
 
   return (
     <AppContext.Provider
@@ -325,7 +390,9 @@ loading,setloading,
    ,
   //  fetch last month medicine for indoor new stock added 
   FetchlastMonthIndoorMed,
-  LastMonthindoorMed
+  LastMonthindoorMed,
+  currentMonthindoorMed,
+  FetchcurrentMonthIndoorMed, Updatestock_Indoor
       }}  
     >
       {children}

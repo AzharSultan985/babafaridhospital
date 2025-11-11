@@ -1,0 +1,16 @@
+{
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "nodemon": "^3.1.10"
+  },
+  "scripts": {
+    "server": "nodemon Backend/app.js",
+    "client": "npm start --prefix babafarid-frontend",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "dependencies": {
+    "dotenv": "^17.2.1",
+    "framer-motion": "^12.23.12",
+    "lucide-react": "^0.552.0"
+  }
+}

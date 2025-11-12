@@ -23,6 +23,7 @@ const [Addmissiondata, setAddmissiondata] = useState({
   roomNo: "",
   Admission_Type: "",
   Operating_handledBy: "",
+  desc:"",
   total_payment: "",
   received_payment: "",
   pending_payment: "",
@@ -33,6 +34,7 @@ const [Addmissiondata, setAddmissiondata] = useState({
   const [RecepInvoiceData, setRecepInvoiceData] = useState();
   const [AdmissionInvoiceData, setAdmissionInvoiceData] = useState();
   const [PatientData, setPatientData] = useState([]);
+  const [AllPatient, setAllPatient] = useState([]);
   const [doctors, setDoctors] = useState([]);
   const [receptionUsers, setReceptionUsers] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -205,6 +207,7 @@ const createAdmission = async (admissionData) => {
       roomNo: "",
       Admission_Type: "",
       Operating_handledBy: "",
+      desc:"",
       total_payment: "",
       received_payment: "",
       pending_payment: "",
@@ -220,6 +223,30 @@ const createAdmission = async (admissionData) => {
 };
 
 
+// fetch all patient 
+const FetchAllPatient = async () => {
+    try {
+      const res = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/fetchall-patient`
+      );
+
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.message || "Error fetching patients");
+
+      const data = result.data || [];
+      if (!data.length) {
+        setAlert({ isAlert: true, alertmsg: "No patients found", type: "error" });
+        setAllPatient([]);
+        return;
+      }
+
+      setAllPatient(data);
+    } catch (error) {
+      console.error("❌ Fetch all patients error:", error);
+      setAlert({ isAlert: true, alertmsg: error.message, type: "error" });
+      setAllPatient([]);
+    }
+  };
 
   return (
     <ReciptionContext.Provider
@@ -239,6 +266,7 @@ const createAdmission = async (admissionData) => {
         Addmissiondata,
         createAdmission,
         AdmissionInvoiceData
+        ,FetchAllPatient,AllPatient
       }}
     >
       {children}

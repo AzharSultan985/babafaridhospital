@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useReception } from "../RecepContext/RecepContext";
 
 const Reception = () => {
-  const { patient, setPatient, doctors, receptionUsers, registerPatient } = useReception();
+  const { patient, setPatient, doctors, receptionUsers, registerPatient , } = useReception();
   const [isModal, setModal] = useState(false);
 
   const handleChange = (e) => {

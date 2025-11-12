@@ -48,6 +48,7 @@ import FetchIndoorStockRecord from "./routes/StockRecords/indoorStockRecord.js";
 import patientRoutes from "./RecepRoutes/registerPatient.js";
 import FetchPatientByID from "./RecepRoutes/fetchpatientByid.js";
 import patiendAdmission from "./RecepRoutes/admissionpatient.js";
+import FetchAllPatient from "./RecepRoutes/fetchAllpatient.js";
 
 
 
@@ -166,6 +167,18 @@ app.use("/api", patiendAdmission);
 
   //  FetchInvoiceByID
    app.get("/api/fetchpatientbyid/", FetchPatientByID); 
+
+  //  fetchall-patient
+   app.get("/api/fetchall-patient/", FetchAllPatient); 
+
+
+
+
+
+
+
+
+
   // logout
   app.post("/api/logout", (req, res) => {
     res.clearCookie("adminToken"); // or your session cookie name

@@ -1,172 +1,193 @@
-import React, { useState } from "react";
-import { Eye } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Eye, X, Search } from "lucide-react";
+import { useReception } from "../RecepContext/RecepContext";
 
 const ReceptionMain = () => {
-  const initialPatients = [
-    {
-      patientID: 1001,
-      name: "Ali Khan",
-      F_H_Name: "Ahmed Khan",
-      doctor: "Dr. Ahmad - Cardiologist",
-      fees: 5000,
-      isAdmit: true,
-      isDischarged: false,
-      age: 32,
-      gender: "Male",
-      phone: "03001234567",
-      address: "Street 1, City",
-    },
-    {
-      patientID: 1002,
-      name: "Fatima Bibi",
-      F_H_Name: "Hassan Bibi",
-      doctor: "Dr. Fatima - Gynecologist",
-      fees: 7000,
-      isAdmit: true,
-      isDischarged: false,
-      age: 28,
-      gender: "Female",
-      phone: "03007654321",
-      address: "Street 2, City",
-    },
-    {
-      patientID: 1003,
-      name: "Usman Ali",
-      F_H_Name: "Sami Ali",
-      doctor: "Dr. Usman - Dentist",
-      fees: 3000,
-      isAdmit: false,
-      isDischarged: false,
-      age: 40,
-      gender: "Male",
-      phone: "03009876543",
-      address: "Street 3, City",
-    },
-  ];
 
-  const [patients, setPatients] = useState(initialPatients);
+  const {FetchAllPatient,AllPatient } = useReception();
+
+ useEffect(() => {
+  FetchAllPatient(); // initial fetch
+
+  const interval = setInterval(() => {
+    FetchAllPatient();
+  }, 60000); // 10 seconds
+
+  return () => clearInterval(interval); // cleanup
+}, []);
+
+
   const [viewPatient, setViewPatient] = useState(null);
-  const [dischargeModal, setDischargeModal] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  const handleDischarge = (patient) => {
-    setDischargeModal(patient);
-  };
-
-  const confirmDischarge = () => {
-    setPatients((prev) =>
-      prev.map((p) =>
-        p.patientID === dischargeModal.patientID
-          ? { ...p, isDischarged: true }
-          : p
-      )
-    );
-    setDischargeModal(null);
-  };
+  const filteredPatients = AllPatient.filter(
+    (p) =>
+      p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.F_H_Name.toLowerCase().includes(searchTerm.toLowerCase()) 
+   
+  );
 
   return (
     <div className="p-6 min-h-screen bg-gray-50">
-      <h2 className="text-2xl font-semibold mb-6 border-b pb-2">
-        🏥 Patient Management
-      </h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-semibold border-b pb-2">
+          🏥 Patient Management
+        </h2>
 
-      <div className="overflow-x-auto bg-white rounded-lg shadow-md border border-gray-200">
-        <table className="w-full table-auto border-collapse">
-          <thead className="bg-gray-100">
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search patient..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+          <Search
+            size={18}
+            className="absolute left-3 top-2.5 text-gray-400"
+          />
+        </div>
+      </div>
+
+      {/* Main Table */}
+      <div className="overflow-x-auto bg-white rounded-lg shadow-lg border border-gray-200">
+        <table className="w-full border-collapse">
+          <thead className="bg-gray-100 text-gray-700">
             <tr>
-              <th className="border px-3 py-2 text-left">ID</th>
-              <th className="border px-3 py-2 text-left">Name</th>
-              <th className="border px-3 py-2 text-left">Father/Husband</th>
-              <th className="border px-3 py-2 text-left">Doctor</th>
-              <th className="border px-3 py-2 text-left">Fees</th>
-              <th className="border px-3 py-2 text-left">Admit</th>
-              <th className="border px-3 py-2 text-left">Discharge</th>
-              <th className="border px-3 py-2 text-left">Action</th>
+              <th className="border px-4 py-2 text-left">ID</th>
+              <th className="border px-4 py-2 text-left">Name</th>
+              <th className="border px-4 py-2 text-left">Father/Husband</th>
+              <th className="border px-4 py-2 text-left">Doctor</th>
+              <th className="border px-4 py-2 text-left">Fees (Rs)</th>
+              <th className="border px-4 py-2 text-center">Action</th>
             </tr>
           </thead>
           <tbody>
-            {patients.map((p) => (
-              <tr key={p.patientID} className="hover:bg-gray-50">
-                <td className="border px-3 py-2">{p.patientID}</td>
-                <td className="border px-3 py-2">{p.name}</td>
-                <td className="border px-3 py-2">{p.F_H_Name}</td>
-                <td className="border px-3 py-2">{p.doctor}</td>
-                <td className="border px-3 py-2">{p.fees}</td>
-                <td className="border px-3 py-2">
-                  {p.isAdmit ? "Yes" : "No"}
-                </td>
-                <td className="border px-3 py-2">
-                  {p.isDischarged ? "Yes" : "No"}
-                </td>
-                <td className="border px-3 py-2 flex gap-2">
-                  {p.isAdmit && !p.isDischarged && (
+            {filteredPatients.length > 0 ? (
+              filteredPatients.map((p) => (
+                <tr key={p.patientID} className="hover:bg-gray-50">
+                  <td className="border px-4 py-2">{p.patientID}</td>
+                  <td className="border px-4 py-2 font-medium">{p.name}</td>
+                  <td className="border px-4 py-2">{p.F_H_Name}</td>
+                  <td className="border px-4 py-2">{p.doctor}</td>
+                  <td className="border px-4 py-2">{p.fees}</td>
+                  <td className="border px-4 py-2 text-center">
                     <button
-                      onClick={() => handleDischarge(p)}
-                      className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                      onClick={() => setViewPatient(p)}
+                      className="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700 flex items-center justify-center mx-auto"
                     >
-                      Discharge
+                      <Eye size={16} />
                     </button>
-                  )}
-
-                  <button
-                    onClick={() => setViewPatient(p)}
-                    className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 flex items-center"
-                  >
-                    <Eye size={16} />
-                  </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan="6"
+                  className="text-center py-6 text-gray-500 italic"
+                >
+                  No patients found.
                 </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
 
-      {/* Discharge Modal */}
-      {dischargeModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold mb-4">Confirm Discharge</h3>
-            <p className="mb-6">
-              Are you sure you want to discharge <b>{dischargeModal.name}</b>?
-            </p>
-            <div className="flex justify-end gap-4">
-              <button
-                onClick={() => setDischargeModal(null)}
-                className="bg-gray-300 px-4 py-2 rounded hover:bg-gray-400"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={confirmDischarge}
-                className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-              >
-                Discharge
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Sidebar Patient Details */}
+      {/* Sidebar: Patient Details */}
       {viewPatient && (
-        <div className="fixed top-0 right-0 w-96 h-full bg-white shadow-lg z-50 overflow-y-auto">
+        <div className="fixed top-0 right-0 w-96 h-full bg-white shadow-2xl z-50 overflow-y-auto transition-transform duration-300 border-l border-gray-200">
           <div className="p-6 flex flex-col h-full">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold">Patient Details</h3>
-              <button onClick={() => setViewPatient(null)}>✖</button>
+            <div className="flex justify-between items-center mb-6 border-b pb-3">
+              <h3 className="text-xl font-semibold text-blue-700">
+                Patient Details
+              </h3>
+              <button
+                onClick={() => setViewPatient(null)}
+                className="text-gray-500 hover:text-red-600"
+              >
+                <X size={20} />
+              </button>
             </div>
 
-            <div className="space-y-3">
-              <p><b>ID:</b> {viewPatient.patientID}</p>
-              <p><b>Name:</b> {viewPatient.name}</p>
-              <p><b>Father/Husband:</b> {viewPatient.F_H_Name}</p>
-              <p><b>Age:</b> {viewPatient.age}</p>
-              <p><b>Gender:</b> {viewPatient.gender}</p>
-              <p><b>Phone:</b> {viewPatient.phone}</p>
-              <p><b>Address:</b> {viewPatient.address}</p>
-              <p><b>Doctor:</b> {viewPatient.doctor}</p>
-              <p><b>Fees:</b> {viewPatient.fees}</p>
-              <p><b>Admit:</b> {viewPatient.isAdmit ? "Yes" : "No"}</p>
-              <p><b>Discharge:</b> {viewPatient.isDischarged ? "Yes" : "No"}</p>
+            <div className="overflow-x-auto">
+              <table className="w-full border border-gray-200 rounded-lg text-sm">
+                <tbody className="divide-y divide-gray-200">
+                  <tr>
+                    <td className="font-semibold p-2 w-1/3 bg-gray-50">ID</td>
+                    <td className="p-2">{viewPatient.patientID}</td>
+                  </tr>
+                  <tr>
+                    <td className="font-semibold p-2 bg-gray-50">Name</td>
+                    <td className="p-2">{viewPatient.name}</td>
+                  </tr>
+                  <tr>
+                    <td className="font-semibold p-2 bg-gray-50">
+                      Father/Husband
+                    </td>
+                    <td className="p-2">{viewPatient.F_H_Name}</td>
+                  </tr>
+                  <tr>
+                    <td className="font-semibold p-2 bg-gray-50">Age</td>
+                    <td className="p-2">{viewPatient.age}</td>
+                  </tr>
+                  <tr>
+                    <td className="font-semibold p-2 bg-gray-50">Gender</td>
+                    <td className="p-2">{viewPatient.gender}</td>
+                  </tr>
+                  <tr>
+                    <td className="font-semibold p-2 bg-gray-50">Phone</td>
+                    <td className="p-2">{viewPatient.phone}</td>
+                  </tr>
+                  <tr>
+                    <td className="font-semibold p-2 bg-gray-50">Address</td>
+                    <td className="p-2">{viewPatient.address}</td>
+                  </tr>
+                  <tr>
+                    <td className="font-semibold p-2 bg-gray-50">Doctor</td>
+                    <td className="p-2">{viewPatient.doctor}</td>
+                  </tr>
+
+                  <tr className="bg-gray-100">
+                    <td
+                      colSpan="2"
+                      className="font-semibold text-center p-2 text-blue-700"
+                    >
+                      Admission Info
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td className="font-semibold p-2 bg-gray-50">Fees</td>
+                    <td className="p-2">{viewPatient.fees} Rs</td>
+                  </tr>
+                  <tr>
+                    <td className="font-semibold p-2 bg-gray-50">Received</td>
+                    <td className="p-2">{viewPatient.fees} Rs</td>
+                  </tr>
+                  <tr>
+                    <td className="font-semibold p-2 bg-gray-50">Pending</td>
+                    <td className="p-2">0 Rs</td>
+                  </tr>
+                  <tr>
+                    <td className="font-semibold p-2 bg-gray-50">Admit</td>
+                    <td className="p-2">
+                      {viewPatient.isAdmit ? "Yes" : "No"}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="font-semibold p-2 bg-gray-50">Discharged</td>
+                    <td className="p-2">
+                      {viewPatient.isDischarged ? "Yes" : "No"}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div className="mt-auto pt-4 border-t text-center text-sm text-gray-500">
+              Last updated: {new Date().toLocaleDateString()}
             </div>
           </div>
         </div>

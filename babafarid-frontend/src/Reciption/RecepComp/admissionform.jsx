@@ -71,6 +71,7 @@ const confirmSubmit = async () => {
     roomNo: "",
     Admission_Type: "",
     Operating_handledBy: "",
+    desc:"",
     total_payment: "",
     received_payment: "",
     pending_payment: "",
@@ -127,14 +128,21 @@ const confirmSubmit = async () => {
 
             <div>
               <label className="block text-gray-700 mb-1">Doctor</label>
-              <input
+
+                 <select
                 name="operating_doctor"
-                value={Addmissiondata.operating_doctor || ""}
+                              value={Addmissiondata.operating_doctor || ""}
+
                 onChange={handleAdmission}
-                type="text"
-                placeholder="e.g. Dr. Ahmad"
                 className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-              />
+              >
+                <option value="">Select Doctor</option>
+                <option value="Dr 1">Dr 1</option>
+                <option value="Dr 2">Dr 2</option>
+                <option value="Dr 2">Dr 2</option>
+
+              </select>
+           
             </div>
 
             <div>
@@ -172,8 +180,7 @@ const confirmSubmit = async () => {
                 <option value="">Select Type</option>
                 <option value="Emergency">Emergency</option>
                 <option value="Routine">Routine</option>
-                <option value="Referral">Referral</option>
-                <option value="Observation">Observation</option>
+      
               </select>
             </div>
 
@@ -185,6 +192,17 @@ const confirmSubmit = async () => {
                 onChange={handleAdmission}
                 type="text"
                 placeholder="Receptionist name"
+                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+            </div>
+            <div>
+              <label className="block text-gray-700 mb-1">Description</label>
+              <textarea
+                name="desc"
+                value={Addmissiondata.desc || ""}
+                onChange={handleAdmission}
+                type="text"
+                placeholder="Write something about patient "
                 className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
               />
             </div>

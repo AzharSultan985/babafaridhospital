@@ -39,7 +39,9 @@ const [Addmissiondata, setAddmissiondata] = useState({
   const [receptionUsers, setReceptionUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [patientIDforAdmission, setpatientIDforAdmission] = useState(false);
+  const [recep_Login_Res, setrecep_Login_Res] = useState(false);
   const [Alert, setAlert] = useState({ isAlert: false, alertmsg: "", type: "" });
+  const [AllReceptionUser, setAllReceptionUser] = useState([]);
 
   const navigate = useNavigate();
 
@@ -50,16 +52,17 @@ const [Addmissiondata, setAddmissiondata] = useState({
 
   useEffect(() => {
     setDoctors([
-      "Dr. Ahmad - Cardiologist",
-      "Dr. Fatima - Gynecologist",
-      "Dr. Usman - Dentist",
-      "Dr. Hina - Pediatrician",
+      "Dr Shumaila-Gynecologist ",
+      "Dr. Fiza -Gynecologist",
+      "Dr. kayinat-Gynecologist",
+      "Dr. M.Yunas  - ENT",
+      "Dr. M.Sohail Haroon",
+      "Dr. M.Asraf ",
     ]);
     setReceptionUsers([
-      "Reception - Ayesha",
-      "Reception - Bilal",
-      "Reception - Sana",
-      "Reception - Ali",
+      "Saher Bano",
+      "Naveed",
+      "Amber ",
     ]);
   }, []);
 
@@ -85,7 +88,7 @@ const registerPatient = async (data) => {
 
     if (!response.ok) throw new Error("Failed to register patient");
     const savedPatient = await response.json();
-    console.log("✅ Patient Registered:", savedPatient);
+    //console.log("✅ Patient Registered:", savedPatient);
 
     // ✅ Show alert once
     setAlert({
@@ -103,7 +106,7 @@ const registerPatient = async (data) => {
     navigate("/recep-invoice");
 
   } catch (error) {
-    console.error("Error registering patient:", error);
+    //console.error("Error registering patient:", error);
     setAlert({
       isAlert: true,
       alertmsg: error.message,
@@ -150,7 +153,7 @@ const FetchPatientById = async (ID) => {
     setAlert({ isAlert: false, alertmsg: "", type: "" });
 
   } catch (error) {
-    console.error("❌ Fetch patient error:", error);
+    //console.error("❌ Fetch patient error:", error);
     setAlert({ isAlert: true, alertmsg: error.message, type: "error" });
     setPatientData([]);
   }
@@ -160,14 +163,6 @@ const FetchPatientById = async (ID) => {
 const createAdmission = async (admissionData) => {
   try {
     setLoading(true);
-
-    // Validation before sending
-    const required = ["department", "roomNo", "Admission_Type", "operating_doctor", "Operating_handledBy"];
-    const missing = required.filter(f => !admissionData[f] || admissionData[f].toString().trim() === "");
-    if (missing.length) {
-      setAlert({ isAlert: true, alertmsg: `Missing fields: ${missing.join(", ")}`, type: "error" });
-      return;
-    }
 
     const response = await fetch(
       `${process.env.REACT_APP_BACKEND_URL}/api/admission-patient/${patientIDforAdmission}`,
@@ -181,6 +176,7 @@ const createAdmission = async (admissionData) => {
             Admission_Type: admissionData.Admission_Type,
             operating_doctorName: admissionData.operating_doctor,
             Operating_handledBy: admissionData.Operating_handledBy,
+            desc:admissionData.desc
           },
           payment: {
             total_payment: admissionData.total_payment,
@@ -215,7 +211,7 @@ const createAdmission = async (admissionData) => {
     });
 
   } catch (error) {
-    console.error("❌ Create admission error:", error);
+    //console.error("❌ Create admission error:", error);
     setAlert({ isAlert: true, alertmsg: error.message, type: "error" });
   } finally {
     setLoading(false);
@@ -242,12 +238,251 @@ const FetchAllPatient = async () => {
 
       setAllPatient(data);
     } catch (error) {
-      console.error("❌ Fetch all patients error:", error);
+      //console.error("❌ Fetch all patients error:", error);
       setAlert({ isAlert: true, alertmsg: error.message, type: "error" });
       setAllPatient([]);
     }
   };
 
+
+
+// update payment of patient
+
+const UpdatePayment = async (paymentDetail) => {
+  try {
+    setLoading(true);
+
+    // Validation before sending
+    
+    
+    if (!paymentDetail.patientID) {
+      setAlert({ isAlert: true, alertmsg: `patientID Required`, type: "error" });
+      return;
+    }
+
+    const response = await fetch(
+      `${process.env.REACT_APP_BACKEND_URL}/api/update-payment/${paymentDetail.patientID}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            status: paymentDetail.status,
+            received_payment: paymentDetail.received_payment,        
+        }),
+      }
+    );
+
+    const result = await response.json();
+    if (!result.success) throw new Error(result.message || "Failed to update payment");
+    setAlert({ isAlert: true, alertmsg: "Payment Update succesfully", type: "success" });
+FetchAllPatient()
+
+  } catch (error) {
+    //console.error("❌ failed to update payment error:", error);
+    setAlert({ isAlert: true, alertmsg: error.message, type: "error" });
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+ 
+const handleDischargePatient = async (dischargeData) => {
+    if (!dischargeData) {
+      setAlert({ type: "error", msg: "Please select discharged by staff." });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/discharge-patient/${dischargeData.id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ dischargedBy :dischargeData.dischargedBy}),
+        }
+      );
+      const result = await response.json();
+      if (!result.success) throw new Error(result.message);
+      setAlert({ type: "success", msg: "Patient discharged successfully." });
+    } catch (error) {
+      setAlert({ type: "error", msg: error.message });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+// reception login
+  // In your context, update the Recep_Login function:
+const Recep_Login = async (username, password) => {
+  try {
+    const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/recep-user-login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include", // This is important for cookies
+      body: JSON.stringify({
+        username: username,
+        password: password
+      })
+    });
+    
+    const data = await res.json();
+    //console.log("Login response:", data);
+
+    if (data.success) {
+      setrecep_Login_Res(data.message);
+      setAlert({
+        isAlert: true,
+        alertmsg: "Login successful!",
+        type: "success"
+      });
+      
+      // Redirect after successful login
+      setTimeout(() => {
+        navigate("/recepition", { replace: true });
+      }, 1000);
+      
+    } else {
+      throw new Error(data.message || "Login failed");
+    }
+  } catch (err) {
+    //console.error("Login Error:", err);
+    setAlert({ 
+      isAlert: true, 
+      alertmsg: err.message, 
+      type: "error" 
+    });
+  }
+};
+
+  // 🚀 Logout function
+  const LogoutRecepUSer = async () => {
+    try {
+let res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/recep-user-logout`, {
+      method: "POST",
+      credentials: "include",
+    });
+
+    let data = await res.json(); // ✅ parse response JSON
+    ////console.log("Logout response:", data);
+
+    if (data.message === "Logged out successfully") {
+      setLoading(false)
+      setTimeout(() => {
+        navigate("/recep-login", { replace: true });
+      }, 1000);
+    } 
+  }catch (err) {
+      ////console.error("Logout failed:", err);
+    }
+  };
+
+
+
+// handle add reception staff
+const HandleReceptionStaff = async (data) => {
+  setLoading(true);
+  try {
+    // Generate random ID between 1000 and 2000
+    const randomId = Math.floor(Math.random() * (2000 - 1000 + 1)) + 1000;
+
+    const response = await fetch(
+      `${process.env.REACT_APP_BACKEND_URL}/api/add-reception-user`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: randomId,         // Randomly generated ID
+          name: data.name,
+          address: data.address,
+          shiftStart: data.shiftStart,
+          shiftEnd: data.shiftEnd,
+        }),
+      }
+    );
+
+    if (!response.ok) throw new Error("Failed to add reception user");
+    const savedReception = await response.json();
+    //console.log("✅ Registered reception:", savedReception);
+FetchAllReceptionUser()
+    // Show success alert
+    setAlert({
+      isAlert: true,
+      alertmsg: "Reception User Added successfully",
+      type: "success",
+    });
+
+    setTimeout(() => {
+      setAlert({ isAlert: false, alertmsg: "", type: "" });
+    }, 2000);
+
+  } catch (error) {
+    //console.error("Error adding reception user:", error);
+    setAlert({
+      isAlert: true,
+      alertmsg: error.message,
+      type: "error",
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+
+// fetch all reception user 
+const FetchAllReceptionUser = async () => {
+    try {
+      const res = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/fetchall-reception-user`
+      );
+
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.message || "Error fetching reception user");
+
+      const data = result.data || [];
+      if (!data.length) {
+        setAlert({ isAlert: true, alertmsg: "No Reception User found", type: "error" });
+        setAllReceptionUser([]);
+        return;
+      }
+
+      setAllReceptionUser(data);
+    } catch (error) {
+      //console.error("❌ Fetch all reception users error:", error);
+      setAlert({ isAlert: true, alertmsg: error.message, type: "error" });
+      setAllReceptionUser([]);
+    }
+  };
+
+  const RemoveReceptionStaff = async (id) => {
+    if (!id) {
+      setAlert({ type: "error", msg: "Please select ID." });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/remove-receptionUser/${id}`,
+        {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      const result = await response.json();
+      if (!result.success) throw new Error(result.message);
+FetchAllReceptionUser()
+
+      setAlert({ type: "success", msg: "Reception User Removed successfully." });
+    } catch (error) {
+      setAlert({ type: "error", msg: error.message });
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <ReciptionContext.Provider
       value={{
@@ -267,6 +502,10 @@ const FetchAllPatient = async () => {
         createAdmission,
         AdmissionInvoiceData
         ,FetchAllPatient,AllPatient
+,HandleReceptionStaff,
+        UpdatePayment,handleDischargePatient,recep_Login_Res,Recep_Login,LogoutRecepUSer,
+
+        FetchAllReceptionUser,AllReceptionUser,RemoveReceptionStaff
       }}
     >
       {children}

@@ -1,10 +1,22 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useReception } from "../RecepContext/RecepContext";
 
 const Reception = () => {
-  const { patient, setPatient, doctors, receptionUsers, registerPatient , } = useReception();
+  const { patient, setPatient, doctors,  registerPatient ,FetchAllReceptionUser,AllReceptionUser } = useReception();
   const [isModal, setModal] = useState(false);
+ const [currentTime, setCurrentTime] = useState(""); // store current time in HH:mm
 
+  useEffect(() => {
+    FetchAllReceptionUser();
+    const timer = setInterval(() => {
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, "0");
+      const minutes = now.getMinutes().toString().padStart(2, "0");
+      setCurrentTime(`${hours}:${minutes}`);
+    }, 60000); // update every minute
+
+    return () => clearInterval(timer);
+  }, []);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setPatient((prev) => ({ ...prev, [name]: value }));
@@ -40,6 +52,32 @@ const confirmSubmit = async () => {
   } catch (err) {
     console.error(err);
   }
+};
+
+  // Check if current time is within shift range
+const isWithinShift = (shiftStart, shiftEnd) => {
+  const now = new Date();
+  const currTotal = now.getHours() * 60 + now.getMinutes();
+
+  const [startHour, startMin] = shiftStart.split(":").map(Number);
+  const [endHour, endMin] = shiftEnd.split(":").map(Number);
+
+  let startTotal = startHour * 60 + startMin;
+  let endTotal = endHour * 60 + endMin;
+
+  // Handle shift that goes past midnight
+  if (endTotal <= startTotal) {
+    // Shift ends next day
+    if (currTotal < startTotal) {
+      // Early morning before midnight, add 24 hours to currTotal
+      return currTotal + 24 * 60 <= endTotal + 24 * 60;
+    } else {
+      // Evening hours, just compare normally
+      return currTotal >= startTotal || currTotal <= endTotal;
+    }
+  }
+
+  return currTotal >= startTotal && currTotal <= endTotal;
 };
 
 
@@ -164,24 +202,22 @@ const confirmSubmit = async () => {
               </div>
 
               {/* Handled By */}
+              {/* Handled By */}
               <div>
                 <label className="block text-gray-700 mb-1">Handled By</label>
-                <select
-                  name="handledBy"
-                  value={patient.handledBy}
-                  onChange={handleChange}
-                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-                  required
-                >
-                  <option value="">Select Receptionist</option>
-                  {receptionUsers.map((user, i) => (
-                    <option key={i} value={user}>
-                      {user}
-                    </option>
-                  ))}
-                </select>
-              </div>
+               <select name="handledBy" value={patient.handledBy} onChange={handleChange} className="w-full ...">
+  <option value="">Select Receptionist</option>
+  {AllReceptionUser.map((user) => {
+    const active = isWithinShift(user.shiftStart, user.shiftEnd);
+    return (
+      <option key={user.id} value={user.name} disabled={!active}>
+        {user.name} {active ? "(Active)" : "(Absent)"}
+      </option>
+    );
+  })}
+</select>
 
+              </div>
               {/* Submit */}
               <div className="col-span-2 text-right">
                 <button

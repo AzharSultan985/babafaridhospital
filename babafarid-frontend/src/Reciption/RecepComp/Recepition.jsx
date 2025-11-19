@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Eye, X, Search } from "lucide-react";
+import { Eye, X, Search,Pencil  } from "lucide-react";
 import { useReception } from "../RecepContext/RecepContext";
 
 const ReceptionMain = () => {
 
-  const {FetchAllPatient,AllPatient } = useReception();
+  const {FetchAllPatient,AllPatient ,UpdatePayment} = useReception();
 
  useEffect(() => {
   FetchAllPatient(); // initial fetch
@@ -19,14 +19,39 @@ const ReceptionMain = () => {
 
   const [viewPatient, setViewPatient] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-
+  const [editModal, setEditModal] = useState(null); // modal open for edit
+  const [updatePayment, setUpdatePayment] = useState({
+    patientID: "",
+    status: "",
+    received_payment: "",
+  });
   const filteredPatients = AllPatient.filter(
     (p) =>
       p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.patientID.toString().toLowerCase().includes(searchTerm.toLowerCase())||
       p.F_H_Name.toLowerCase().includes(searchTerm.toLowerCase()) 
    
   );
 
+  const handleEditClick = (patient) => {
+    setEditModal(patient);
+    setUpdatePayment({
+      patientID: patient.patientID,
+      status: patient.payment.paymentstatus || "",
+      received_payment: patient.payment.received_payment || "",
+    });
+  };
+
+  const handlePaymentChange = (e) => {
+    const { name, value } = e.target;
+    setUpdatePayment((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSaveUpdate = async () => {
+    console.log("Updated Payment Object:", updatePayment);
+         UpdatePayment(updatePayment)
+    setEditModal(null);
+  };
   return (
     <div className="p-6 min-h-screen bg-gray-50">
       <div className="flex justify-between items-center mb-6">
@@ -57,7 +82,7 @@ const ReceptionMain = () => {
               <th className="border px-4 py-2 text-left">ID</th>
               <th className="border px-4 py-2 text-left">Name</th>
               <th className="border px-4 py-2 text-left">Father/Husband</th>
-              <th className="border px-4 py-2 text-left">Doctor</th>
+              <th className="border px-4 py-2 text-left">Check Up</th>
               <th className="border px-4 py-2 text-left">Fees (Rs)</th>
               <th className="border px-4 py-2 text-center">Action</th>
             </tr>
@@ -71,12 +96,18 @@ const ReceptionMain = () => {
                   <td className="border px-4 py-2">{p.F_H_Name}</td>
                   <td className="border px-4 py-2">{p.doctor}</td>
                   <td className="border px-4 py-2">{p.fees}</td>
-                  <td className="border px-4 py-2 text-center">
+                <td className="border px-4 py-2 text-center flex justify-center gap-2">
                     <button
                       onClick={() => setViewPatient(p)}
-                      className="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700 flex items-center justify-center mx-auto"
+                      className="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700 flex items-center justify-center"
                     >
                       <Eye size={16} />
+                    </button>
+                    <button
+                      onClick={() => handleEditClick(p)}
+                      className="bg-yellow-500 text-white px-3 py-1 rounded-md hover:bg-yellow-600 flex items-center justify-center"
+                    >
+                      <Pencil size={16} />
                     </button>
                   </td>
                 </tr>
@@ -124,7 +155,7 @@ const ReceptionMain = () => {
                   </tr>
                   <tr>
                     <td className="font-semibold p-2 bg-gray-50">
-                      Father/Husband
+                      F/H
                     </td>
                     <td className="p-2">{viewPatient.F_H_Name}</td>
                   </tr>
@@ -145,10 +176,14 @@ const ReceptionMain = () => {
                     <td className="p-2">{viewPatient.address}</td>
                   </tr>
                   <tr>
-                    <td className="font-semibold p-2 bg-gray-50">Doctor</td>
+                    <td className="font-semibold p-2 bg-gray-50">Check Up</td>
                     <td className="p-2">{viewPatient.doctor}</td>
+           
                   </tr>
-
+<tr>
+         <td className="font-semibold p-2 bg-gray-50">Register By</td>
+                    <td className="p-2">{viewPatient.handledBy}</td>
+</tr>
                   <tr className="bg-gray-100">
                     <td
                       colSpan="2"
@@ -159,39 +194,154 @@ const ReceptionMain = () => {
                   </tr>
 
                   <tr>
-                    <td className="font-semibold p-2 bg-gray-50">Fees</td>
-                    <td className="p-2">{viewPatient.fees} Rs</td>
+                    <td className="font-semibold p-2 bg-gray-50">Admit</td>
+                    <td className="p-2">{viewPatient.admission.isadmitted?'Yes':'No'}</td>
+                  </tr>
+                 
+                  <tr>
+                    <td className="font-semibold p-2 bg-gray-50">Department</td>
+                    <td className="p-2">{viewPatient.admission.department}</td>
+                  </tr>
+                  <tr>
+                    <td className="font-semibold p-2 bg-gray-50">OPD Doctor</td>
+                    <td className="p-2">{viewPatient.admission.operating_doctorName}</td>
+                  </tr>
+                  <tr>
+                    <td className="font-semibold p-2 bg-gray-50">Room No</td>
+                    <td className="p-2">{viewPatient.admission.roomNo}</td>
+                  </tr>
+                  <tr>
+                    <td className="font-semibold p-2 bg-gray-50">
+                       Type</td>
+                    <td className="p-2">{viewPatient.admission.Admission_Type}</td>
+                  </tr>
+                
+                  <tr>
+                    <td className="font-semibold p-2 bg-gray-50">
+                       Handle By</td>
+                    <td className="p-2">{viewPatient.admission.Operating_handledBy}</td>
+                  </tr>
+                  <tr>
+                    <td className="font-semibold p-2 bg-gray-50">
+                       Admitted At</td>
+                    <td className="p-2"> {viewPatient.admission.admittedAt?new Date(viewPatient.admission.admittedAt).toLocaleString() :"Not Admit"}</td>
+                  </tr>
+                   <tr className="bg-gray-100">
+                    <td
+                      colSpan="2"
+                      className="font-semibold text-center p-2 text-blue-700"
+                    >
+                      Payment Info
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="font-semibold p-2 bg-gray-50">Total</td>
+                    <td className="p-2"> Rs {viewPatient.payment.total_payment?viewPatient.payment.total_payment:"0.0"} </td>
+                  </tr>
+                   <tr>
+                    <td className="font-semibold p-2 bg-gray-50">Status</td>
+                    <td className="p-2"> {viewPatient.payment.paymentstatus}</td>
                   </tr>
                   <tr>
                     <td className="font-semibold p-2 bg-gray-50">Received</td>
-                    <td className="p-2">{viewPatient.fees} Rs</td>
+                    <td className="p-2">Rs {viewPatient.payment.received_payment?viewPatient.payment.received_payment:"0.0"}</td>
                   </tr>
                   <tr>
                     <td className="font-semibold p-2 bg-gray-50">Pending</td>
-                    <td className="p-2">0 Rs</td>
+                    <td className="p-2">Rs {viewPatient.payment.pending_payment?viewPatient.payment.pending_payment:"0.0"}</td>
                   </tr>
-                  <tr>
-                    <td className="font-semibold p-2 bg-gray-50">Admit</td>
-                    <td className="p-2">
-                      {viewPatient.isAdmit ? "Yes" : "No"}
+                 
+                   <tr className="bg-gray-100">
+                    <td
+                      colSpan="2"
+                      className="font-semibold text-center p-2 text-blue-700"
+                    >
+                      Discharge Info
                     </td>
                   </tr>
-                  <tr>
-                    <td className="font-semibold p-2 bg-gray-50">Discharged</td>
-                    <td className="p-2">
-                      {viewPatient.isDischarged ? "Yes" : "No"}
-                    </td>
+                <tr>
+                    <td className="font-semibold p-2 bg-gray-50">Dicharge</td>
+               <td className="p-2">{viewPatient.discharge.isdischarge?'Yes':'No'}</td>
+
+                  </tr>
+                <tr>
+                    <td className="font-semibold p-2 bg-gray-50">Dicharge By</td>
+               <td className="p-2">{viewPatient.discharge.dischargedBy}</td>
+
                   </tr>
                 </tbody>
               </table>
             </div>
 
-            <div className="mt-auto pt-4 border-t text-center text-sm text-gray-500">
-              Last updated: {new Date().toLocaleDateString()}
+           
+          </div>
+        </div>
+      )}
+
+      
+      {/* 🔹 Edit Payment Modal */}
+      {editModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
+          <div className="bg-white w-96 rounded-lg shadow-lg p-6 relative">
+            <button
+              onClick={() => setEditModal(null)}
+              className="absolute top-3 right-3 text-gray-500 hover:text-red-600"
+            >
+              <X size={20} />
+            </button>
+
+            <h3 className="text-lg font-semibold mb-4 text-blue-700">
+              Edit Payment Info
+            </h3>
+
+            <div className="space-y-3">
+              <p>
+                <span className="font-semibold">Patient ID:</span>{" "}
+                {editModal.patientID}
+              </p>
+              <p>
+                <span className="font-semibold">Name:</span>{" "}
+                {editModal.name}
+              </p>
+              <p>
+                <span className="font-semibold">Total Payment:</span>{" "}
+                {editModal.payment.total_payment}
+              </p>
+
+              <label className="block font-medium">Payment Status</label>
+              <select
+                name="status"
+                value={updatePayment.status}
+                onChange={handlePaymentChange}
+                className="w-full border rounded-md p-2"
+              >
+                <option value="">Select</option>
+                <option value="Paid">Paid</option>
+                <option value="Pending">Pending</option>
+                <option value="Partial">Partial</option>
+              </select>
+
+              <label className="block font-medium">Receiving Amount (Rs)</label>
+              <input
+                type="number"
+                name="received_payment"
+        
+                value={updatePayment.received_payment}
+                onChange={handlePaymentChange}
+                className="w-full border rounded-md p-2"
+              />
+
+              <button
+                onClick={handleSaveUpdate}
+                className="w-full mt-4 bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700"
+              >
+                Save Changes
+              </button>
             </div>
           </div>
         </div>
       )}
+
     </div>
   );
 };

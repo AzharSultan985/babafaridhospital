@@ -33,7 +33,12 @@ const {FetchMedicine} =useContext(AppContext)
 
       if (data.message === "Login successful") {
         setloggedin_Indoor_Res(data.message)
-  navigate("/indoormedmangment", { replace: true });
+       
+          navigate("/indoormedmangment", { replace: true });
+
+        
+
+
 }else {
         throw new Error("Failed to logged admin");
       }

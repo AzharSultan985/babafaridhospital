@@ -20,7 +20,7 @@ router.post("/patient-register", async (req, res) => {
       data: savedPatient,
     });
   } catch (error) {
-    console.error("Error registering patient:", error);
+    //console.error("Error registering patient:", error);
     res.status(500).json({
       success: false,
       message: "Failed to register patient",

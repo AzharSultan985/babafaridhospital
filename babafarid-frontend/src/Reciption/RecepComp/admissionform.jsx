@@ -10,9 +10,10 @@ const AdmissionForm = () => {
     PatientData,
     setAddmissiondata,
     Addmissiondata,
-    createAdmission,
+    createAdmission, doctors, FetchAllReceptionUser,AllReceptionUser
   } = useReception();
   const [isModal, setModal] = useState(false);
+ const [currentTime, setCurrentTime] = useState(""); // store current time in HH:mm
 
   // 🔹 Fetch patient by ID or phone
   const handleFetch = async (e) => {
@@ -26,6 +27,17 @@ const AdmissionForm = () => {
     setShowForm(true);
   };
 
+  useEffect(() => {
+    FetchAllReceptionUser();
+    const timer = setInterval(() => {
+      const now = new Date();
+      const hours = now.getHours().toString().padStart(2, "0");
+      const minutes = now.getMinutes().toString().padStart(2, "0");
+      setCurrentTime(`${hours}:${minutes}`);
+    }, 60000); // update every minute
+
+    return () => clearInterval(timer);
+  }, []);
   // 🔹 Update admission form values
   const handleAdmission = (e) => {
     const { name, value } = e.target;
@@ -78,7 +90,31 @@ const confirmSubmit = async () => {
     paymentstatus: "",
   });
 };
+ // Check if current time is within shift range
+const isWithinShift = (shiftStart, shiftEnd) => {
+  const now = new Date();
+  const currTotal = now.getHours() * 60 + now.getMinutes();
 
+  const [startHour, startMin] = shiftStart.split(":").map(Number);
+  const [endHour, endMin] = shiftEnd.split(":").map(Number);
+
+  let startTotal = startHour * 60 + startMin;
+  let endTotal = endHour * 60 + endMin;
+
+  // Handle shift that goes past midnight
+  if (endTotal <= startTotal) {
+    // Shift ends next day
+    if (currTotal < startTotal) {
+      // Early morning before midnight, add 24 hours to currTotal
+      return currTotal + 24 * 60 <= endTotal + 24 * 60;
+    } else {
+      // Evening hours, just compare normally
+      return currTotal >= startTotal || currTotal <= endTotal;
+    }
+  }
+
+  return currTotal >= startTotal && currTotal <= endTotal;
+};
   return (
 <>
 
@@ -130,6 +166,7 @@ const confirmSubmit = async () => {
               <label className="block text-gray-700 mb-1">Doctor</label>
 
                  <select
+                 required
                 name="operating_doctor"
                               value={Addmissiondata.operating_doctor || ""}
 
@@ -137,17 +174,19 @@ const confirmSubmit = async () => {
                 className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
               >
                 <option value="">Select Doctor</option>
-                <option value="Dr 1">Dr 1</option>
-                <option value="Dr 2">Dr 2</option>
-                <option value="Dr 2">Dr 2</option>
-
+               
+ {doctors.map((doc, i) => (
+                    <option key={i} value={doc}>
+                      {doc}
+                    </option>
+                  ))}
               </select>
            
             </div>
 
             <div>
               <label className="block text-gray-700 mb-1">Department</label>
-              <input
+              <input required
                 name="department"
                 value={Addmissiondata.department || ""}
                 onChange={handleAdmission}
@@ -159,7 +198,7 @@ const confirmSubmit = async () => {
 
             <div>
               <label className="block text-gray-700 mb-1">Room No</label>
-              <input
+              <input required
                 name="roomNo"
                 value={Addmissiondata.roomNo || ""}
                 onChange={handleAdmission}
@@ -169,9 +208,9 @@ const confirmSubmit = async () => {
               />
             </div>
 
-            <div>
+            <div> 
               <label className="block text-gray-700 mb-1">Admission Type</label>
-              <select
+              <select required
                 name="Admission_Type"
                 value={Addmissiondata.Admission_Type || ""}
                 onChange={handleAdmission}
@@ -186,14 +225,26 @@ const confirmSubmit = async () => {
 
             <div>
               <label className="block text-gray-700 mb-1">Handled By</label>
-              <input
-                name="Operating_handledBy"
+              
+               <select
+                  name="Operating_handledBy"
                 value={Addmissiondata.Operating_handledBy || ""}
-                onChange={handleAdmission}
-                type="text"
-                placeholder="Receptionist name"
-                className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-              />
+                  onChange={handleAdmission}
+                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+                  required
+                >
+                  <option value="">Select Receptionist</option>
+               
+
+                  {AllReceptionUser.map((user) => {
+    const active = isWithinShift(user.shiftStart, user.shiftEnd);
+    return (
+      <option key={user.id} value={user.name} disabled={!active}>
+        {user.name} {active ? "(Active)" : "(Absent)"}
+      </option>
+    );
+  })}
+                </select>
             </div>
             <div>
               <label className="block text-gray-700 mb-1">Description</label>
@@ -217,7 +268,7 @@ const confirmSubmit = async () => {
                   <label className="block text-gray-700 mb-1">
                     Total Fees (Rs)
                   </label>
-                  <input
+                  <input required
                     name="total_payment"
                     value={Addmissiondata.total_payment || ""}
                     onChange={handleAdmission}

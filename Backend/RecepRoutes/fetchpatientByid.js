@@ -29,7 +29,7 @@ const FetchPatientByID = async (req, res) => {
       data: patientdata,
     });
   } catch (error) {
-    console.error("❌ Error fetching patient data:", error);
+    //console.error("❌ Error fetching patient data:", error);
     res.status(500).json({ success: false, message: "Server error while fetching data." });
   }
 };

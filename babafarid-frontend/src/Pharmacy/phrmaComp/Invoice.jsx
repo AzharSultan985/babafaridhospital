@@ -42,16 +42,14 @@ const Invoice = () => {
 
   return (
     <>
-   <style>{`
+ <style>{`
   @media print {
     body {
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
       margin: 0;
       padding: 0;
       background: #fff;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
     }
     body * {
       visibility: hidden;
@@ -60,39 +58,44 @@ const Invoice = () => {
       visibility: visible;
     }
     .printable {
-      position: relative;
-      width: 85mm; /* Readable width */
-      margin: 1px auto;
-      padding: 6mm;
+      position: absolute;
+      top: 0;                 /* ✅ starts from very top */
+      left: 0;
+      width: 85mm;            /* thermal readable width */
+      margin-left: 5mm;       /* ✅ left margin safe zone */
+      margin-top: 0;          /* ✅ remove all top margin */
+      padding: 3mm 5mm;       /* light balanced padding */
       background: #fff;
+      font-size: 12.5px;
+      font-weight: bold;
+      line-height: 1.55;
+      letter-spacing: 0.35px;
+      color: #000 !important;
       box-shadow: none;
-      font-size: 12px;
-      line-height: 1.5; /* lines ke beech space */
-      letter-spacing: 0.3px; /* har letter ke darmiyan halka gap */
     }
     table th, table td {
-      padding: 3px 5px; /* table ke andar spacing */
+      padding: 3px 5px;
     }
-    h1, h2, h3 {
-      letter-spacing: 0.5px;
+    h1, h2, h3, p, td, th {
+      color: #000 !important;
     }
     @page {
       size: 80mm auto;
-      margin: 0;
+      margin: 0;  /* ✅ removes default printer margin */
     }
   }
 
-  /* screen view readability */
+  /* Screen view */
   .printable {
     width: 85mm;
-    margin: 20px auto;
-    padding: 10px;
+    margin: 10px auto;
+    padding: 8px;
     border: 1px solid #ddd;
     background: #fff;
-    font-size: 12.5px;
+    font-size: 13px;
     line-height: 1.6;
-    letter-spacing: 0.3px;
-  }
+    letter-spacing: 0.35px;
+  }
 `}</style>
 
 
@@ -135,10 +138,16 @@ const Invoice = () => {
                 <td className="text-left px-1">{med.Medname}</td>
                 <td className="text-center px-1">{med.quantity}</td>
                 <td className="text-right px-1">{med.PriceOFMedPerBuy.toFixed(2)}</td>
+                
               </tr>
             ))}
           </tbody>
           <tfoot className="border-t border-black">
+            <tr>
+              <td className="text-left px-1">No of Items</td>
+              <td></td>
+              <td className="text-right px-1">{InvoiceData.medicines.length}</td> {/* Fixed: removed .toFixed(2) */}
+            </tr>
             <tr>
               <td className="text-left px-1">Total</td>
               <td></td>

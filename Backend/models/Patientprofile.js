@@ -22,14 +22,14 @@ const patientSchema = new mongoose.Schema({
 roomNo:Number,
 Admission_Type:String,
 Operating_handledBy:String,
-
+desc:String,
     admittedAt: Date,
     
   },
 discharge:{
 isdischarge:{ type: Boolean, default: false },
-    dischargedAt:{ type: Date, default: Date.now }
-
+    dischargedAt:{ type: Date, default: Date.now },
+dischargedBy:String
 },
 
   // --- Pharmacy Billing Information ---

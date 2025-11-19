@@ -1,4 +1,4 @@
-import IndoorStaffAuthModel from "../models/indoorstaffdb.js";
+import StaffAuthModel from "../models/StaffDb.js";
 import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -22,7 +22,7 @@ router.post("/loginstaffindoor", async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    const staff = await IndoorStaffAuthModel.findOne({ username });
+    const staff = await StaffAuthModel.findOne({ username });
     if (!staff) {
       return res.status(400).json({ message: "Invalid username or password" });
     }
@@ -46,7 +46,9 @@ router.post("/loginstaffindoor", async (req, res) => {
 
     });
 
-    res.status(200).json({ message: "Login successful" });
+    res.status(200).json({ message: "Login successful" ,data:staff},
+      
+    );
 
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });

@@ -134,7 +134,7 @@ router.post("/addnewstockpharmamed", async (req, res) => {
       newRecordsAdded: recordsToAdd.length,
     });
   } catch (error) {
-    console.error("❌ Error updating stock:", error);
+    //console.error("❌ Error updating stock:", error);
     res.status(500).json({
       success: false,
       message: "Server error while updating pharmacy stock.",

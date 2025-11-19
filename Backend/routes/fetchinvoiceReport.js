@@ -5,20 +5,41 @@ const FetchInvoiceReports = async (req, res) => {
     const { start, end } = req.query;
     let filter = {};
 
+    // Helper: Convert normal date into 7pm-day-start
+    const getSevenPMStart = (dateString) => {
+      const d = new Date(dateString);
+      d.setHours(19, 0, 0, 0); // 7 PM same day
+      return d;
+    };
+
+    // Helper: Convert normal date into next-day 6:59 PM end
+    const getSevenPMEnd = (dateString) => {
+      const d = new Date(dateString);
+      d.setDate(d.getDate() + 1); // next day
+      d.setHours(18, 59, 59, 999); // 6:59 PM
+      return d;
+    };
+
     if (start && end) {
-      const startDate = new Date(start);
-      const endDate = new Date(end);
-      endDate.setHours(23, 59, 59, 999);
-      filter.createdAt = { $gte: startDate, $lte: endDate };
-    } else if (start && !end) {
-      const startDate = new Date(start);
-      const today = new Date();
-      today.setHours(23, 59, 59, 999);
-      filter.createdAt = { $gte: startDate, $lte: today };
-    } else {
+      filter.createdAt = {
+        $gte: getSevenPMStart(start),
+        $lte: getSevenPMEnd(end),
+      };
+    }
+
+    else if (start && !end) {
+      filter.createdAt = {
+        $gte: getSevenPMStart(start),
+        $lte: getSevenPMEnd(start),
+      };
+    }
+
+    else {
+      // Default: current month (but using 7 PM boundaries)
       const now = new Date();
-      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-      const nextMonthStart = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1, 19, 0, 0, 0);
+      const nextMonthStart = new Date(now.getFullYear(), now.getMonth() + 1, 1, 19, 0, 0, 0);
+
       filter.createdAt = { $gte: monthStart, $lt: nextMonthStart };
     }
 
@@ -29,8 +50,8 @@ const FetchInvoiceReports = async (req, res) => {
       count: invoices.length,
       data: invoices,
     });
+
   } catch (error) {
-    //console.error("❌ Error fetching invoices:", error);
     res.status(500).json({ success: false, message: "Server error while fetching data." });
   }
 };

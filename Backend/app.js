@@ -48,21 +48,23 @@ import FetchIndoorStockRecord from "./routes/StockRecords/indoorStockRecord.js";
 import patientRoutes from "./RecepRoutes/registerPatient.js";
 import FetchPatientByID from "./RecepRoutes/fetchpatientByid.js";
 import patiendAdmission from "./RecepRoutes/admissionpatient.js";
+import handleRecepUser from "./RecepRoutes/RecepAuth.js";
 import FetchAllPatient from "./RecepRoutes/fetchAllpatient.js";
+import DischargePatient from "./RecepRoutes/dischargePatient.js";
+import addReceptionUser from "./RecepRoutes/addReceptionstaff.js";
+import FetchAllReceptionUser from "./RecepRoutes/fetchAllReceptionUser.js";
+import RemoveReceptionUser from "./RecepRoutes/removeReceptionUser.js";
 
 
 
   const __filename = fileURLToPath(import.meta.url);
   const __dirname = path.dirname(__filename);
-  const frontendBuildPath = path.join(__dirname, "build");
-
+  
   dotenv.config({ path: path.join(__dirname, ".env") }); // ✅ always load Backend/.env
 
   const app = express();
 
-  app.use(express.json());
-  app.use(cookieParser())
-  app.use(express.static(frontendBuildPath));
+  
 
     // Connect DB
   connectDB();
@@ -73,7 +75,9 @@ import FetchAllPatient from "./RecepRoutes/fetchAllpatient.js";
     origin: true, // frontend origin
     credentials: true, // allow cookies / auth headers
   }));
-
+app.use(express.json());
+  app.use(cookieParser())
+  
 
   // // Serve frontend build
 
@@ -154,6 +158,12 @@ app.use("/api/fetchindoorstock_record",FetchIndoorStockRecord );
 // reception handle routes
 app.use("/api", patientRoutes);
 app.use("/api", patiendAdmission);
+app.use("/api", handleRecepUser);
+app.use("/api", DischargePatient);
+app.use("/api/fetchall-patient", FetchAllPatient);
+app.use("/api/fetchall-reception-user", FetchAllReceptionUser);
+app.use("/api", addReceptionUser);
+app.use("/api", RemoveReceptionUser);
 
 
 
@@ -167,18 +177,6 @@ app.use("/api", patiendAdmission);
 
   //  FetchInvoiceByID
    app.get("/api/fetchpatientbyid/", FetchPatientByID); 
-
-  //  fetchall-patient
-   app.get("/api/fetchall-patient/", FetchAllPatient); 
-
-
-
-
-
-
-
-
-
   // logout
   app.post("/api/logout", (req, res) => {
     res.clearCookie("adminToken"); // or your session cookie name

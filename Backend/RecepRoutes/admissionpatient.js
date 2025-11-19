@@ -48,8 +48,7 @@ router.put("/admission-patient/:identifier", async (req, res) => {
       "roomNo",
       "Admission_Type",
       "operating_doctorName",
-      "Operating_handledBy",
-    ];
+      "Operating_handledBy",];
 
     const missing = requiredFields.filter(
       (f) => !admission?.[f] || admission[f].trim() === ""
@@ -86,9 +85,10 @@ router.put("/admission-patient/:identifier", async (req, res) => {
       success: true,
       message: "Admission and payment details updated successfully.",
       patient,
+
     });
   } catch (error) {
-    console.error("❌ Error updating admission/payment:", error);
+    //console.error("❌ Error updating admission/payment:", error);
     res.status(500).json({
       success: false,
       message: "Internal server error.",

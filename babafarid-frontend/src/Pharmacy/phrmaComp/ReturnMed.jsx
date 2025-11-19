@@ -139,7 +139,7 @@ export default function ReturnMedicine() {
           <table className="w-full border-collapse">
             <thead>
               <tr className="bg-gray-100">
-                <th className="p-2 border">ID</th>
+  
                 <th className="p-2 border">Medicine</th>
                 <th className="p-2 border">Qty</th>
                 <th className="p-2 border">Price</th>
@@ -149,7 +149,7 @@ export default function ReturnMedicine() {
             <tbody>
               {summary.map((med) => (
                 <tr key={med.id} className="text-center border">
-                  <td>{med.id}</td>
+        
                   <td className="p-2 border flex justify-center items-center gap-2">
                     <button
                       onClick={() => handleDecrease(med.id)}

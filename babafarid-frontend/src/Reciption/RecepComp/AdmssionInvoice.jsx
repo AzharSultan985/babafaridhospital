@@ -17,51 +17,61 @@ console.log('patiet',AdmissionInvoiceData);
 
   return (
     <>
-      <style>{`
-        @media print {
-          body {
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-            margin: 0;
-            padding: 0;
-            background: #fff;
-          }
-          body * {
-            visibility: hidden;
-          }
-          .printable, .printable * {
-            visibility: visible;
-          }
-          .printable {
-            position: relative;
-            width: 85mm;
-            margin: 1px auto;
-            padding: 6mm;
-            background: #fff;
-            box-shadow: none;
-            font-size: 12px;
-            line-height: 1.5;
-            letter-spacing: 0.3px;
-          }
-          @page {
-            size: 80mm auto;
-            margin: 0;
-          }
-        }
+   <style>{`
+  @media print {
+    body {
+      margin: 0;
+      padding: 0;
+      background: #fff;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    body * {
+      visibility: hidden;
+    }
+    .printable, .printable * {
+      visibility: visible;
+    }
+    .printable {
+      position: absolute;
+      top: 0;                 /* ✅ starts from very top */
+      left: 0;
+      width: 85mm;            /* thermal readable width */
+      margin-left: 5mm;       /* ✅ left margin safe zone */
+      margin-top: 0;          /* ✅ remove all top margin */
+      padding: 3mm 5mm;       /* light balanced padding */
+      background: #fff;
+      font-size: 12.5px;
+      font-weight: bold;
+      line-height: 1.55;
+      letter-spacing: 0.35px;
+      color: #000 !important;
+      box-shadow: none;
+    }
+    table th, table td {
+      padding: 3px 5px;
+    }
+    h1, h2, h3, p, td, th {
+      color: #000 !important;
+    }
+    @page {
+      size: 80mm auto;
+      margin: 0;  /* ✅ removes default printer margin */
+    }
+  }
 
-        .printable {
-          width: 85mm;
-          margin: 20px auto;
-          padding: 10px;
-          border: 1px solid #ddd;
-          background: #fff;
-          font-size: 12.5px;
-          line-height: 1.6;
-          letter-spacing: 0.3px;
-        }
-      `}</style>
+  /* Screen view */
+  .printable {
+    width: 85mm;
+    margin: 10px auto;
+    padding: 8px;
+    border: 1px solid #ddd;
+    background: #fff;
+    font-size: 13px;
+    line-height: 1.6;
+    letter-spacing: 0.35px;
+  }
+`}</style>
 
       <div className="bg-white border rounded-md shadow-md px-4 py-2 max-w-md mx-auto mt-2 printable text-black font-bold">
         <h1 className="font-bold text-xl text-center mb-1">
@@ -93,7 +103,7 @@ console.log('patiet',AdmissionInvoiceData);
            
             <tr>
               <td className="font-semibold">Operating Doctor:</td>
-              <td>Dr. {AdmissionInvoiceData.admission.operating_doctorName || "N/A"}</td>
+              <td> {AdmissionInvoiceData.admission.operating_doctorName || "N/A"}</td>
             </tr>
             
             <tr>

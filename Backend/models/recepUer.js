@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const IndoorStaffSchema = new mongoose.Schema({
+const RecepStaffSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
@@ -13,10 +13,10 @@ const IndoorStaffSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    default: "indoor-staff"
+    
   }
 });
 
-const IndoorStaffAuthModel = mongoose.model("IndoorStaff", IndoorStaffSchema);
+const RecepStaffAuthModel = mongoose.model("RecepUser", RecepStaffSchema);
 
-export default IndoorStaffAuthModel;
+export default RecepStaffAuthModel;

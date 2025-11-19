@@ -18,50 +18,60 @@ console.log('patiet',RecepInvoiceData);
   return (
     <>
       <style>{`
-        @media print {
-          body {
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-            margin: 0;
-            padding: 0;
-            background: #fff;
-          }
-          body * {
-            visibility: hidden;
-          }
-          .printable, .printable * {
-            visibility: visible;
-          }
-          .printable {
-            position: relative;
-            width: 85mm;
-            margin: 1px auto;
-            padding: 6mm;
-            background: #fff;
-            box-shadow: none;
-            font-size: 12px;
-            line-height: 1.5;
-            letter-spacing: 0.3px;
-          }
-          @page {
-            size: 80mm auto;
-            margin: 0;
-          }
-        }
+  @media print {
+    body {
+      margin: 0;
+      padding: 0;
+      background: #fff;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    body * {
+      visibility: hidden;
+    }
+    .printable, .printable * {
+      visibility: visible;
+    }
+    .printable {
+      position: absolute;
+      top: 0;                 /* ✅ starts from very top */
+      left: 0;
+      width: 85mm;            /* thermal readable width */
+      margin-left: 5mm;       /* ✅ left margin safe zone */
+      margin-top: 0;          /* ✅ remove all top margin */
+      padding: 3mm 5mm;       /* light balanced padding */
+      background: #fff;
+      font-size: 12.5px;
+      font-weight: bold;
+      line-height: 1.55;
+      letter-spacing: 0.35px;
+      color: #000 !important;
+      box-shadow: none;
+    }
+    table th, table td {
+      padding: 3px 5px;
+    }
+    h1, h2, h3, p, td, th {
+      color: #000 !important;
+    }
+    @page {
+      size: 80mm auto;
+      margin: 0;  /* ✅ removes default printer margin */
+    }
+  }
 
-        .printable {
-          width: 85mm;
-          margin: 20px auto;
-          padding: 10px;
-          border: 1px solid #ddd;
-          background: #fff;
-          font-size: 12.5px;
-          line-height: 1.6;
-          letter-spacing: 0.3px;
-        }
-      `}</style>
+  /* Screen view */
+  .printable {
+    width: 85mm;
+    margin: 10px auto;
+    padding: 8px;
+    border: 1px solid #ddd;
+    background: #fff;
+    font-size: 13px;
+    line-height: 1.6;
+    letter-spacing: 0.35px;
+  }
+`}</style>
 
       <div className="bg-white border rounded-md shadow-md px-4 py-2 max-w-md mx-auto mt-2 printable text-black font-bold">
         <h1 className="font-bold text-xl text-center mb-1">
@@ -109,8 +119,8 @@ console.log('patiet',RecepInvoiceData);
         </table>
 
         <div className="text-center mt-3 border-t border-black pt-2 text-xs">
-          <p>Thank you for visiting Baba Farid Hospital</p>
-          <p>For any queries, contact the reception desk.</p>
+          <p>بابا فرید ہسپتال آنے کا شکریہ</p>
+          <p>کسی بھی سوال کے لیے، استقبالیہ ڈیسک سے رابطہ کریں۔</p>
         </div>
 
         <div className="text-center text-xs border-t border-black pt-1 mt-1">

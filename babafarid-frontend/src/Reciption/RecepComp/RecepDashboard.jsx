@@ -1,16 +1,20 @@
 import React, { useState ,useEffect} from "react";
-import { LogOut, UserPlus, FileText, CheckCircle } from "lucide-react";
+import { LogOut, UserPlus, FileText, CheckCircle ,Contact2 } from "lucide-react";
 
 import RecepAlert from "./RecepAlert";
+import { useReception } from "../RecepContext/RecepContext";
 
 import RegisterPatient from "./RegisterPatient"; // Your registration component
-import { useReception } from "../RecepContext/RecepContext";
 import AdmissionForm from "./admissionform";
 import ReceptionMain from "./Recepition";
+import DischargePatient from "./dischargePatient";
 
-const DischargePatient = () => <div className="p-6">Discharge Patient Component</div>;
+
 
 const ReceptionDashboard = () => {
+  const { LogoutRecepUSer} = useReception();
+
+  
   // --- Page States ---
   const [showRegister, setShowRegister] = useState(true);
   const [showAdmission, setShowAdmission] = useState(false);
@@ -60,7 +64,7 @@ const ReceptionDashboard = () => {
                 }}
                 className={navButtonClasses(showReception)}
               >
-              
+              <Contact2 size={18} />
                 <span className="ms-3">Recepition</span>
               </button>
             </li>
@@ -104,8 +108,12 @@ const ReceptionDashboard = () => {
             </li>
 
             <li>
-              <button className="flex items-center p-2 w-full rounded-lg text-gray-300 hover:bg-red-600 hover:text-white">
-                <LogOut size={18} />
+              <button
+              onClick={LogoutRecepUSer}
+              className="flex items-center p-2 w-full rounded-lg text-gray-300 hover:bg-red-600 hover:text-white">
+              
+              
+                {/* <LogOut size={18} /> */}
                 <span className="ms-3">Logout</span>
               </button>
             </li>
@@ -115,7 +123,7 @@ const ReceptionDashboard = () => {
             <p className="font-medium">
               Built with ❤️ by <span className="font-semibold text-white">CodeTrust by Azhar</span>
             </p>
-            <p className="text-xs mt-1">Version 1.0.0</p>
+            <p className="text-xs mt-1">Version 4.2.5</p>
           </div>
         </div>
       </aside>

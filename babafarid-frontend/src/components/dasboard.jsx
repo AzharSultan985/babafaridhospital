@@ -13,6 +13,7 @@ import PharmacyReport from "../Pharmacy/Report/pharmaReport";
 import UpdateIndoorStock from "./updateIndoorMed";
 import UpdateStockPharmacy from "./updatepharmacyMed";
 import IndoorStockReocord from "./stockRecordComp/IndoorStockRecord";
+import ReceptionStaff from "../Reciption/RecepComp/ReceptionStaff";
 
 const Dashboard = () => {
   const { LogoutAdmin } = useContext(AuthContext);
@@ -28,12 +29,15 @@ const Dashboard = () => {
   const [showUpdateStockPharmacy, setShowUpdateStockPharmacy] = useState(false);
   const [showPharmacyReport, setShowPharmacyReport] = useState(false);
   const [showIndoor_Record, setShowIndoor_Record] = useState(false);
+  const [showRecepStaff, setShowRecepStaff] = useState(false);
+  const [showDoctors, setShowDoctors] = useState(false);
 
   // --- Dropdown visibility ---
   const [showAddStockMenu, setShowAddStockMenu] = useState(false);
   const [showUpdateStockMenu, setShowUpdateStockMenu] = useState(false);
   const [showReportMenu, setShowReportMenu] = useState(false);
   const [showRecordMenu, setShowRecordMenu] = useState(false);
+  const [showStaff_Menu, setshowStaff_Menu] = useState(false);
 
   // --- Dashboard Detection ---
   const isDashboard =
@@ -44,17 +48,23 @@ const Dashboard = () => {
     !showUpdateIndoorStock &&
     !showUpdateStockPharmacy &&
     !showPharmacyReport&&
-    !showIndoor_Record;
+    !showIndoor_Record&&
+    !showRecepStaff&&
+    !showDoctors
 
   const resetAll = () => {
-    setIsIndoorMed(false);
-    setIsPharmacy(false);
-    setShowAddIndoorStock(false);
-    setShowAddStockPharmacy(false);
-    setShowUpdateIndoorStock(false);
-    setShowUpdateStockPharmacy(false);
-    setShowPharmacyReport(false);
-  };
+  // Hide all main content
+  setIsIndoorMed(false);
+  setIsPharmacy(false);
+  setShowAddIndoorStock(false);
+  setShowAddStockPharmacy(false);
+  setShowUpdateIndoorStock(false);
+  setShowUpdateStockPharmacy(false);
+  setShowPharmacyReport(false);
+  setShowIndoor_Record(false);
+  setShowRecepStaff(false);
+  setShowDoctors(false);
+};
 
   const navButtonClasses = (active) =>
     `flex items-center p-2 w-full rounded-lg transition-colors duration-200 
@@ -313,6 +323,57 @@ const Dashboard = () => {
               )}
             </li>
 
+
+{/* {/* staff doctor manage */}
+
+
+<li className="relative">
+              <button
+                onClick={() => setshowStaff_Menu((prev) => !prev)}
+                className="flex justify-between items-center w-full p-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white"
+              >
+                <span className="ms-3">Manage Staff</span>
+                <svg
+                  className={`w-4 h-4 transition-transform ${
+                    showStaff_Menu ? "rotate-180" : ""
+                  }`}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {showStaff_Menu && (
+                <ul className="w-full bg-[#333] border border-gray-700 rounded-lg shadow-lg overflow-hidden mt-2">
+                  <li>
+                    <button
+                      onClick={() => {
+                        resetAll();
+                        setShowRecepStaff(true);
+                        setshowStaff_Menu(false);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-600"
+                    >
+                    Reception Staff
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                  onClick={() => {
+                        resetAll();
+                        setShowDoctors(true);
+                       setshowStaff_Menu(false);
+                      }}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-600"
+                    >Docotors
+                    </button>
+                  </li>
+                </ul>
+              )}
+            </li>
             {/* Sign Out */}
             <li>
               <button
@@ -330,7 +391,8 @@ const Dashboard = () => {
               Built with ❤️ by{" "}
               <span className="font-semibold text-white">CodeTrust by Azhar</span>
             </p>
-            <p className="text-xs mt-1">Version 3.2.5</p>
+            <p className="text-xs mt-1">Version 
+              4.2.5</p>
           </div>
         </div>
       </aside>
@@ -347,7 +409,8 @@ const Dashboard = () => {
         {showUpdateStockPharmacy && <UpdateStockPharmacy />}
         {showPharmacyReport && <PharmacyReport />}
         { showIndoor_Record&& <IndoorStockReocord />}
-      
+        { showRecepStaff&& <ReceptionStaff />}
+      {showDoctors && <div>Doctors Component Placeholder</div>}
       </div>
     </>
   );

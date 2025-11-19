@@ -23,6 +23,8 @@ import PharmacyReport from "./Pharmacy/Report/pharmaReport";
 import ReceptionDashboard from "./Reciption/RecepComp/RecepDashboard";
 import RecepInvoice from "./Reciption/RecepComp/RecepInvoice";
 import AdmissionInvoice from "./Reciption/RecepComp/AdmssionInvoice";
+import RecepLogin from "./Reciption/RecepComp/RecepLogin";
+import RecepUserProtectedRoute from "./ProtectedRoutes/recepuserProtectRoute";
 
 function App() {
   const {spiner } = usePharmacy();
@@ -45,7 +47,12 @@ function App() {
         <Route path="/stafflogin" element={< StaffIndoorLogin />} />
 
 
-        <Route path="/recepition" element={< ReceptionDashboard />} />
+        <Route path="/recepition" element={
+          <RecepUserProtectedRoute>
+          < ReceptionDashboard />
+          </RecepUserProtectedRoute>
+          } />
+        <Route path="/recep-login" element={< RecepLogin />} />
 
 
         <Route path="/indoormedmangment" element={

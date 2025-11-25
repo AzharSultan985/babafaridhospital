@@ -14,10 +14,11 @@ import UpdateIndoorStock from "./updateIndoorMed";
 import UpdateStockPharmacy from "./updatepharmacyMed";
 import IndoorStockReocord from "./stockRecordComp/IndoorStockRecord";
 import ReceptionStaff from "../Reciption/RecepComp/ReceptionStaff";
+import DoctorManagement from "./Managedoctors";
 
 const Dashboard = () => {
   const { LogoutAdmin } = useContext(AuthContext);
-  const { IsMedAddAlert, IsMedDelAlert } = useContext(AppContext);
+  const { IsMedAddAlert, IsMedDelAlert ,showAlert} = useContext(AppContext);
   const { alertMsg, alertType } = usePharmacy();
 
   // --- Page States ---
@@ -78,6 +79,7 @@ const Dashboard = () => {
     <>
       {/* Alert */}
       {alertMsg && <Alert alertMsg={alertMsg} type={alertType} />}
+      {showAlert && <Alert alertMsg={showAlert.msg} type={showAlert.type} />}
 
       {/* Medicine Alert */}
       {(IsMedAddAlert || IsMedDelAlert) && (
@@ -410,7 +412,7 @@ const Dashboard = () => {
         {showPharmacyReport && <PharmacyReport />}
         { showIndoor_Record&& <IndoorStockReocord />}
         { showRecepStaff&& <ReceptionStaff />}
-      {showDoctors && <div>Doctors Component Placeholder</div>}
+      {showDoctors && <DoctorManagement/>}
       </div>
     </>
   );

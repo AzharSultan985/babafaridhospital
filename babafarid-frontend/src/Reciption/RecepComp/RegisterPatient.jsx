@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import { useReception } from "../RecepContext/RecepContext";
 
 const Reception = () => {
-  const { patient, setPatient, doctors,  registerPatient ,FetchAllReceptionUser,AllReceptionUser } = useReception();
+  const { patient, setPatient,  registerPatient ,FetchAllReceptionUser,AllReceptionUser ,AllDoctors,FetchAllDoctors} = useReception();
   const [isModal, setModal] = useState(false);
  const [currentTime, setCurrentTime] = useState(""); // store current time in HH:mm
 
   useEffect(() => {
     FetchAllReceptionUser();
+    FetchAllDoctors()
     const timer = setInterval(() => {
       const now = new Date();
       const hours = now.getHours().toString().padStart(2, "0");
@@ -17,10 +18,34 @@ const Reception = () => {
 
     return () => clearInterval(timer);
   }, []);
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setPatient((prev) => ({ ...prev, [name]: value }));
-  };
+const handleChange = (e) => {
+  const { name, value } = e.target;
+
+  setPatient((prev) => {
+    let updated = { ...prev, [name]: value };
+
+    // When doctor is selected, set original fee and fees
+    if (name === "doctor") {
+      const selectedDoc = AllDoctors.find((doc) => doc.name === value);
+      if (selectedDoc) {
+        updated.originalFee = selectedDoc.fees || 0; // store original doctor's fee
+        updated.fees = selectedDoc.fees || 0;       // set initial fees
+      }
+    }
+
+    // When discount changes, calculate from original fee
+    if (name === "discount") {
+      const discount = Number(value) || 0;
+      const originalFee = Number(prev.originalFee) || 0;
+      const discountedFee = originalFee - (originalFee * discount) / 100;
+      updated.fees = Math.round(discountedFee); // round to nearest integer
+    }
+
+    return updated;
+  });
+};
+
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,7 +69,9 @@ const confirmSubmit = async () => {
       address: "",
       doctor: "",
       fees: "",
+      discount:"",
       handledBy: "",
+      originalFee: 0
     });
 
     // ✅ Optional: if you want auto-hide alert, leave it to registerPatient
@@ -172,20 +199,22 @@ const isWithinShift = (shiftStart, shiftEnd) => {
               {/* Doctor */}
               <div>
                 <label className="block text-gray-700 mb-1">Doctor</label>
-                <select
-                  name="doctor"
-                  value={patient.doctor}
-                  onChange={handleChange}
-                  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
-                  required
-                >
-                  <option value="">Select Doctor</option>
-                  {doctors.map((doc, i) => (
-                    <option key={i} value={doc}>
-                      {doc}
-                    </option>
-                  ))}
-                </select>
+             <select
+  name="doctor"
+  value={patient.doctor}
+  onChange={handleChange}
+  className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+  required
+>
+  <option value="">Select Doctor</option>
+
+  {AllDoctors.map((doc, i) => (
+    <option key={i} value={doc.name}>
+     Dr.{doc.name} 
+    </option>
+  ))}
+</select>
+
               </div>
 
               {/* Fees */}
@@ -200,6 +229,17 @@ const isWithinShift = (shiftStart, shiftEnd) => {
                   required
                 />
               </div>
+             <div>
+  <label className="block text-gray-700 mb-1">Discount %</label>
+  <input
+    type="number"
+    name="discount"
+    value={patient.discount}
+    onChange={handleChange}
+    className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
+  />
+</div>
+
 
               {/* Handled By */}
               {/* Handled By */}

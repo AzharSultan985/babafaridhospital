@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Eye, X, Search,Pencil  } from "lucide-react";
+import { Eye, X, Search, Pencil, RefreshCw, Edit } from "lucide-react";
+
 import { useReception } from "../RecepContext/RecepContext";
 
 const ReceptionMain = () => {
 
-  const {FetchAllPatient,AllPatient ,UpdatePayment} = useReception();
+  const {FetchAllPatient,AllPatient ,UpdatePayment,HandleReAppointment,AllReceptionUser} = useReception();
 
  useEffect(() => {
   FetchAllPatient(); // initial fetch
@@ -52,6 +53,67 @@ const ReceptionMain = () => {
          UpdatePayment(updatePayment)
     setEditModal(null);
   };
+
+const [reAppModal, setReAppModal] = useState(null);
+const [reAppData, setReAppData] = useState({
+  patientID: '',
+  fees: '',
+  ReappHandleby: '',
+
+});
+
+const handleReAppChange = (e) => {
+  const { name, value } = e.target;
+  setReAppData((prev) => ({ ...prev, [name]: value }));
+};
+
+
+const handleReAppointment = (patient) => {
+  setReAppData({
+    patientID: patient.patientID,
+    fees: "",   
+    ReappHandleby:""
+  });
+
+  setReAppModal(patient);
+};
+
+
+const handleSaveReApp = async () => {
+  // console.log("RE-APPOINTMENT DATA:", reAppData);
+
+
+ await HandleReAppointment(reAppData)
+  setReAppModal(null);
+};
+
+
+  // Check if current time is within shift range
+const isWithinShift = (shiftStart, shiftEnd) => {
+  const now = new Date();
+  const currTotal = now.getHours() * 60 + now.getMinutes();
+
+  const [startHour, startMin] = shiftStart.split(":").map(Number);
+  const [endHour, endMin] = shiftEnd.split(":").map(Number);
+
+  let startTotal = startHour * 60 + startMin;
+  let endTotal = endHour * 60 + endMin;
+
+  // Handle shift that goes past midnight
+  if (endTotal <= startTotal) {
+    // Shift ends next day
+    if (currTotal < startTotal) {
+      // Early morning before midnight, add 24 hours to currTotal
+      return currTotal + 24 * 60 <= endTotal + 24 * 60;
+    } else {
+      // Evening hours, just compare normally
+      return currTotal >= startTotal || currTotal <= endTotal;
+    }
+  }
+
+  return currTotal >= startTotal && currTotal <= endTotal;
+};
+
   return (
     <div className="p-6 min-h-screen bg-gray-50">
       <div className="flex justify-between items-center mb-6">
@@ -75,7 +137,11 @@ const ReceptionMain = () => {
       </div>
 
       {/* Main Table */}
-      <div className="overflow-x-auto bg-white rounded-lg shadow-lg border border-gray-200">
+     {/* Main Table */}
+<div className="bg-white rounded-lg shadow-lg border border-gray-200">
+
+  {/* Only Table Scrolls Here */}
+  <div className="max-h-[500px] overflow-y-auto overflow-x-auto"></div>
         <table className="w-full border-collapse">
           <thead className="bg-gray-100 text-gray-700">
             <tr>
@@ -83,7 +149,7 @@ const ReceptionMain = () => {
               <th className="border px-4 py-2 text-left">Name</th>
               <th className="border px-4 py-2 text-left">Father/Husband</th>
               <th className="border px-4 py-2 text-left">Check Up</th>
-              <th className="border px-4 py-2 text-left">Fees (Rs)</th>
+   
               <th className="border px-4 py-2 text-center">Action</th>
             </tr>
           </thead>
@@ -95,21 +161,39 @@ const ReceptionMain = () => {
                   <td className="border px-4 py-2 font-medium">{p.name}</td>
                   <td className="border px-4 py-2">{p.F_H_Name}</td>
                   <td className="border px-4 py-2">{p.doctor}</td>
-                  <td className="border px-4 py-2">{p.fees}</td>
-                <td className="border px-4 py-2 text-center flex justify-center gap-2">
-                    <button
-                      onClick={() => setViewPatient(p)}
-                      className="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700 flex items-center justify-center"
-                    >
-                      <Eye size={16} />
-                    </button>
-                    <button
-                      onClick={() => handleEditClick(p)}
-                      className="bg-yellow-500 text-white px-3 py-1 rounded-md hover:bg-yellow-600 flex items-center justify-center"
-                    >
-                      <Pencil size={16} />
-                    </button>
-                  </td>
+
+           <td className="border px-4 py-2 text-center  flex justify-start gap-2">
+  
+  {/* VIEW BUTTON */}
+  <button
+    onClick={() => setViewPatient(p)}
+    className="bg-blue-600 text-white px-3 py-1 ml-2 rounded-md hover:bg-blue-700 flex items-center justify-center"
+  >
+    <Eye size={16} />
+  </button>
+
+
+
+  {/* RE-APPOINTMENT (REFRESH ICON) */}
+  <button
+    onClick={() => handleReAppointment(p)}
+    className="bg-green-600 text-white px-3 py-1 rounded-md hover:bg-green-700 flex items-center justify-center"
+  >
+    <RefreshCw size={16} />
+  </button>
+  {/* EDIT PAYMENT (EDIT ICON) */}
+{p.admission.isadmitted &&
+ (p.payment.paymentstatus === "Partial" || p.payment.paymentstatus === "Pending") && (
+  <button
+    onClick={() => handleEditClick(p)}
+    className="bg-yellow-500 text-white px-3 py-1 rounded-md hover:bg-yellow-600 flex items-center justify-center"
+  >
+    <Edit size={16} />
+  </button>
+)}
+
+</td>
+
                 </tr>
               ))
             ) : (
@@ -184,6 +268,50 @@ const ReceptionMain = () => {
          <td className="font-semibold p-2 bg-gray-50">Register By</td>
                     <td className="p-2">{viewPatient.handledBy}</td>
 </tr>
+<tr className="bg-gray-100">
+  <td colSpan="2" className="font-semibold text-center p-2 text-blue-700">
+    Appointment Info
+  </td>
+</tr>
+
+{viewPatient.Appointment && viewPatient.Appointment.length > 0 ? (
+  viewPatient.Appointment.map((app, index) => (
+    <React.Fragment key={index}>
+      <tr>
+        <td className="font-semibold p-2 bg-gray-50">Visit #{index + 1}</td>
+        <td className="p-2"> {app.NoofTime || 1}</td>
+      </tr>
+      <tr>
+        <td className="font-semibold p-2 bg-gray-50">Fees</td>
+        <td className="p-2">Rs {app.fees || 0}</td>
+      </tr>
+      <tr>
+        <td className="font-semibold p-2 bg-gray-50">Discount</td>
+        <td className="p-2">{app.reAppHandleby }</td>
+      </tr>
+     
+    </React.Fragment>
+  ))
+) : (
+  <tr>
+    <td colSpan="2" className="p-2 text-center text-gray-500">
+      No appointment info
+    </td>
+  </tr>
+)}
+
+
+
+
+
+
+
+
+
+
+
+
+
                   <tr className="bg-gray-100">
                     <td
                       colSpan="2"
@@ -341,6 +469,59 @@ const ReceptionMain = () => {
           </div>
         </div>
       )}
+{reAppModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center z-50">
+    <div className="bg-white w-96 rounded-lg shadow-lg p-6 relative">
+      
+      <button
+        onClick={() => setReAppModal(null)}
+        className="absolute top-3 right-3 text-gray-500 hover:text-red-600"
+      >
+        <X size={20} />
+      </button>
+
+      <h3 className="text-lg font-semibold mb-4 text-green-700">
+        Re-Appointment
+      </h3>
+
+      <p><span className="font-semibold">Patient ID:</span> {reAppData.patientID}</p>
+
+      <div className="mt-4">
+        <label className="block font-medium">Fees</label>
+     <input
+  type="number"
+  name="fees"
+  value={reAppData.fees}
+  onChange={handleReAppChange}
+  className="w-full border p-2 rounded-lg"
+/>
+
+      </div>
+              <div>
+                <label className="block text-gray-700 mb-1">Handled By</label>
+               <select name="ReappHandleby" value={reAppData.ReappHandleby} onChange={handleReAppChange} className="w-full ...">
+  <option value="">Select Reception User</option>
+  {AllReceptionUser.map((user) => {
+    const active = isWithinShift(user.shiftStart, user.shiftEnd);
+    return (
+      <option key={user.id} value={user.name} disabled={!active}>
+        {user.name} {active ? "(Active)" : "(Absent)"}
+      </option>
+    );
+  })}
+</select>
+
+              </div>
+      <button
+        onClick={handleSaveReApp}
+        className="w-full mt-5 bg-green-600 text-white py-2 rounded-md hover:bg-green-700"
+      >
+        Save Re-Appointment
+      </button>
+    </div>
+  </div>
+)}
+
 
     </div>
   );

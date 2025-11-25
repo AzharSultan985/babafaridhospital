@@ -14,6 +14,10 @@ console.log('patiet',RecepInvoiceData);
   
   const currentDate = new Date().toLocaleDateString("en-GB");
   const qrValue = `Patient: ${RecepInvoiceData.patientID}`;
+const latestAppointment =
+  RecepInvoiceData.Appointment[
+    RecepInvoiceData.Appointment.length - 1
+  ];
 
   return (
     <>
@@ -83,7 +87,8 @@ console.log('patiet',RecepInvoiceData);
           <div>
             <p>Patient ID: {RecepInvoiceData.patientID || "N/A"}</p>
             <p>Date: {currentDate}</p>
-            <p>Print By: {RecepInvoiceData.handledBy}</p>
+            <p>Print By: {latestAppointment?.reAppHandleby || "Reception"}</p>
+
           </div>
           <div>
             <QRCodeCanvas value={qrValue} size={60} />
@@ -97,7 +102,7 @@ console.log('patiet',RecepInvoiceData);
               <td>{RecepInvoiceData.name}</td>
             </tr>
             <tr>
-              <td className="font-semibold">Patient Name:</td>
+              <td className="font-semibold">F/H Name:</td>
               <td>{RecepInvoiceData.F_H_Name}</td>
             </tr>
             <tr>
@@ -113,7 +118,8 @@ console.log('patiet',RecepInvoiceData);
             
             <tr>
               <td className="font-semibold">Fees:</td>
-              <td>Rs. {RecepInvoiceData.fees || "0.00"}</td>
+             <td>Rs. {latestAppointment?.fees || "0.00"}</td>
+
             </tr>
           </tbody>
         </table>

@@ -54,6 +54,10 @@ import DischargePatient from "./RecepRoutes/dischargePatient.js";
 import addReceptionUser from "./RecepRoutes/addReceptionstaff.js";
 import FetchAllReceptionUser from "./RecepRoutes/fetchAllReceptionUser.js";
 import RemoveReceptionUser from "./RecepRoutes/removeReceptionUser.js";
+import DoctorProfile from "./routes/Doctorprofile.js";
+import FetchallDoctorsRoute from "./routes/fetchallDoctors.js";
+import Reappointment from "./RecepRoutes/Reappointment.js";
+import updateAddmissionPayment from "./RecepRoutes/updatePayment.js";
 
 
 
@@ -134,12 +138,7 @@ app.use("/api", InvoiceRoute);
   app.get("/api/searchpharmacymed/:pharmaMedname", SearchPharmaMedName);
   // fetchpharmacymed
   app.use("/api/",FetchPharmacyMEd ); // ✅ fetch med pharma method
-  // fetchlastmonthpharmacymed
-  // app.use("/api/",FetchLastMonthPharmaMed ); // ✅ fetch med pharma method
-  // // fetchlastmonth indoor med
-  // app.use("/api/",FetchLastMonthindoorMed ); // ✅ fetch med pharma method
-  // // fetch  current  month indoor med
-  // app.use("/api/",Fetchcurrentmonthindoormed ); // ✅ fetch med pharma method
+ 
   // update pharma med
   app.use("/api/",UpdatePharmaMed ); // ✅ update med pharma method
   // update invoice data
@@ -163,8 +162,14 @@ app.use("/api", DischargePatient);
 app.use("/api/fetchall-patient", FetchAllPatient);
 app.use("/api/fetchall-reception-user", FetchAllReceptionUser);
 app.use("/api", addReceptionUser);
+app.use("/api", Reappointment);
 app.use("/api", RemoveReceptionUser);
+app.use("/api", updateAddmissionPayment);
 
+// DoctorProfile
+app.use("/api", DoctorProfile);
+
+app.use("/api/fetchall-doctors", FetchallDoctorsRoute);
 
 
 

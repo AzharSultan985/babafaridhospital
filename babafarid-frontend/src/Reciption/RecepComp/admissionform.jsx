@@ -10,7 +10,7 @@ const AdmissionForm = () => {
     PatientData,
     setAddmissiondata,
     Addmissiondata,
-    createAdmission, doctors, FetchAllReceptionUser,AllReceptionUser
+    createAdmission, AllDoctors, FetchAllReceptionUser,AllReceptionUser
   } = useReception();
   const [isModal, setModal] = useState(false);
  const [currentTime, setCurrentTime] = useState(""); // store current time in HH:mm
@@ -170,16 +170,27 @@ const isWithinShift = (shiftStart, shiftEnd) => {
                 name="operating_doctor"
                               value={Addmissiondata.operating_doctor || ""}
 
-                onChange={handleAdmission}
+               onChange={(e) => {
+  const doctorName = e.target.value;
+  const doctorObj = AllDoctors.find((doc) => doc.name === doctorName);
+
+  setAddmissiondata((prev) => ({
+    ...prev,
+    operating_doctor: doctorName,
+    department: doctorObj ? doctorObj.department : "",
+  }));
+
+}}
+
                 className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
               >
                 <option value="">Select Doctor</option>
                
- {doctors.map((doc, i) => (
-                    <option key={i} value={doc}>
-                      {doc}
-                    </option>
-                  ))}
+  {AllDoctors.map((doc, i) => (
+    <option key={i} value={doc.name}>
+     Dr. {doc.name} 
+    </option>
+  ))}
               </select>
            
             </div>
@@ -188,10 +199,12 @@ const isWithinShift = (shiftStart, shiftEnd) => {
               <label className="block text-gray-700 mb-1">Department</label>
               <input required
                 name="department"
+// defaultValue={selectedDepartment}
+disabled
                 value={Addmissiondata.department || ""}
                 onChange={handleAdmission}
                 type="text"
-                placeholder="e.g. Cardiology"
+                placeholder={Addmissiondata.department || ""}
                 className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none"
               />
             </div>

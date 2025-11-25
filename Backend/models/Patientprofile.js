@@ -9,8 +9,20 @@ const patientSchema = new mongoose.Schema({
   gender: String,
   phone: String,
   address: String,
-  doctor: String,
-  fees: Number, // ✅ corrected from 'number' to 'Number'
+   doctor: {
+    type: String
+  },
+
+  Appointment:[
+{
+    NoofTime: Number,
+    fees: Number, 
+    reAppHandleby:String,
+    Appdate:{ type: Date, default: Date.now }
+  },
+  ]
+,
+
   handledBy: String,
 
   // --- Admission Information ---
@@ -18,7 +30,12 @@ const patientSchema = new mongoose.Schema({
     isadmitted: { type: Boolean, default: false },
     department: String,
     roomNumber: String,
-    operating_doctorName: String,
+
+    operating_doctorName:{
+    type: String
+    
+  }, 
+
 roomNo:Number,
 Admission_Type:String,
 Operating_handledBy:String,

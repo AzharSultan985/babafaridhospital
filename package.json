@@ -9,8 +9,10 @@
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "dependencies": {
+    "date-fns": "^2.30.0",
     "dotenv": "^17.2.1",
     "framer-motion": "^12.23.12",
-    "lucide-react": "^0.552.0"
+    "lucide-react": "^0.552.0",
+    "react-date-range": "^1.4.0"
   }
 }

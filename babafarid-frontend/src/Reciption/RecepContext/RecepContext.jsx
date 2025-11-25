@@ -30,13 +30,14 @@ const [Addmissiondata, setAddmissiondata] = useState({
   paymentstatus: "",
 });
 
+  const [AllDoctors, setAllDoctors] = useState([]);
 
   const [RecepInvoiceData, setRecepInvoiceData] = useState();
   const [AdmissionInvoiceData, setAdmissionInvoiceData] = useState();
   const [PatientData, setPatientData] = useState([]);
   const [AllPatient, setAllPatient] = useState([]);
-  const [doctors, setDoctors] = useState([]);
-  const [receptionUsers, setReceptionUsers] = useState([]);
+  // const [doctors, setDoctors] = useState([]);
+  // const [receptionUsers, setReceptionUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [patientIDforAdmission, setpatientIDforAdmission] = useState(false);
   const [recep_Login_Res, setrecep_Login_Res] = useState(false);
@@ -50,21 +51,7 @@ const [Addmissiondata, setAddmissiondata] = useState({
     localStorage.setItem("patientID", 1000);
   }
 
-  useEffect(() => {
-    setDoctors([
-      "Dr Shumaila-Gynecologist ",
-      "Dr. Fiza -Gynecologist",
-      "Dr. kayinat-Gynecologist",
-      "Dr. M.Yunas  - ENT",
-      "Dr. M.Sohail Haroon",
-      "Dr. M.Asraf ",
-    ]);
-    setReceptionUsers([
-      "Saher Bano",
-      "Naveed",
-      "Amber ",
-    ]);
-  }, []);
+ 
 
   // 🔹 Register a new patient
 const registerPatient = async (data) => {
@@ -74,7 +61,14 @@ const registerPatient = async (data) => {
     currentID = currentID ? parseInt(currentID) + 1 : 1000;
     localStorage.setItem("patientID", currentID);
 
-    const patientWithID = { ...data, patientID: currentID };
+    const patientWithID = { ...data, patientID: currentID, Appointment: [
+        {
+          NoofTime: 1, // or whatever you want
+          fees: Number(data.fees),
+          Discount: Number(data.discount),
+        },
+      ],
+     };
     setRecepInvoiceData(patientWithID);
 
     const response = await fetch(
@@ -265,10 +259,11 @@ const UpdatePayment = async (paymentDetail) => {
       {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            status: paymentDetail.status,
-            received_payment: paymentDetail.received_payment,        
-        }),
+      body: JSON.stringify({
+  status: paymentDetail.status,
+  received_payment: paymentDetail.received_payment,        
+}),
+
       }
     );
 
@@ -483,13 +478,78 @@ FetchAllReceptionUser()
       setLoading(false);
     }
   };
+
+
+//FetchAllDoctors
+const FetchAllDoctors = async () => {
+    try {
+      const res = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/fetchall-doctors`
+      );
+
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.message || "Error fetching doctors");
+
+      const data = result.data || [];
+      if (!data.length) {
+        // setAlert({ isAlert: true, alertmsg: "No patients found", type: "error" });
+
+
+        setAllDoctors([]);
+        return;
+      }
+
+      setAllDoctors(data);
+    } catch (error) {
+      //console.error("❌ Fetch all patients error:", error);
+      setAlert({ isAlert: true, alertmsg: error.message, type: "error" });
+      setAllDoctors([]);
+    }
+  };
+
+// 🔹 Create new admission
+const HandleReAppointment = async (data) => {
+  try {
+    setLoading(true);
+
+    const response = await fetch(
+      `${process.env.REACT_APP_BACKEND_URL}/api/reappointment-patient/${data.patientID}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+     body: JSON.stringify({
+  fees: data.fees,
+  reAppHandleby: data.ReappHandleby
+})
+
+      }
+    );
+
+    const result = await response.json();
+    if (!result.success) throw new Error(result.message || "Failed to admit patient");
+ 
+    setAlert({ isAlert: true, alertmsg: "Reappointment succesfully", type: "success" });
+
+    setRecepInvoiceData(result.patient)
+
+      navigate("/recep-invoice");
+
+  
+
+  } catch (error) {
+    //console.error("❌ Create admission error:", error);
+    setAlert({ isAlert: true, alertmsg: error.message, type: "error" });
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <ReciptionContext.Provider
       value={{
         patient,
         setPatient,
-        doctors,
-        receptionUsers,
+      
+     
         registerPatient,
         loading,
         Alert,
@@ -505,7 +565,8 @@ FetchAllReceptionUser()
 ,HandleReceptionStaff,
         UpdatePayment,handleDischargePatient,recep_Login_Res,Recep_Login,LogoutRecepUSer,
 
-        FetchAllReceptionUser,AllReceptionUser,RemoveReceptionStaff
+        FetchAllReceptionUser,AllReceptionUser,RemoveReceptionStaff,
+        AllDoctors,FetchAllDoctors,HandleReAppointment
       }}
     >
       {children}

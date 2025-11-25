@@ -1,5 +1,7 @@
 import express from "express";
 import PatientModel from "../models/Patientprofile.js";
+import DoctorModel from "../models/doctorProfile.js";
+import { LogIn } from "lucide-react";
 
 const router = express.Router();
 
@@ -11,6 +13,7 @@ router.put("/admission-patient/:identifier", async (req, res) => {
   try {
     const { identifier } = req.params; // could be ID or phone
     const { admission, payment } = req.body;
+console.log("admission.operating_doctorName",admission.operating_doctorName);
 
     if (!identifier) {
       return res.status(400).json({
@@ -34,6 +37,8 @@ router.put("/admission-patient/:identifier", async (req, res) => {
       });
     }
 
+    console.log('doctor',patient);
+    
     // --- Prevent duplicate admission ---
     if (patient.admission?.isadmitted) {
       return res.status(400).json({
@@ -81,12 +86,28 @@ router.put("/admission-patient/:identifier", async (req, res) => {
     // --- Save updates ---
     await patient.save();
 
+  // Fetch doctor info by name
+    const doctor = await DoctorModel.findOne({ name: admission.operating_doctorName });
+    if (!doctor) {
+      return res.status(404).json({
+        success: false,
+        message: "Doctor not found",
+      });
+    }
+
+
+ // Push patient ID to doctor's CheckedPatients array
+    doctor.OperatedPatients.push(patient._id);
+    await doctor.save();
+
     res.status(200).json({
       success: true,
       message: "Admission and payment details updated successfully.",
       patient,
 
     });
+
+
   } catch (error) {
     //console.error("❌ Error updating admission/payment:", error);
     res.status(500).json({

@@ -1,3 +1,4 @@
+
 import { createContext, useState, useEffect, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 
@@ -31,6 +32,9 @@ const [ListOFNewstack,setListOFNewstack]=useState([])
 // Medicines list
   // const [LastMonthindoorMed, setLastMonindoorMed] = useState([]);
   // const [currentMonthindoorMed, setcurrentMonindoorMed] = useState([]);
+  const [AllDoctors, setAllDoctors] = useState([]);
+  const [showAlert, setAlert] = useState({isAlert:false
+     , msg: "", type: "info" });
 
   const IndoorMedSubmitHandle = async () => {
     try {
@@ -301,6 +305,99 @@ useEffect(() => {
 //   }
 // };
 
+
+
+
+
+
+// handle add doctors 
+const HandleDoctor = async (data) => {
+  setloading(true);
+  console.log(data);
+  try {
+    
+    const response = await fetch(
+      `${process.env.REACT_APP_BACKEND_URL}/api/add-doctor`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: data.name,
+          department:data.department,
+          fees:data.fees,
+         shiftStart: data.starttime,
+          shiftEnd: data.endtime,
+        }),
+      }
+    );
+
+    if (!response.ok) throw new Error("Failed to add docotr");
+    const saveddoctor = await response.json();
+    console.log("✅ Registered doctor:", saveddoctor);
+// FetchAllReceptionUser()
+    // Show success alert
+if (saveddoctor.success) {
+  
+setAlert({
+  isAlert:true,
+msg:"Doctor  Added successfully",
+type:"success"
+})
+
+     setTimeout(() => {
+    setAlert("");
+   
+  }, 2000);
+  
+}
+
+
+  } catch (error) {
+    //console.error("Error adding reception user:", error);
+
+setAlert({
+  isAlert:true,
+msg:"error ",
+type:"error"
+})
+
+     setTimeout(() => {
+    setAlert("");
+   
+  }, 2000);
+  
+  } finally {
+    setloading(false);
+  }
+};
+
+//FetchAllDoctors
+const FetchAllDoctors = async () => {
+    try {
+      const res = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/fetchall-doctors`
+      );
+
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.message || "Error fetching doctors");
+
+      const data = result.data || [];
+      if (!data.length) {
+        // setAlert({ isAlert: true, alertmsg: "No patients found", type: "error" });
+
+
+        setAllDoctors([]);
+        return;
+      }
+
+      setAllDoctors(data);
+    } catch (error) {
+      //console.error("❌ Fetch all patients error:", error);
+      setAlert({ isAlert: true, alertmsg: error.message, type: "error" });
+      setAllDoctors([]);
+    }
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -346,6 +443,13 @@ loading,setloading,
   //  fetch last month medicine for indoor new stock added 
   
  Updatestock_Indoor
+
+ ,HandleDoctor,
+
+ showAlert,
+
+ AllDoctors,
+ FetchAllDoctors
       }}  
     >
       {children}

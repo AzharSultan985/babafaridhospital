@@ -9,21 +9,19 @@ const patientSchema = new mongoose.Schema({
   gender: String,
   phone: String,
   address: String,
-   doctor: {
-    type: String
-  },
-
+   doctor: {type: String},
+     registerby: String,
   Appointment:[
 {
     NoofTime: Number,
     fees: Number, 
-    reAppHandleby:String,
+     handledBy: String,
+
     Appdate:{ type: Date, default: Date.now }
   },
   ]
 ,
 
-  handledBy: String,
 
   // --- Admission Information ---
   admission: {

@@ -15,6 +15,7 @@ import UpdateStockPharmacy from "./updatepharmacyMed";
 import IndoorStockReocord from "./stockRecordComp/IndoorStockRecord";
 import ReceptionStaff from "../Reciption/RecepComp/ReceptionStaff";
 import DoctorManagement from "./Managedoctors";
+import AdminPatientDetails from "./patientINFO";
 
 const Dashboard = () => {
   const { LogoutAdmin } = useContext(AuthContext);
@@ -24,6 +25,7 @@ const Dashboard = () => {
   // --- Page States ---
   const [IsIndoorMed, setIsIndoorMed] = useState(false);
   const [IsPharmacy, setIsPharmacy] = useState(false);
+  const [IsPatient, setIsPatient] = useState(false);
   const [showAddIndoorStock, setShowAddIndoorStock] = useState(false);
   const [showAddStockPharmacy, setShowAddStockPharmacy] = useState(false);
   const [showUpdateIndoorStock, setShowUpdateIndoorStock] = useState(false);
@@ -32,6 +34,7 @@ const Dashboard = () => {
   const [showIndoor_Record, setShowIndoor_Record] = useState(false);
   const [showRecepStaff, setShowRecepStaff] = useState(false);
   const [showDoctors, setShowDoctors] = useState(false);
+  
 
   // --- Dropdown visibility ---
   const [showAddStockMenu, setShowAddStockMenu] = useState(false);
@@ -44,6 +47,7 @@ const Dashboard = () => {
   const isDashboard =
     !IsIndoorMed &&
     !IsPharmacy &&
+    !IsPatient &&
     !showAddIndoorStock &&
     !showAddStockPharmacy &&
     !showUpdateIndoorStock &&
@@ -51,12 +55,14 @@ const Dashboard = () => {
     !showPharmacyReport&&
     !showIndoor_Record&&
     !showRecepStaff&&
+  
     !showDoctors
 
   const resetAll = () => {
   // Hide all main content
   setIsIndoorMed(false);
   setIsPharmacy(false);
+  setIsPatient(false);
   setShowAddIndoorStock(false);
   setShowAddStockPharmacy(false);
   setShowUpdateIndoorStock(false);
@@ -65,6 +71,7 @@ const Dashboard = () => {
   setShowIndoor_Record(false);
   setShowRecepStaff(false);
   setShowDoctors(false);
+
 };
 
   const navButtonClasses = (active) =>
@@ -376,6 +383,26 @@ const Dashboard = () => {
                 </ul>
               )}
             </li>
+
+
+
+
+
+
+    <li>
+              <button
+                onClick={() => {
+                  resetAll();
+             
+                  setIsPatient(true)
+                }}
+            className={navButtonClasses(IsPatient)}
+              >
+                <span className="ms-3">Patient</span>
+              </button>
+            </li>
+
+
             {/* Sign Out */}
             <li>
               <button
@@ -413,6 +440,7 @@ const Dashboard = () => {
         { showIndoor_Record&& <IndoorStockReocord />}
         { showRecepStaff&& <ReceptionStaff />}
       {showDoctors && <DoctorManagement/>}
+      {IsPatient && <AdminPatientDetails/>}
       </div>
     </>
   );

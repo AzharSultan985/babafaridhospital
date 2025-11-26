@@ -221,6 +221,7 @@ const isWithinShift = (shiftStart, shiftEnd) => {
               <div>
                 <label className="block text-gray-700 mb-1">Fees (Rs)</label>
                 <input
+                disabled
                   type="number"
                   name="fees"
                   value={patient.fees}

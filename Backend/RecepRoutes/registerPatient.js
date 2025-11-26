@@ -5,14 +5,6 @@ import express from "express";
 const router = express.Router();
 
 
-
-
-
-
-
-
-
-
 router.post("/patient-register", async (req, res) => {
   try {
     const patientData = req.body;

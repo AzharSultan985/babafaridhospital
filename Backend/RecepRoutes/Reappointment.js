@@ -48,7 +48,7 @@ router.put("/reappointment-patient/:identifier", async (req, res) => {
     patient.Appointment.push({
       NoofTime: nextNo,
       fees: Number(fees),
-      reAppHandleby: reAppHandleby || "Reception",
+      handledBy: reAppHandleby || "Reception",
     });
 
     await patient.save();

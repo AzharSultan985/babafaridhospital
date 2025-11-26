@@ -50,6 +50,24 @@ const [Addmissiondata, setAddmissiondata] = useState({
   if (!localStorage.getItem("patientID")) {
     localStorage.setItem("patientID", 1000);
   }
+const generateToken = () => {
+  let lastResetDate = localStorage.getItem("TokenResetDate");
+  let TokenNo = localStorage.getItem("TokenNo");
+  let today = new Date().toISOString().split("T")[0];
+
+  if (lastResetDate !== today) {
+    // midnight reset
+    TokenNo = 0;
+    localStorage.setItem("TokenNo", TokenNo);
+    localStorage.setItem("TokenResetDate", today);
+  } else {
+    // continue counting
+    TokenNo = TokenNo ? parseInt(TokenNo) + 1 : 0;
+    localStorage.setItem("TokenNo", TokenNo);
+  }
+
+  return TokenNo; // return token number
+};
 
  
 
@@ -61,13 +79,16 @@ const registerPatient = async (data) => {
     currentID = currentID ? parseInt(currentID) + 1 : 1000;
     localStorage.setItem("patientID", currentID);
 
+    const newToken = generateToken();
+
     const patientWithID = { ...data, patientID: currentID, Appointment: [
         {
           NoofTime: 1, // or whatever you want
           fees: Number(data.fees),
-          Discount: Number(data.discount),
+           handledBy:data.handledBy
         },
       ],
+      TokenNo :newToken
      };
     setRecepInvoiceData(patientWithID);
 
@@ -511,6 +532,7 @@ const FetchAllDoctors = async () => {
 const HandleReAppointment = async (data) => {
   try {
     setLoading(true);
+   const TokenNo = generateToken();
 
     const response = await fetch(
       `${process.env.REACT_APP_BACKEND_URL}/api/reappointment-patient/${data.patientID}`,
@@ -529,8 +551,13 @@ const HandleReAppointment = async (data) => {
     if (!result.success) throw new Error(result.message || "Failed to admit patient");
  
     setAlert({ isAlert: true, alertmsg: "Reappointment succesfully", type: "success" });
+    // Prepare invoice data with token
+    const invoiceData = {
+      ...result.patient,
+      TokenNo: TokenNo,
+    };
 
-    setRecepInvoiceData(result.patient)
+    setRecepInvoiceData(invoiceData)
 
       navigate("/recep-invoice");
 

@@ -122,12 +122,12 @@ console.log('patiet',AdmissionInvoiceData);
         </table>
 
         <div className="text-center mt-3 border-t border-black pt-2 text-xs">
-          <p>بابا فرید ہسپتال آنے کا شکریہ</p>
-          <p>کسی بھی سوال کے لیے، استقبالیہ ڈیسک سے رابطہ کریں۔</p>
+       <p>بابا فرید ہسپتال میں تشریف آوری کا شکریہ۔ جلد آپ کو آپ کے ٹوکن نمبر کے مطابق پکارا جائے گا۔</p>
+        <p>براہِ کرم ویٹنگ ایریا میں تشریف رکھیں۔ شکریہ</p>
         </div>
 
         <div className="text-center text-xs border-t border-black pt-1 mt-1">
-          Powered By <span className="font-bold">CodeTrust By Azhar</span>
+          Powered By <span className="font-bold">Azhar Sultan (03289858508) </span>
         </div>
       </div>
 

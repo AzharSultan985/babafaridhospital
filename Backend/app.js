@@ -59,6 +59,7 @@ import FetchallDoctorsRoute from "./routes/fetchallDoctors.js";
 import Reappointment from "./RecepRoutes/Reappointment.js";
 import updateAddmissionPayment from "./RecepRoutes/updatePayment.js";
 
+import fetchSinglePatientRoutes from "./RecepRoutes/fetchSinglePatient.js";
 
 
   const __filename = fileURLToPath(import.meta.url);
@@ -171,6 +172,7 @@ app.use("/api", DoctorProfile);
 
 app.use("/api/fetchall-doctors", FetchallDoctorsRoute);
 
+app.use("/api", fetchSinglePatientRoutes);
 
 
 

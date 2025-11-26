@@ -264,10 +264,7 @@ const isWithinShift = (shiftStart, shiftEnd) => {
                     <td className="p-2">{viewPatient.doctor}</td>
            
                   </tr>
-<tr>
-         <td className="font-semibold p-2 bg-gray-50">Register By</td>
-                    <td className="p-2">{viewPatient.handledBy}</td>
-</tr>
+
 <tr className="bg-gray-100">
   <td colSpan="2" className="font-semibold text-center p-2 text-blue-700">
     Appointment Info
@@ -278,16 +275,16 @@ const isWithinShift = (shiftStart, shiftEnd) => {
   viewPatient.Appointment.map((app, index) => (
     <React.Fragment key={index}>
       <tr>
-        <td className="font-semibold p-2 bg-gray-50">Visit #{index + 1}</td>
-        <td className="p-2"> {app.NoofTime || 1}</td>
+        <td colSpan="2" className="font-semibold p-2 text-center text-blue-700 bg-gray-50">Visit # {app.NoofTime || 1}</td>
+         
       </tr>
       <tr>
         <td className="font-semibold p-2 bg-gray-50">Fees</td>
         <td className="p-2">Rs {app.fees || 0}</td>
       </tr>
       <tr>
-        <td className="font-semibold p-2 bg-gray-50">Discount</td>
-        <td className="p-2">{app.reAppHandleby }</td>
+        <td className="font-semibold p-2 bg-gray-50">Handle By</td>
+        <td className="p-2">{app.handledBy }</td>
       </tr>
      
     </React.Fragment>

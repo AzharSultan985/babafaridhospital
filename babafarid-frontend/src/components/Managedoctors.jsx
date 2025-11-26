@@ -130,6 +130,9 @@ useEffect(() => {
 
   setFilteredOperated(operatedPatients.filter((p) => inRange(p.date)));
 }, [filterDate, selectedDoctor]);
+const totalCheckedFees = filteredChecked.reduce((sum, p) => sum + Number(p.fees || 0), 0);
+const totalOperatedFees = filteredOperated.reduce((sum, p) => sum + Number(p.fees || 0), 0);
+const grandTotal = totalCheckedFees + totalOperatedFees;
 
   return (
     <div className="p-6 space-y-6 relative">
@@ -154,7 +157,7 @@ useEffect(() => {
               <th className="py-2">Name</th>
               <th className="py-2">Department</th>
               <th className="py-2">Fees</th>
-              <th className="py-2">Checkup Time</th>
+            
               <th className="py-2">Actions</th>
             </tr>
           </thead>
@@ -165,9 +168,7 @@ useEffect(() => {
                 <td className="py-2">{doc.name}</td>
                 <td className="py-2">{doc.department}</td>
                 <td className="py-2">{doc.fees}</td>
-                <td className="py-2">
-                  {formatTime(doc.shiftStart)} - {formatTime(doc.shiftEnd)}
-                </td>
+               
                 <td className="py-2 flex gap-3">
                   <Eye className="cursor-pointer text-blue-600" onClick={() => handleOpenProfile(doc)} />
                   <Edit className="cursor-pointer text-green-600" onClick={() => handleEdit(doc)} />
@@ -213,9 +214,7 @@ useEffect(() => {
             <p><strong>Name:</strong> {selectedDoctor.name}</p>
             <p><strong>Department:</strong> {selectedDoctor.department}</p>
             <p><strong>Fees:</strong> {selectedDoctor.fees}</p>
-            <p>
-              <strong>Shift:</strong> {formatTime(selectedDoctor.shiftStart)} – {formatTime(selectedDoctor.shiftEnd)}
-            </p>
+           
           </div>
 
           {/* Date Filter */}
@@ -251,72 +250,115 @@ useEffect(() => {
 
 
           {/* Checked Patients */}
-          <div className="mt-6">
-            <h3 className="text-xl font-semibold text-gray-800 mb-3">Checked Patients</h3>
-            <div className="bg-gray-50 rounded-xl border p-3 max-h-64 overflow-y-auto">
-              <table className="w-full text-sm text-left">
-                <thead>
-                  <tr className="border-b">
-                    <th className="py-2">Patient ID</th>
-                    <th className="py-2">Date</th>
-                    <th className="py-2">Fees</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredChecked.length > 0 ? (
-                    filteredChecked.map((p, i) => (
-                      <tr key={i} className="border-b">
-                    {/* <td>{p}</td> */}
+     
+  
+ <div className="mt-6">
+  <h3 className="text-xl font-semibold text-gray-800 mb-3">
+    Checked Patients — {filteredChecked.length}
+  </h3>
 
-                        <td className="py-2">{p.patientID}</td>
-                        <td className="py-2">{new Date(p.date).toLocaleDateString()}</td>
-                        <td className="py-2">{p.fees}</td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="3" className="py-4 text-center text-gray-500 italic">
-                        No records found.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
+  <div className="border rounded-xl overflow-hidden bg-white shadow-sm">
+
+    {/* HEADER fixed */}
+    <table className="w-full text-sm text-left">
+      <thead className="bg-gray-100 sticky top-0 z-10">
+        <tr className="border-b">
+          <th className="py-2 px-2">Patient ID</th>
+          <th className="py-2 px-2">Date</th>
+          <th className="py-2 px-2">Fees</th>
+        </tr>
+      </thead>
+    </table>
+
+    {/* BODY scrollable only */}
+    <div className="max-h-60 overflow-y-auto">
+      <table className="w-full text-sm text-left">
+        <tbody>
+          {filteredChecked.length > 0 ? (
+            filteredChecked.map((p, i) => (
+              <tr key={i} className="border-b ">
+                <td className="py-2 px-2">{p.patientID}</td>
+                <td className="py-2 px-2"></td>
+                <td className="py-2 px-2"></td>
+                <td className="py-2 px-2">  </td>
+                <td className="py-2  pl-30">{new Date(p.date).toLocaleDateString()}</td>
+                <td className="py-2 px-2">{p.fees}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="3" className="py-4 text-center text-gray-500 italic">
+                No records found.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+
+    {/* FOOTER fixed, not scrolling */}
+    <div className="bg-gray-100 border-t flex justify-between items-center px-8 py-3">
+      <span className="font-semibold text-gray-800">Total Fees</span>
+      <span className="font-bold text-green-600 text-lg">{totalCheckedFees}</span>
+   
+    </div>
+  </div>
+</div>
+
+
 
           {/* Operated Patients */}
-          <div className="mt-6">
-            <h3 className="text-xl font-semibold text-gray-800 mb-3">Operated Patients</h3>
-            <div className="bg-gray-50 rounded-xl border p-3 max-h-64 overflow-y-auto">
-              <table className="w-full text-sm text-left">
-                <thead>
-                  <tr className="border-b">
-                    <th className="py-2">Patient ID</th>
-                    <th className="py-2">Date</th>
-                    <th className="py-2">Fees</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredOperated.length > 0 ? (
-                    filteredOperated.map((p, i) => (
-                      <tr key={i} className="border-b">
-                        <td className="py-2">{p.patientID}</td>
-                        <td className="py-2">{new Date(p.date).toLocaleDateString()}</td>
-                        <td className="py-2">{p.fees}</td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="3" className="py-4 text-center text-gray-500 italic">
-                        No records found.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
+        <div className="mt-6">
+  <h3 className="text-xl font-semibold text-gray-800 mb-3">
+    Operated Patients — {filteredOperated.length}
+  </h3>
+
+  <div className="border rounded-xl overflow-hidden bg-white shadow-sm">
+
+    {/* HEADER fixed */}
+    <table className="w-full text-sm text-left">
+      <thead className="bg-gray-100 sticky top-0 z-10">
+        <tr className="border-b">
+          <th className="py-2 px-2">Patient ID</th>
+          <th className="py-2 px-2">Date</th>
+          <th className="py-2 px-2">Fees</th>
+        </tr>
+      </thead>
+    </table>
+
+    {/* BODY scrollable only */}
+    <div className="max-h-60 overflow-y-auto">
+      <table className="w-full text-sm text-left">
+        <tbody>
+          {filteredOperated.length > 0 ? (
+            filteredOperated.map((p, i) => (
+              <tr key={i} className="border-b">
+                <td className="py-2 px-2">{p.patientID}</td>
+                <td className="py-2 px-2"></td>
+                <td className="py-2 px-2"></td>
+                <td className="py-2 px-2">{new Date(p.date).toLocaleDateString()}</td>
+                <td className="py-2 px-2">{p.fees}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="3" className="py-4 text-center text-gray-500 italic">
+                No records found.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+
+    {/* FOOTER fixed */}
+    <div className="bg-gray-100 border-t flex justify-between items-center px-4 py-3">
+      <span className="font-semibold text-gray-800">Total Fees</span>
+      <span className="font-bold text-green-600 text-lg">{totalOperatedFees}</span>
+    </div>
+  </div>
+</div>
+
         </div>
       )}
 

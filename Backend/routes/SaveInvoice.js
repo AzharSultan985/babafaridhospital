@@ -1,5 +1,6 @@
 import express from "express";
 import InvoiceModel from "../models/InvoiceModel.js";
+import PatientModel from "../models/Patientprofile.js";
 
 const router = express.Router();
 
@@ -7,6 +8,7 @@ const router = express.Router();
 router.post("/saveinvoice", async (req, res) => {
   try {
     const { InvoiceDetails } = req.body;
+console.log(InvoiceDetails.PatientID);
 
     if (!InvoiceDetails) {
       return res
@@ -14,13 +16,18 @@ router.post("/saveinvoice", async (req, res) => {
         .json({ success: false, message: "No invoice details provided" });
     }
 //console.log(" InvoiceDetails.patientID", InvoiceDetails.PatientID);
+ // 1️⃣ Find patient using numeric patientID
+    const patient = await PatientModel.findOne({
+      patientID: InvoiceDetails.PatientID,
+    });
 
     // ✅ Create invoice in DB
     const newInvoice = new InvoiceModel({
       BillData: InvoiceDetails.BillData,
       date: InvoiceDetails.date,
       InvoiceID: InvoiceDetails.InvoiceID,
-       patient: InvoiceDetails.PatientID,
+       patientId: InvoiceDetails.PatientID,
+
       medicines: InvoiceDetails.medicines.map((m) => ({
         id: m.id,
         Medname: m.Medname,
@@ -31,7 +38,11 @@ router.post("/saveinvoice", async (req, res) => {
     });
 
     await newInvoice.save();
+// 3️⃣ Push Invoice ObjectId into patient profile
+    patient.pharmacyInvoices.push(newInvoice._id);
 
+    // 4️⃣ Save patient record
+    await patient.save();
     res.status(201).json({
       success: true,
       message: "Invoice saved successfully",

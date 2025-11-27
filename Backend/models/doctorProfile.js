@@ -21,9 +21,7 @@ const DoctorSchema = new mongoose.Schema({
     }
   ],
 
-  shiftStart: { type: String, required: true },
-  shiftEnd: { type: String, required: true },
-
+ 
   createdAt: { type: Date, default: Date.now },
 });
 

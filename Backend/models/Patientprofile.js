@@ -49,7 +49,7 @@ dischargedBy:String
 
   // --- Pharmacy Billing Information ---
   pharmacyInvoices: [
-    { type: mongoose.Schema.Types.ObjectId, ref: "PharmacyInvoice" }
+    { type: mongoose.Schema.Types.ObjectId, ref: "Invoice" }
   ],
 
   // --- Payment Details ---

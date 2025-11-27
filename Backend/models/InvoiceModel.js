@@ -1,3 +1,4 @@
+import { number } from "framer-motion";
 import mongoose from "mongoose";
 
 const InvoiceSchema = new mongoose.Schema(
@@ -16,7 +17,7 @@ const InvoiceSchema = new mongoose.Schema(
     },
 
     // 👨‍⚕️ Patient reference only
-      patientId: { type: mongoose.Schema.Types.ObjectId, ref: "Patient" },
+      patientId: { type: Number },
     InvoiceID: {
       type: Number
      

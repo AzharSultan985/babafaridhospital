@@ -24,9 +24,7 @@ router.put("/discharge-patient/:patientID", async (req, res) => {
     patient.discharge.dischargedAt = new Date();
     patient.discharge.dischargedBy = dischargedBy;
 
-    // ✅ Also mark admission as false
-    patient.admission.isadmitted = false;
-
+  
     await patient.save();
 
     res.status(200).json({

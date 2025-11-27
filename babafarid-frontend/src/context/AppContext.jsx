@@ -35,6 +35,7 @@ const [ListOFNewstack,setListOFNewstack]=useState([])
   const [AllDoctors, setAllDoctors] = useState([]);
   const [showAlert, setAlert] = useState({isAlert:false
      , msg: "", type: "info" });
+  const [patientINFO, setPatientINFO] = useState(null);
 
   const IndoorMedSubmitHandle = async () => {
     try {
@@ -325,8 +326,7 @@ const HandleDoctor = async (data) => {
           name: data.name,
           department:data.department,
           fees:data.fees,
-         shiftStart: data.starttime,
-          shiftEnd: data.endtime,
+        
         }),
       }
     );
@@ -398,6 +398,48 @@ const FetchAllDoctors = async () => {
     }
   };
 
+
+
+
+const handlePatientINFOFetch = async (patientID) => {
+  if (!patientID.trim()) return;
+
+  try {
+    setloading(true);
+
+    const res = await fetch(
+      `${process.env.REACT_APP_BACKEND_URL}/api/fetch-single-patient/${patientID}`
+    );
+
+    const data = await res.json();   // IMPORTANT
+
+    console.log("backend response:", data);
+
+    if (data.success) {
+      setPatientINFO(data.patient);
+    } else {
+      setAlert({
+        isAlert: true,
+        alertmsg: data.message || "Patient not found",
+        type: "error",
+      });
+    }
+
+  } catch (err) {
+    setAlert({
+      isAlert: true,
+      alertmsg: "Unable to fetch patient.",
+      type: "error",
+    });
+
+  } finally {
+    setloading(false);
+  }
+};
+
+
+
+
   return (
     <AppContext.Provider
       value={{
@@ -449,7 +491,10 @@ loading,setloading,
  showAlert,
 
  AllDoctors,
- FetchAllDoctors
+ FetchAllDoctors,
+
+ handlePatientINFOFetch,
+ patientINFO
       }}  
     >
       {children}

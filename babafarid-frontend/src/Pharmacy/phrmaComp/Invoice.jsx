@@ -142,28 +142,29 @@ const Invoice = () => {
               </tr>
             ))}
           </tbody>
-          <tfoot className="border-t border-black">
-            <tr>
-              <td className="text-left px-1">No of Items</td>
-              <td></td>
-              <td className="text-right px-1">{InvoiceData.medicines.length}</td> {/* Fixed: removed .toFixed(2) */}
-            </tr>
-            <tr>
-              <td className="text-left px-1">Total</td>
-              <td></td>
-              <td className="text-right px-1">{InvoiceData.BillData.Total.toFixed(2)}</td>
-            </tr>
-            <tr>
-              <td className="text-left px-1">Discount</td>
-              <td></td>
-              <td className="text-right px-1">{InvoiceData.BillData.DicountRate}%</td>
-            </tr>
-            <tr>
-              <td className="text-left px-1">Net Total</td>
-              <td></td>
-              <td className="text-right px-1">{InvoiceData.BillData.NetTotal.toFixed(2)}</td>
-            </tr>
-          </tfoot>
+      
+  <tfoot className="border-t border-black">
+    <tr>
+      <td className="text-left px-1">No of Items</td>
+      <td></td>
+      <td className="text-right px-1">{InvoiceData.medicines.length}</td>
+    </tr>
+    <tr>
+      <td className="text-left px-1">Total</td>
+      <td></td>
+      <td className="text-right px-1">{InvoiceData.BillData.Total.toFixed(2)}</td>
+    </tr>
+    <tr>
+      <td className="text-left px-1">Discount</td>
+      <td></td>
+      <td className="text-right px-1">{InvoiceData.BillData.DicountRate}%</td>
+    </tr>
+    <tr>
+      <td className="text-left px-1">Net Total</td>
+      <td></td>
+      <td className="text-right px-1">{InvoiceData.BillData.NetTotal.toFixed(2)}</td>
+    </tr>
+  </tfoot>
         </table>
 
         <div className="text-center mb-1">

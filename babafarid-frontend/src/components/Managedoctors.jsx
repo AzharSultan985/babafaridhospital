@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Plus, X, Edit, Trash2, Eye, PawPrint } from "lucide-react";
+import { Plus, X, Edit, Trash2, Eye } from "lucide-react";
 import { AppContext } from "../context/AppContext";
-import { DateRangePicker } from "react-date-range";
+
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import { format } from "date-fns";
@@ -13,9 +13,9 @@ export default function DoctorManagement() {
   // const [filterDate, setFilterDate] = useState("");
   const [filteredChecked, setFilteredChecked] = useState([]);
   const [filteredOperated, setFilteredOperated] = useState([]);
+console.log("AllDoctors",AllDoctors);
 
   const [showModal, setShowModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
 
@@ -25,22 +25,14 @@ export default function DoctorManagement() {
     name: "",
     department: "",
     fees: "",
-    starttime: "",
-    endtime: "",
+  
   });
 
   useEffect(() => {
     FetchAllDoctors();
   }, []);
 
-  const formatTime = (time) => {
-    if (!time) return "";
-    let [hour, minute] = time.split(":");
-    hour = parseInt(hour);
-    const ampm = hour >= 12 ? "PM" : "AM";
-    hour = hour % 12 || 12;
-    return `${hour}:${minute} ${ampm}`;
-  };
+
 const [openRange, setOpenRange] = useState(false);
 
 const [filterDate, setFilterDate] = useState({
@@ -55,25 +47,13 @@ const [filterDate, setFilterDate] = useState({
 
   const handleAddDoctor = () => {
     HandleDoctor(doctorData);
-    setDoctorData({ name: "", department: "", fees: "", starttime: "", endtime: "" });
+    setDoctorData({ name: "", department: "", fees: "" });
     setShowModal(false);
   };
 
   const handleOpenProfile = (doctor) => {
     setSelectedDoctor(doctor);
     setShowSidebar(true);
-  };
-
-  const handleEdit = (doctor) => {
-    setSelectedDoctor(doctor);
-    setDoctorData(doctor);
-    setShowEditModal(true);
-  };
-
-  const handleSaveEdit = () => {
-    const updated = AllDoctors.map((d) => (d === selectedDoctor ? doctorData : d));
-    HandleDoctor(updated);
-    setShowEditModal(false);
   };
 
   const handleRemove = (doctor) => {
@@ -132,7 +112,6 @@ useEffect(() => {
 }, [filterDate, selectedDoctor]);
 const totalCheckedFees = filteredChecked.reduce((sum, p) => sum + Number(p.fees || 0), 0);
 const totalOperatedFees = filteredOperated.reduce((sum, p) => sum + Number(p.fees || 0), 0);
-const grandTotal = totalCheckedFees + totalOperatedFees;
 
   return (
     <div className="p-6 space-y-6 relative">
@@ -171,7 +150,6 @@ const grandTotal = totalCheckedFees + totalOperatedFees;
                
                 <td className="py-2 flex gap-3">
                   <Eye className="cursor-pointer text-blue-600" onClick={() => handleOpenProfile(doc)} />
-                  <Edit className="cursor-pointer text-green-600" onClick={() => handleEdit(doc)} />
                   <Trash2 className="cursor-pointer text-red-600" onClick={() => handleRemove(doc)} />
                 </td>
 
@@ -363,64 +341,7 @@ const grandTotal = totalCheckedFees + totalOperatedFees;
       )}
 
       {/* Edit Doctor Modal */}
-{showEditModal && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-    <div className="bg-white rounded-xl shadow-xl w-[400px] p-6 relative">
-      <button className="absolute top-4 right-4" onClick={() => setShowEditModal(false)}>
-        <X className="w-5 h-5 text-gray-600" />
-      </button>
-      <h2 className="text-xl font-semibold mb-4 text-gray-800">Edit Doctor</h2>
-      <div className="space-y-3">
-        <input
-          type="text"
-          name="name"
-          placeholder="Name"
-          value={doctorData.name}
-          onChange={handleChange}
-          className="w-full p-2 border rounded-lg"
-        />
-        <input
-          type="text"
-          name="department"
-          placeholder="Department"
-          value={doctorData.department}
-          onChange={handleChange}
-          className="w-full p-2 border rounded-lg"
-        />
-        <input
-          type="number"
-          name="fees"
-          placeholder="Fees"
-          value={doctorData.fees}
-          onChange={handleChange}
-          className="w-full p-2 border rounded-lg"
-        />
-        <div className="flex gap-2">
-          <input
-            type="time"
-            name="starttime"
-            value={doctorData.starttime}
-            onChange={handleChange}
-            className="w-1/2 p-2 border rounded-lg"
-          />
-          <input
-            type="time"
-            name="endtime"
-            value={doctorData.endtime}
-            onChange={handleChange}
-            className="w-1/2 p-2 border rounded-lg"
-          />
-        </div>
-        <button
-          onClick={handleSaveEdit}
-          className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition"
-        >
-          Save Changes
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+
 {/* Delete Doctor Modal */}
 {showRemoveModal && (
   <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -442,6 +363,73 @@ const grandTotal = totalCheckedFees + totalOperatedFees;
           className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
         >
           Delete
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+{/* Add Doctor Modal */}
+{showModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div className="bg-white rounded-xl shadow-xl w-[400px] p-6 relative">
+      <button
+        className="absolute top-4 right-4"
+        onClick={() => setShowModal(false)}
+      >
+        <X className="w-5 h-5 text-gray-600" />
+      </button>
+
+      <h2 className="text-xl font-semibold mb-4 text-gray-800">Add Doctor</h2>
+
+      <div className="space-y-3">
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Name</label>
+          <input
+            type="text"
+            name="name"
+            value={doctorData.name}
+            onChange={handleChange}
+            className="mt-1 w-full p-2 border rounded-lg"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Department</label>
+          <input
+            type="text"
+            name="department"
+            value={doctorData.department}
+            onChange={handleChange}
+            className="mt-1 w-full p-2 border rounded-lg"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700">Fees</label>
+          <input
+            type="number"
+            name="fees"
+            value={doctorData.fees}
+            onChange={handleChange}
+            className="mt-1 w-full p-2 border rounded-lg"
+          />
+        </div>
+
+       
+      </div>
+
+      <div className="flex justify-end gap-3 mt-6">
+        <button
+          onClick={() => setShowModal(false)}
+          className="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400 transition"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={handleAddDoctor}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+        >
+          Add
         </button>
       </div>
     </div>

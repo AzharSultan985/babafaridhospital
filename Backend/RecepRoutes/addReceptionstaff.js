@@ -32,7 +32,7 @@ router.post("/add-reception-user", async (req, res) => {
     res.status(201).json({ success: true, data: savedStaff });
 
   } catch (error) {
-    //console.error("Error adding reception staff:", error);
+    ////console.error("Error adding reception staff:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 });

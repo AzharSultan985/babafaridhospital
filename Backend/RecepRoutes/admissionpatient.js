@@ -13,7 +13,7 @@ router.put("/admission-patient/:identifier", async (req, res) => {
   try {
     const { identifier } = req.params; // could be ID or phone
     const { admission, payment } = req.body;
-console.log("admission.operating_doctorName",admission.operating_doctorName);
+//console.log("admission.operating_doctorName",admission.operating_doctorName);
 
     if (!identifier) {
       return res.status(400).json({
@@ -37,7 +37,7 @@ console.log("admission.operating_doctorName",admission.operating_doctorName);
       });
     }
 
-    console.log('doctor',patient);
+    //console.log('doctor',patient);
     
     // --- Prevent duplicate admission ---
     if (patient.admission?.isadmitted) {
@@ -109,7 +109,7 @@ console.log("admission.operating_doctorName",admission.operating_doctorName);
 
 
   } catch (error) {
-    //console.error("❌ Error updating admission/payment:", error);
+    ////console.error("❌ Error updating admission/payment:", error);
     res.status(500).json({
       success: false,
       message: "Internal server error.",

@@ -17,7 +17,7 @@ const FetchAllReceptionUser = async (req, res) => {
       data: ReceptionUserdata,
     });
   } catch (error) {
-    //console.error("❌ Error fetching Reception User data:", error);
+    ////console.error("❌ Error fetching Reception User data:", error);
     res.status(500).json({
       success: false,
       message: "Server error while fetching data.",

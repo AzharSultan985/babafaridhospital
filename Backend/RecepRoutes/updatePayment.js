@@ -47,7 +47,7 @@ router.put("/update-payment/:patientID", async (req, res) => {
       updatedPayment: patient.payment,
     });
   } catch (error) {
-    //console.error("❌ Error updating payment:", error);
+    ////console.error("❌ Error updating payment:", error);
     res.status(500).json({
       success: false,
       message: "Internal server error.",

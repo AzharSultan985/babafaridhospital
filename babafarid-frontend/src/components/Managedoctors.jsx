@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Plus, X, Edit, Trash2, Eye } from "lucide-react";
+import { Plus, X, Trash2, Eye } from "lucide-react";
 import { AppContext } from "../context/AppContext";
 
 import "react-date-range/dist/styles.css";
@@ -8,18 +8,19 @@ import { format } from "date-fns";
 import CalendarTable from "../components/CalendarTable";
 
 export default function DoctorManagement() {
-  const { HandleDoctor, AllDoctors, FetchAllDoctors } = useContext(AppContext);
+  const { HandleDoctor, AllDoctors, FetchAllDoctors,HandleRemoveDoctor } = useContext(AppContext);
 
   // const [filterDate, setFilterDate] = useState("");
   const [filteredChecked, setFilteredChecked] = useState([]);
   const [filteredOperated, setFilteredOperated] = useState([]);
-console.log("AllDoctors",AllDoctors);
+//console.log("AllDoctors",AllDoctors);
 
   const [showModal, setShowModal] = useState(false);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
 
   const [selectedDoctor, setSelectedDoctor] = useState(null);
+  const [RemoveDoctorID, setRemoveDoctorID] = useState(null);
 
   const [doctorData, setDoctorData] = useState({
     name: "",
@@ -30,7 +31,7 @@ console.log("AllDoctors",AllDoctors);
 
   useEffect(() => {
     FetchAllDoctors();
-  }, []);
+  }, [FetchAllDoctors]);
 
 
 const [openRange, setOpenRange] = useState(false);
@@ -56,14 +57,15 @@ const [filterDate, setFilterDate] = useState({
     setShowSidebar(true);
   };
 
-  const handleRemove = (doctor) => {
-    setSelectedDoctor(doctor);
+  const handleRemove = (doc) => {
+    setRemoveDoctorID(doc);
     setShowRemoveModal(true);
   };
 
   const confirmRemove = () => {
-    const updated = AllDoctors.filter((d) => d !== selectedDoctor);
-    HandleDoctor(updated);
+    
+
+    HandleRemoveDoctor(RemoveDoctorID);
     setShowRemoveModal(false);
   };
 
@@ -150,7 +152,7 @@ const totalOperatedFees = filteredOperated.reduce((sum, p) => sum + Number(p.fee
                
                 <td className="py-2 flex gap-3">
                   <Eye className="cursor-pointer text-blue-600" onClick={() => handleOpenProfile(doc)} />
-                  <Trash2 className="cursor-pointer text-red-600" onClick={() => handleRemove(doc)} />
+                  <Trash2 className="cursor-pointer text-red-600" onClick={() => handleRemove(doc._id)} />
                 </td>
 
 

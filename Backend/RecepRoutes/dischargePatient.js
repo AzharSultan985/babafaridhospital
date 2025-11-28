@@ -33,7 +33,7 @@ router.put("/discharge-patient/:patientID", async (req, res) => {
       patient,
     });
   } catch (error) {
-    //console.error("❌ Error discharging patient:", error);
+    ////console.error("❌ Error discharging patient:", error);
     res.status(500).json({
       success: false,
       message: "Internal server error while discharging patient.",

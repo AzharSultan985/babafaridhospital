@@ -1,9 +1,9 @@
 import express from "express";
-import ReceptionStaffModel from "../models/receptionStaffUsers.js";
+import DoctorModel from "../models/doctorProfile.js";
 
 const router = express.Router();
 
-router.delete("/remove-receptionUser/:id", async (req, res) => {
+router.delete("/remove-doctor/:id", async (req, res) => {
   try {
     const { id } = req.params; // <-- fix: use lowercase 'id'
     if (!id) {
@@ -12,20 +12,19 @@ router.delete("/remove-receptionUser/:id", async (req, res) => {
         message: "ID is required.",
       });
     }
-
-    const RecepUser = await ReceptionStaffModel.findOneAndDelete({ id: Number(id) });
-    if (!RecepUser)
-      return res.status(404).json({ success: false, message: "Reception User not found." });
+    const doctor = await DoctorModel.findOneAndDelete({ _id: id });
+    if (!doctor)
+      return res.status(404).json({ success: false, message: "doctor  not found." });
 
     res.status(200).json({
       success: true,
-      message: "Reception User Removed successfully.",
+      message: "Doctor Removed successfully.",
     });
   } catch (error) {
     ////console.error("❌ Error removing Reception User:", error);
     res.status(500).json({
       success: false,
-      message: "Internal server error while removing Reception User.",
+      message: "Internal server error while removing doctor .",
     });
   }
 });

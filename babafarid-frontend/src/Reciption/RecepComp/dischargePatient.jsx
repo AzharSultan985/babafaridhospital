@@ -26,7 +26,7 @@ useEffect(() => {
 
     return () => clearInterval(timer);
   }, []);
-console.log('AllPatient',AllPatient);
+//console.log('AllPatient',AllPatient);
 
   // 🔹 Fetch Patient from AllPatient by ID
  const handleFetch = () => {
@@ -56,7 +56,7 @@ console.log('AllPatient',AllPatient);
       dischargedBy: staff,
       date: new Date().toLocaleString(),
     };
-    console.log('dischargeData',dischargeData);
+    //console.log('dischargeData',dischargeData);
     
 handleDischargePatient(dischargeData)
    

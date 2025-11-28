@@ -22,13 +22,13 @@ router.post("/add-doctor", async (req, res) => {
       fees,
  
     });
-    // console.log(NewDoctor);
+    // //console.log(NewDoctor);
     
     const savedDoctor= await NewDoctor.save();
     res.status(201).json({ success: true, data: savedDoctor });
 
   } catch (error) {
-    //console.error("Error adding reception staff:", error);
+    ////console.error("Error adding reception staff:", error);
     res.status(500).json({ success: false, message: "Server error" });
   }
 });

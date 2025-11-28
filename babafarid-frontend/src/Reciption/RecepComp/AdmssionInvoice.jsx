@@ -4,7 +4,7 @@ import { useReception } from "../RecepContext/RecepContext";
 
 const AdmissionInvoice = () => {
   const { AdmissionInvoiceData} = useReception();
-console.log('patiet',AdmissionInvoiceData);
+//console.log('patiet',AdmissionInvoiceData);
 
   if (!AdmissionInvoiceData) {
     return <div>No Invoice Data Available</div>;
@@ -127,7 +127,7 @@ console.log('patiet',AdmissionInvoiceData);
         </div>
 
         <div className="text-center text-xs border-t border-black pt-1 mt-1">
-          Powered By <span className="font-bold">Azhar Sultan (03289858508) </span>
+          Powered By <span className="font-bold">Azhar Sultan  </span>
         </div>
       </div>
 

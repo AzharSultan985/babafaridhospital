@@ -49,7 +49,7 @@ const ReceptionMain = () => {
   };
 
   const handleSaveUpdate = async () => {
-    console.log("Updated Payment Object:", updatePayment);
+    //console.log("Updated Payment Object:", updatePayment);
          UpdatePayment(updatePayment)
     setEditModal(null);
   };
@@ -80,7 +80,7 @@ const handleReAppointment = (patient) => {
 
 
 const handleSaveReApp = async () => {
-  // console.log("RE-APPOINTMENT DATA:", reAppData);
+  // //console.log("RE-APPOINTMENT DATA:", reAppData);
 
 
  await HandleReAppointment(reAppData)

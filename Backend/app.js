@@ -60,6 +60,7 @@ import Reappointment from "./RecepRoutes/Reappointment.js";
 import updateAddmissionPayment from "./RecepRoutes/updatePayment.js";
 
 import fetchSinglePatientRoutes from "./RecepRoutes/fetchSinglePatient.js";
+import RemoveDoctor from "./routes/Removedoctor.js";
 
 
   const __filename = fileURLToPath(import.meta.url);
@@ -169,6 +170,7 @@ app.use("/api", updateAddmissionPayment);
 
 // DoctorProfile
 app.use("/api", DoctorProfile);
+app.use("/api", RemoveDoctor);
 
 app.use("/api/fetchall-doctors", FetchallDoctorsRoute);
 

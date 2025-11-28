@@ -10,7 +10,7 @@ const router = express.Router();
 router.get("/fetch-single-patient/:id", async (req, res) => {
   try {
       const id = Number(req.params.id);
-// console.log('id',id);
+// //console.log('id',id);
 
     if (!id) {
       return res.status(400).json({
@@ -26,7 +26,7 @@ router.get("/fetch-single-patient/:id", async (req, res) => {
     })
       .populate("pharmacyInvoices") // to show full invoice data
       .lean();
-// console.log(patient);
+// //console.log(patient);
 
     if (!patient) {
       return res.status(404).json({

@@ -77,7 +77,7 @@ const confirmSubmit = async () => {
     // ✅ Optional: if you want auto-hide alert, leave it to registerPatient
     // Do not set alert again here, it’s already set
   } catch (err) {
-    console.error(err);
+    //console.error(err);
   }
 };
 

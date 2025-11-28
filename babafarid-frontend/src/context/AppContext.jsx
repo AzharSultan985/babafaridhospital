@@ -26,9 +26,9 @@ const [loading,setloading]=useState(false)
   const location = useLocation();
   const Isdashboard = location.pathname === "/admindashboard";
   const Istaff_dashboard =location.pathname === "/indoormedmangment"
-// //////console.log(Indoor_Med_current);
+// ////////console.log(Indoor_Med_current);
 const [ListOFNewstack,setListOFNewstack]=useState([])
-// //console.log(ListOFNewstack);
+// ////console.log(ListOFNewstack);
 // Medicines list
   // const [LastMonthindoorMed, setLastMonindoorMed] = useState([]);
   // const [currentMonthindoorMed, setcurrentMonindoorMed] = useState([]);
@@ -62,7 +62,7 @@ else {
         throw new Error("Failed to create medicine record");
       }
     } catch (err) {
-      //////console.error("Error:", err);
+      ////////console.error("Error:", err);
     }
   };
 
@@ -78,7 +78,7 @@ const AddNewstock_Indoor = async () => {
 
     // Prepare request body as object (to keep it clean and consistent)
     const payload = { medicines: ListOFNewstack };
-//console.log(payload);
+////console.log(payload);
 
     const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/addnewstockindormed`, {
       method: "POST",
@@ -93,15 +93,15 @@ const AddNewstock_Indoor = async () => {
     if (res.ok && data.success) {
       setIsMedAddAlert(true);
       FetchMedicine()
-      //console.log("✅ Medicines saved successfully!");
+      ////console.log("✅ Medicines saved successfully!");
       // Optionally clear the list after save
       // setListOFNewstack([]);
     } else {
-      //console.error("❌ Failed to create medicine record:", data.message || "Unknown error");
+      ////console.error("❌ Failed to create medicine record:", data.message || "Unknown error");
       alert("Failed to save medicines. Please try again.");
     }
   } catch (err) {
-    //console.error("🚨 Error saving new stock:", err);
+    ////console.error("🚨 Error saving new stock:", err);
     alert("Something went wrong while saving medicines.");
   }
 };
@@ -119,7 +119,7 @@ const Updatestock_Indoor = async () => {
 
     // Prepare request body as object (to keep it clean and consistent)
     const payload = { medicines: ListOFNewstack };
-//console.log(payload);
+////console.log(payload);
 
     const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/updatestockindormed`, {
       method: "POST",
@@ -134,15 +134,15 @@ const Updatestock_Indoor = async () => {
     if (res.ok && data.success) {
       setIsMedAddAlert(true);
       FetchMedicine()
-      //console.log("✅ Medicines saved successfully!");
+      ////console.log("✅ Medicines saved successfully!");
       // Optionally clear the list after save
       // setListOFNewstack([]);
     } else {
-      //console.error("❌ Failed to create medicine record:", data.message || "Unknown error");
+      ////console.error("❌ Failed to create medicine record:", data.message || "Unknown error");
       alert("Failed to save medicines. Please try again.");
     }
   } catch (err) {
-    //console.error("🚨 Error saving new stock:", err);
+    ////console.error("🚨 Error saving new stock:", err);
     alert("Something went wrong while saving medicines.");
   }
 };
@@ -164,7 +164,7 @@ const FetchMedicine = useCallback(async () => {
     const allMed = await res.json();
     if (Array.isArray(allMed)) setFetchAllMed(allMed);
   } catch (err) {
-    ////console.log(err);
+    //////console.log(err);
   }
 }, [setFetchAllMed]);
 // Delect Row using ID
@@ -186,7 +186,7 @@ const DelMedByID = async (id) => {
       alert(delOK.error || "Error deleting medicine");
     }
   } catch (err) {
-    //////console.error("Delete failed:", err);
+    ////////console.error("Delete failed:", err);
     alert("Something went wrong while deleting");
   }
 };
@@ -208,7 +208,7 @@ const HandleEditModal =async()=>{
     
   })
    const updatedata =await res.json()
-  //  ////////console.log(updatedata);
+  //  //////////console.log(updatedata);
    
    if (updatedata.success) {
     FetchMedicine()
@@ -226,7 +226,7 @@ const HandleEditModal =async()=>{
   const delayDebounce = setTimeout(async () => {
     const resSearch = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/searchbyname/${searchTerm}`);
     const dataSearch = await resSearch.json();
-    ////////console.log(dataSearch.data);
+    //////////console.log(dataSearch.data);
     
     setResults(Array.isArray(dataSearch.data) ? dataSearch.data : []);
   }, 300);
@@ -262,7 +262,7 @@ useEffect(() => {
 //     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
 //     const result = await res.json();
-//     //console.log(result);
+//     ////console.log(result);
     
 //     // ✅ Only update if different (avoid infinite re-renders)
 //     setLastMonindoorMed((prev) => {
@@ -270,7 +270,7 @@ useEffect(() => {
 //       return JSON.stringify(prev) === JSON.stringify(newData) ? prev : newData;
 //     });
 //   } catch (error) {
-//     //console.log("❌ Error fetching medicines:", error);
+//     ////console.log("❌ Error fetching medicines:", error);
 //     // setAlertMsg("❌ Failed to fetch medicines.");
 //   //   setAlertType("error");
 //   //    setTimeout(() => {
@@ -288,7 +288,7 @@ useEffect(() => {
 //     if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
 
 //     const result = await res.json();
-//     //console.log(result);
+//     ////console.log(result);
     
 //     // ✅ Only update if different (avoid infinite re-renders)
 //     setcurrentMonindoorMed((prev) => {
@@ -296,7 +296,7 @@ useEffect(() => {
 //       return JSON.stringify(prev) === JSON.stringify(newData) ? prev : newData;
 //     });
 //   } catch (error) {
-//     //console.log("❌ Error fetching medicines:", error);
+//     ////console.log("❌ Error fetching medicines:", error);
 //     // setAlertMsg("❌ Failed to fetch medicines.");
 //   //   setAlertType("error");
 //   //    setTimeout(() => {
@@ -312,67 +312,10 @@ useEffect(() => {
 
 
 // handle add doctors 
-const HandleDoctor = async (data) => {
-  setloading(true);
-  console.log(data);
-  try {
-    
-    const response = await fetch(
-      `${process.env.REACT_APP_BACKEND_URL}/api/add-doctor`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: data.name,
-          department:data.department,
-          fees:data.fees,
-        
-        }),
-      }
-    );
 
-    if (!response.ok) throw new Error("Failed to add docotr");
-    const saveddoctor = await response.json();
-    console.log("✅ Registered doctor:", saveddoctor);
-// FetchAllReceptionUser()
-    // Show success alert
-if (saveddoctor.success) {
-  
-setAlert({
-  isAlert:true,
-msg:"Doctor  Added successfully",
-type:"success"
-})
-
-     setTimeout(() => {
-    setAlert("");
-   
-  }, 2000);
-  
-}
-
-
-  } catch (error) {
-    //console.error("Error adding reception user:", error);
-
-setAlert({
-  isAlert:true,
-msg:"error ",
-type:"error"
-})
-
-     setTimeout(() => {
-    setAlert("");
-   
-  }, 2000);
-  
-  } finally {
-    setloading(false);
-  }
-};
 
 //FetchAllDoctors
-const FetchAllDoctors = async () => {
+const FetchAllDoctors =useCallback( async () => {
     try {
       const res = await fetch(
         `${process.env.REACT_APP_BACKEND_URL}/api/fetchall-doctors`
@@ -392,9 +335,109 @@ const FetchAllDoctors = async () => {
 
       setAllDoctors(data);
     } catch (error) {
-      //console.error("❌ Fetch all patients error:", error);
+      ////console.error("❌ Fetch all patients error:", error);
       setAlert({ isAlert: true, alertmsg: error.message, type: "error" });
       setAllDoctors([]);
+    }
+  },[]);
+//HandleRemoveDoctor
+const HandleDoctor = async (data) => {
+  setloading(true);
+  //console.log(data);
+  try {
+    
+    const response = await fetch(
+      `${process.env.REACT_APP_BACKEND_URL}/api/add-doctor`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: data.name,
+          department:data.department,
+          fees:data.fees,
+        
+        }),
+      }
+    );
+
+    if (!response.ok) throw new Error("Failed to add docotr");
+    const saveddoctor = await response.json();
+    // //console.log("✅ Registered doctor:", saveddoctor);
+
+
+    // Show success alert
+if (saveddoctor.success) {
+  FetchAllDoctors()
+setAlert({
+  isAlert:true,
+msg:"Doctor  Added successfully",
+type:"success"
+})
+
+     setTimeout(() => {
+    setAlert("");
+   
+  }, 2000);
+  
+}
+
+
+  } catch (error) {
+    ////console.error("Error adding reception user:", error);
+
+setAlert({
+  isAlert:true,
+msg:"error ",
+type:"error"
+})
+
+     setTimeout(() => {
+    setAlert("");
+   
+  }, 2000);
+  
+  } finally {
+    setloading(false);
+  }
+};
+
+
+const HandleRemoveDoctor = async (id) => {
+    try {
+      //console.log('id',id);
+      
+      const res = await fetch(
+        `${process.env.REACT_APP_BACKEND_URL}/api/remove-doctor/${id}`,
+         {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.message || "Error deleting doctors");
+if (result.success) {
+
+        setAlert({ isAlert: true, msg: result.message, type: "success" });
+          setTimeout(() => {
+    setAlert("");
+   
+  }, 2000);
+        FetchAllDoctors()
+}else{
+        setAlert({ isAlert: true, msg: "Doctor not Remove ", type: "error" });
+  setTimeout(() => {
+    setAlert("");
+   
+  }, 2000);
+}
+      
+
+    
+    } catch (error) {
+
+      setAlert({ isAlert: true, alertmsg: error.message, type: "error" });
+
     }
   };
 
@@ -413,7 +456,7 @@ const handlePatientINFOFetch = async (patientID) => {
 
     const data = await res.json();   // IMPORTANT
 
-    console.log("backend response:", data);
+    //console.log("backend response:", data);
 
     if (data.success) {
       setPatientINFO(data.patient);
@@ -494,7 +537,8 @@ loading,setloading,
  FetchAllDoctors,
 
  handlePatientINFOFetch,
- patientINFO
+ patientINFO,
+ HandleRemoveDoctor
       }}  
     >
       {children}

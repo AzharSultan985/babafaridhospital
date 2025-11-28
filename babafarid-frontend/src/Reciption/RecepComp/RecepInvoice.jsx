@@ -1,10 +1,10 @@
-import { QRCodeCanvas } from "qrcode.react";
+
 import { Link } from "react-router-dom";
 import { useReception } from "../RecepContext/RecepContext";
 
 const RecepInvoice = () => {
   const { RecepInvoiceData} = useReception();
-console.log('patiet',RecepInvoiceData);
+////console.log('patiet',RecepInvoiceData);
 
   if (!RecepInvoiceData) {
     return <div>No Invoice Data Available</div>;
@@ -13,7 +13,7 @@ console.log('patiet',RecepInvoiceData);
   // Auto generate Invoice number and date
   
   const currentDate = new Date().toLocaleDateString("en-GB");
-  const qrValue = `Patient: ${RecepInvoiceData.patientID}`;
+  
 const latestAppointment =
   RecepInvoiceData.Appointment[
     RecepInvoiceData.Appointment.length - 1
@@ -92,11 +92,9 @@ const latestAppointment =
           </div>
 
           <div>
-            <h1 >Token No #  <span className="text-xl"> {RecepInvoiceData.TokenNo} </span></h1>
+            <h1 className="text-xl p-4" >Token No #  <span > {RecepInvoiceData.TokenNo} </span></h1>
           </div>
-          <div>
-            <QRCodeCanvas value={qrValue} size={60} />
-          </div>
+         
         </div>
 
         <table className="w-full border mb-2">
@@ -134,7 +132,7 @@ const latestAppointment =
         </div>
 
         <div className="text-center text-xs border-t border-black pt-1 mt-1">
-          Powered By <span className="font-bold">  Azhar Sultan (03289858508) </span>
+          Powered By <span className="font-bold">  Azhar Sultan  </span>
         </div>
       </div>
 

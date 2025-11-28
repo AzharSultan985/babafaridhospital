@@ -105,7 +105,7 @@ const Dashboard = () => {
       {/* Sidebar */}
       <aside
         id="logo-sidebar"
-        className="fixed top-0 left-0 z-40 w-64 h-screen sm:translate-x-0 bg-[#282829]"
+        className="fixed top-0 left-0 z-40 w-64 h-screen auto-y sm:translate-x-0 bg-[#282829]"
         aria-label="Sidebar"
       >
         <div className="h-full px-3 py-4 overflow-y-auto">
@@ -415,10 +415,10 @@ const Dashboard = () => {
           </ul>
 
           {/* Footer */}
-          <div className="absolute bottom-4 left-0 w-full px-3 text-center text-gray-400 text-sm">
+          <div className=" bottom-4 left-0 w-full px-3 mt-6 text-center text-gray-400 text-sm">
             <p className="font-medium">
               Built with ❤️ by{" "}
-              <span className="font-semibold text-white">CodeTrust by Azhar</span>
+              <span className="font-semibold text-white"> Azhar Sultan</span>
             </p>
             <p className="text-xs mt-1">Version 
               4.2.5</p>

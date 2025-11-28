@@ -10,7 +10,7 @@ const {
    handlePatientINFOFetch,
  patientINFO
   } = useContext(AppContext);
-console.log(patientINFO);
+//console.log(patientINFO);
 
 const handleFetch =async ()=>{
 

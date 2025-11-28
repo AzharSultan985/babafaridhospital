@@ -103,7 +103,7 @@ const registerPatient = async (data) => {
 
     if (!response.ok) throw new Error("Failed to register patient");
     const savedPatient = await response.json();
-    //console.log("✅ Patient Registered:", savedPatient);
+    ////console.log("✅ Patient Registered:", savedPatient);
 
     // ✅ Show alert once
     setAlert({
@@ -121,7 +121,7 @@ const registerPatient = async (data) => {
     navigate("/recep-invoice");
 
   } catch (error) {
-    //console.error("Error registering patient:", error);
+    ////console.error("Error registering patient:", error);
     setAlert({
       isAlert: true,
       alertmsg: error.message,
@@ -168,7 +168,7 @@ const FetchPatientById = async (ID) => {
     setAlert({ isAlert: false, alertmsg: "", type: "" });
 
   } catch (error) {
-    //console.error("❌ Fetch patient error:", error);
+    ////console.error("❌ Fetch patient error:", error);
     setAlert({ isAlert: true, alertmsg: error.message, type: "error" });
     setPatientData([]);
   }
@@ -226,7 +226,7 @@ const createAdmission = async (admissionData) => {
     });
 
   } catch (error) {
-    //console.error("❌ Create admission error:", error);
+    ////console.error("❌ Create admission error:", error);
     setAlert({ isAlert: true, alertmsg: error.message, type: "error" });
   } finally {
     setLoading(false);
@@ -253,7 +253,7 @@ const FetchAllPatient = async () => {
 
       setAllPatient(data);
     } catch (error) {
-      //console.error("❌ Fetch all patients error:", error);
+      ////console.error("❌ Fetch all patients error:", error);
       setAlert({ isAlert: true, alertmsg: error.message, type: "error" });
       setAllPatient([]);
     }
@@ -294,7 +294,7 @@ const UpdatePayment = async (paymentDetail) => {
 FetchAllPatient()
 
   } catch (error) {
-    //console.error("❌ failed to update payment error:", error);
+    ////console.error("❌ failed to update payment error:", error);
     setAlert({ isAlert: true, alertmsg: error.message, type: "error" });
   } finally {
     setLoading(false);
@@ -347,7 +347,7 @@ const Recep_Login = async (username, password) => {
     });
     
     const data = await res.json();
-    //console.log("Login response:", data);
+    ////console.log("Login response:", data);
 
     if (data.success) {
       setrecep_Login_Res(data.message);
@@ -366,7 +366,7 @@ const Recep_Login = async (username, password) => {
       throw new Error(data.message || "Login failed");
     }
   } catch (err) {
-    //console.error("Login Error:", err);
+    ////console.error("Login Error:", err);
     setAlert({ 
       isAlert: true, 
       alertmsg: err.message, 
@@ -384,7 +384,7 @@ let res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/recep-user-logou
     });
 
     let data = await res.json(); // ✅ parse response JSON
-    ////console.log("Logout response:", data);
+    //////console.log("Logout response:", data);
 
     if (data.message === "Logged out successfully") {
       setLoading(false)
@@ -393,7 +393,7 @@ let res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/recep-user-logou
       }, 1000);
     } 
   }catch (err) {
-      ////console.error("Logout failed:", err);
+      //////console.error("Logout failed:", err);
     }
   };
 
@@ -423,7 +423,7 @@ const HandleReceptionStaff = async (data) => {
 
     if (!response.ok) throw new Error("Failed to add reception user");
     const savedReception = await response.json();
-    //console.log("✅ Registered reception:", savedReception);
+    ////console.log("✅ Registered reception:", savedReception);
 FetchAllReceptionUser()
     // Show success alert
     setAlert({
@@ -437,7 +437,7 @@ FetchAllReceptionUser()
     }, 2000);
 
   } catch (error) {
-    //console.error("Error adding reception user:", error);
+    ////console.error("Error adding reception user:", error);
     setAlert({
       isAlert: true,
       alertmsg: error.message,
@@ -467,7 +467,7 @@ const FetchAllReceptionUser = async () => {
 
       setAllReceptionUser(data);
     } catch (error) {
-      //console.error("❌ Fetch all reception users error:", error);
+      ////console.error("❌ Fetch all reception users error:", error);
       setAlert({ isAlert: true, alertmsg: error.message, type: "error" });
       setAllReceptionUser([]);
     }
@@ -522,7 +522,7 @@ const FetchAllDoctors = async () => {
 
       setAllDoctors(data);
     } catch (error) {
-      //console.error("❌ Fetch all patients error:", error);
+      ////console.error("❌ Fetch all patients error:", error);
       setAlert({ isAlert: true, alertmsg: error.message, type: "error" });
       setAllDoctors([]);
     }
@@ -564,7 +564,7 @@ const HandleReAppointment = async (data) => {
   
 
   } catch (error) {
-    //console.error("❌ Create admission error:", error);
+    ////console.error("❌ Create admission error:", error);
     setAlert({ isAlert: true, alertmsg: error.message, type: "error" });
   } finally {
     setLoading(false);

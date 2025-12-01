@@ -30,8 +30,7 @@ export const PharmacyProvider = ({ children }) => {
   // const [currentMonthpharmacyMed, setcurrentMonthPharmaMed] = useState([]);
 
   // Search
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filteredMed, setFilteredMed] = useState([]);
+  // const [filteredMed, setFilteredMed] = useState([]);
 
   // Alerts
   const [alertMsg, setAlertMsg] = useState("");
@@ -205,47 +204,47 @@ useEffect(() => {
 };
 
 
-  // ✅ Auto-fetch on mount
+// ✅ Auto-fetch on mount
   useEffect(() => {
     fetchPharmacyMed();
   }, []);
 
   // 🔍 Debounced Search
-  useEffect(() => {
-    if (!searchTerm) return;
+  // useEffect(() => {
+  //   if (!searchTerm) return;
 
-    const delayDebounce = setTimeout(async () => {
-      try {
-      setSpiner(true)
+  //   const delayDebounce = setTimeout(async () => {
+  //     try {
+  //     setSpiner(true)
 
-        const resSearch = await fetch(
-          `${process.env.REACT_APP_BACKEND_URL}/api/searchpharmacymed/${searchTerm}`
-        );
-        const dataSearch = await resSearch.json();
-        setFilteredMed(Array.isArray(dataSearch.data) ? dataSearch.data : []);
-    setSpiner(false)
+  //       const resSearch = await fetch(
+  //         `${process.env.REACT_APP_BACKEND_URL}/api/searchpharmacymed/${searchTerm}`
+  //       );
+  //       const dataSearch = await resSearch.json();
+  //       setFilteredMed(Array.isArray(dataSearch.data) ? dataSearch.data : []);
+  //   setSpiner(false)
 
-      } catch (error) {
-        //////console.log.error("❌ Search failed:", error);
-        setFilteredMed([]);
-      }
-    }, 300);
+  //     } catch (error) {
+  //       //////console.log.error("❌ Search failed:", error);
+  //       setFilteredMed([]);
+  //     }
+  //   }, 300);
     
-    return () => clearTimeout(delayDebounce);
-  }, [searchTerm]);
+  //   return () => clearTimeout(delayDebounce);
+  // }, [searchTerm]);
 
   // ✅ Sync full list when no search
- useEffect(() => {
-  if (!searchTerm) {
-    // Avoid unnecessary updates
-    setFilteredMed((prev) => {
-      if (prev !== pharmacyMed) {
-        return pharmacyMed;
-      }
-      return prev;
-    });
-  }
-}, [pharmacyMed, searchTerm]);
+//  useEffect(() => {
+//   if (!searchTerm) {
+//     // Avoid unnecessary updates
+//     setFilteredMed((prev) => {
+//       if (prev !== pharmacyMed) {
+//         return pharmacyMed;
+//       }
+//       return prev;
+//     });
+//   }
+// }, [pharmacyMed, searchTerm]);
 
 
 
@@ -734,9 +733,9 @@ const handleUdateInvoice = async (invoiceIDParam) => {
         alertType,
         setAlertMsg,
 
-        // Search
-        setSearchTerm,
-        filteredMed,
+        // // Search
+        // setSearchTerm,
+        // filteredMed,
 // patientInfo
 setPatientModal,
 setPatientID,

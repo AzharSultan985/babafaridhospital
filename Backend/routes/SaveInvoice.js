@@ -8,7 +8,7 @@ const router = express.Router();
 router.post("/saveinvoice", async (req, res) => {
   try {
     const { InvoiceDetails } = req.body;
-console.log(InvoiceDetails.PatientID);
+// console.log(InvoiceDetails.PatientID);
 
     if (!InvoiceDetails) {
       return res

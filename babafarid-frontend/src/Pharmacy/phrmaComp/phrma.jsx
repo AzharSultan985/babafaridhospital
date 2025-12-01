@@ -11,18 +11,24 @@ export default function Pharmacy() {
   const [discount, setDiscount] = useState(0);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [alert, setAlert] = useState({ msg: "", type: "info" });
+  const [searchTerm, setSearchTerm] = useState("");
 
   const {
     fetchPharmacyMed,
-    setSearchTerm,
-    filteredMed,
+    // setSearchTerm,
+    // filteredMed,
     pharmacyMed,
     setPatientModal,
     summary,
     setSummary,
     setBillingPriceRates,
-    Logoutpharma,
+    Logoutpharma
   } = usePharmacy();
+const filteredMedicine = pharmacyMed.filter((med) =>
+  med.PharmaMedname.toLowerCase().includes(searchTerm.toLowerCase())
+);
+
+
 
   // ✅ Totals
   const total = summary.reduce((acc, item) => acc + item.PriceOFMedPerBuy, 0);
@@ -167,6 +173,9 @@ useEffect(() => {
         .filter((item) => item.quantity > 0)
     );
   };
+const handleRemove = (id) => {
+  setSummary((prev) => prev.filter((item) => item.id !== id));
+};
 
   return (
     <>
@@ -280,7 +289,8 @@ useEffect(() => {
               </tr>
             </thead>
             <tbody>
-              {(filteredMed.length > 0 ? filteredMed : pharmacyMed).map((med) => {
+            {(filteredMedicine.length > 0 ? filteredMedicine : pharmacyMed).map((med) => {
+
                 const daysLeft = getDaysLeft(med.PharmaMedexpireDate);
                 const rowColor =
                   daysLeft <= 0
@@ -337,6 +347,7 @@ useEffect(() => {
         {/* Summary Section */}
         <div className="bg-white shadow-xl rounded-xl p-4 h-[500px] flex flex-col">
           <h2 className="text-xl font-bold mb-4">Summary</h2>
+          <h2 className="text-xl font-bold mb-4">No of Items  - {summary.length}</h2>
 
           <div className="flex-1 overflow-y-auto">
             {summary.length === 0 ? (
@@ -355,6 +366,25 @@ useEffect(() => {
                     <tr key={item.id} className="text-center border">
                       <td className="p-2 border flex justify-center items-center gap-2">
                         {/* Decrease */}
+
+    {/* ❌ Remove Icon */}
+    <button
+      onClick={() => handleRemove(item.id)}
+      className="p-1 rounded-md hover:bg-red-100"
+      title="Remove"
+    >
+      <svg
+        className="w-6 h-4 text-red-800"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        strokeWidth="2"
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" d="M6 6l12 12M6 18L18 6" />
+      </svg>
+    </button>
+
                         <button
                           onClick={() => handleDecrease(item.id)}
                           className="p-1 rounded-md border bg-white hover:bg-gray-100"
@@ -389,6 +419,10 @@ useEffect(() => {
                             <path d="M12 5v14M5 12h14" />
                           </svg>
                         </button>
+
+
+
+
                       </td>
                       <td className="p-2 border">{item.quantity}</td>
                       <td className="p-2 border">

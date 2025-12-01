@@ -5,42 +5,44 @@ const FetchInvoiceReports = async (req, res) => {
     const { start, end } = req.query;
     let filter = {};
 
-    // Helper: Convert normal date into 7pm-day-start
-    const getSevenPMStart = (dateString) => {
-      const d = new Date(dateString);
-      d.setHours(19, 0, 0, 0); // 7 PM same day
-      return d;
-    };
-
-    // Helper: Convert normal date into next-day 6:59 PM end
-    const getSevenPMEnd = (dateString) => {
-      const d = new Date(dateString);
-      d.setDate(d.getDate() + 1); // next day
-      d.setHours(18, 59, 59, 999); // 6:59 PM
-      return d;
-    };
-
     if (start && end) {
+      // Normal date range - start of start date to end of end date
+      const startDate = new Date(start);
+      startDate.setHours(0, 0, 0, 0); // Start of the day
+      
+      const endDate = new Date(end);
+      endDate.setHours(23, 59, 59, 999); // End of the day
+
       filter.createdAt = {
-        $gte: getSevenPMStart(start),
-        $lte: getSevenPMEnd(end),
+        $gte: startDate,
+        $lte: endDate,
       };
     }
 
     else if (start && !end) {
+      // Single day - from start of day to end of day
+      const startDate = new Date(start);
+      startDate.setHours(0, 0, 0, 0); // Start of the day
+      
+      const endDate = new Date(start);
+      endDate.setHours(23, 59, 59, 999); // End of the day
+
       filter.createdAt = {
-        $gte: getSevenPMStart(start),
-        $lte: getSevenPMEnd(start),
+        $gte: startDate,
+        $lte: endDate,
       };
     }
 
     else {
-      // Default: current month (but using 7 PM boundaries)
+      // Default: current month (normal calendar month)
       const now = new Date();
-      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1, 19, 0, 0, 0);
-      const nextMonthStart = new Date(now.getFullYear(), now.getMonth() + 1, 1, 19, 0, 0, 0);
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
+      const nextMonthStart = new Date(now.getFullYear(), now.getMonth() + 1, 1, 0, 0, 0, 0);
 
-      filter.createdAt = { $gte: monthStart, $lt: nextMonthStart };
+      filter.createdAt = { 
+        $gte: monthStart, 
+        $lt: nextMonthStart 
+      };
     }
 
     const invoices = await InvoiceModel.find(filter).sort({ createdAt: -1 });
@@ -52,7 +54,11 @@ const FetchInvoiceReports = async (req, res) => {
     });
 
   } catch (error) {
-    res.status(500).json({ success: false, message: "Server error while fetching data." });
+    console.error("Error fetching invoices:", error);
+    res.status(500).json({ 
+      success: false, 
+      message: "Server error while fetching data." 
+    });
   }
 };
 

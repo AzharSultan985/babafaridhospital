@@ -26,13 +26,6 @@ const ReceptionMain = () => {
     status: "",
     received_payment: "",
   });
-  const filteredPatients = AllPatient.filter(
-    (p) =>
-      p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.patientID.toString().toLowerCase().includes(searchTerm.toLowerCase())||
-      p.F_H_Name.toLowerCase().includes(searchTerm.toLowerCase()) 
-   
-  );
 
   const handleEditClick = (patient) => {
     setEditModal(patient);
@@ -66,6 +59,7 @@ const handleReAppChange = (e) => {
   const { name, value } = e.target;
   setReAppData((prev) => ({ ...prev, [name]: value }));
 };
+
 
 
 const handleReAppointment = (patient) => {
@@ -114,6 +108,35 @@ const isWithinShift = (shiftStart, shiftEnd) => {
   return currTotal >= startTotal && currTotal <= endTotal;
 };
 
+const startOfToday = new Date();
+startOfToday.setHours(0, 0, 0, 0);
+
+const endOfToday = new Date();
+endOfToday.setHours(23, 59, 59, 999);
+
+// Get latest app date from patient
+const getLatestAppDate = (patient) => {
+  if (!patient.Appointment || patient.Appointment.length === 0) return null;
+  return patient.Appointment.reduce((latest, curr) =>
+    new Date(curr.Appdate) > new Date(latest.Appdate) ? curr : latest
+  ).Appdate;
+};
+
+// Filter For Today
+const todayAppointments = AllPatient.filter((p) => {
+  const latest = getLatestAppDate(p);
+  if (!latest) return false;
+
+  const appDate = new Date(latest);
+  return appDate >= startOfToday && appDate <= endOfToday;
+});
+const filteredPatients = searchTerm.trim()
+  ? AllPatient.filter((p) =>
+      p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.patientID.toString().includes(searchTerm.toLowerCase()) 
+    )
+  : todayAppointments;
+
   return (
     <div className="p-6 min-h-screen bg-gray-50">
       <div className="flex justify-between items-center mb-6">
@@ -155,7 +178,12 @@ const isWithinShift = (shiftStart, shiftEnd) => {
           </thead>
           <tbody>
             {filteredPatients.length > 0 ? (
-              filteredPatients.map((p) => (
+             filteredPatients.map((p) => (
+
+
+
+
+                
                 <tr key={p.patientID} className="hover:bg-gray-50">
                   <td className="border px-4 py-2">{p.patientID}</td>
                   <td className="border px-4 py-2 font-medium">{p.name}</td>
@@ -286,6 +314,20 @@ const isWithinShift = (shiftStart, shiftEnd) => {
         <td className="font-semibold p-2 bg-gray-50">Handle By</td>
         <td className="p-2">{app.handledBy }</td>
       </tr>
+   <tr>
+  <td className="font-semibold p-2 bg-gray-50">Appointment Date</td>
+  <td className="p-2">
+    {new Date(app.Appdate).toLocaleString("en-PK", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true
+    })}
+  </td>
+</tr>
+
      
     </React.Fragment>
   ))

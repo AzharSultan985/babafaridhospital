@@ -7,26 +7,6 @@ const Invoice = () => {
   const { InvoiceData, setExtractMedForReport, HandlepharmaMedQuntity, SaveInvoiceData ,setPatientID} = usePharmacy();
   const [dataINVQR, setdataINVQR] = useState("");
 
-
-
-useEffect(() => {
-  if (
-    InvoiceData &&InvoiceData.medicines?.length > 0 ) {
-    // Print first
-    window.print();
-
-    // Update backend
-    HandlepharmaMedQuntity(); // optional if needed
-    SaveInvoiceData();
-
- setPatientID('')
-  }
-}, [InvoiceData]);
-
-
-
-
-
   
   useEffect(() => {
     if (InvoiceData?.medicines?.length) {
@@ -203,16 +183,19 @@ useEffect(() => {
       </div>
 
       <div className="w-full flex gap-2 justify-center print:hidden mt-3">
-        {/* <button
-        //   onClick={() => {
-        // handleDirectPrint();
-        //     HandlepharmaMedQuntity();
-        //     SaveInvoiceData();
-        //   }}
+       <button
+          onClick={() => {
+        
+            HandlepharmaMedQuntity();
+            SaveInvoiceData();
+
+ setPatientID('')
+
+          }}
           className="px-4 py-2 w-[30%] bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
         >
           Print Invoice
-        </button> */}
+        </button> 
         <Link
           to={"/pharmacy"}
           className="px-4 py-2 w-[20%] bg-green-600 text-white rounded-lg hover:bg-green-700 transition flex justify-center items-center"

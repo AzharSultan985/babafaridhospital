@@ -50,24 +50,29 @@ const [Addmissiondata, setAddmissiondata] = useState({
   if (!localStorage.getItem("patientID")) {
     localStorage.setItem("patientID", 1000);
   }
-const generateToken = () => {
-  let lastResetDate = localStorage.getItem("TokenResetDate");
-  let TokenNo = localStorage.getItem("TokenNo");
+const generateDoctorWiseToken = (doctorName) => {
+  let tokens = JSON.parse(localStorage.getItem("DoctorTokens")) || {};
   let today = new Date().toISOString().split("T")[0];
 
-  if (lastResetDate !== today) {
-    // midnight reset
-    TokenNo = 0;
-    localStorage.setItem("TokenNo", TokenNo);
-    localStorage.setItem("TokenResetDate", today);
-  } else {
-    // continue counting
-    TokenNo = TokenNo ? parseInt(TokenNo) + 1 : 0;
-    localStorage.setItem("TokenNo", TokenNo);
+  if (!tokens[doctorName]) {
+    tokens[doctorName] = { lastDate: today, token: 0 };
   }
 
-  return TokenNo; // return token number
+  // Reset token if new day
+  if (tokens[doctorName].lastDate !== today) {
+    tokens[doctorName].token = 0;
+    tokens[doctorName].lastDate = today;
+  }
+
+  // Increase token
+  tokens[doctorName].token += 1;
+
+  // Save back to localStorage
+  localStorage.setItem("DoctorTokens", JSON.stringify(tokens));
+
+  return tokens[doctorName].token; // return doctor-wise token
 };
+
 
  
 
@@ -79,7 +84,7 @@ const registerPatient = async (data) => {
     currentID = currentID ? parseInt(currentID) + 1 : 1000;
     localStorage.setItem("patientID", currentID);
 
-    const newToken = generateToken();
+    const newToken = generateDoctorWiseToken(data.doctor);
 
     const patientWithID = { ...data, patientID: currentID, Appointment: [
         {
@@ -532,37 +537,36 @@ const FetchAllDoctors = async () => {
 const HandleReAppointment = async (data) => {
   try {
     setLoading(true);
-   const TokenNo = generateToken();
-
+    
     const response = await fetch(
       `${process.env.REACT_APP_BACKEND_URL}/api/reappointment-patient/${data.patientID}`,
       {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-     body: JSON.stringify({
-  fees: data.fees,
-  reAppHandleby: data.ReappHandleby
-})
-
+        body: JSON.stringify({
+          fees: data.fees,
+          reAppHandleby: data.ReappHandleby
+        })
+        
       }
     );
-
+    
     const result = await response.json();
     if (!result.success) throw new Error(result.message || "Failed to admit patient");
- 
+    // console.log('Patient',result.patient.doctor);
+    const newToken = generateDoctorWiseToken(result.patient.doctor);
+
+
     setAlert({ isAlert: true, alertmsg: "Reappointment succesfully", type: "success" });
     // Prepare invoice data with token
     const invoiceData = {
       ...result.patient,
-      TokenNo: TokenNo,
+      TokenNo: newToken,
     };
 
     setRecepInvoiceData(invoiceData)
 
       navigate("/recep-invoice");
-
-  
-
   } catch (error) {
     ////console.error("❌ Create admission error:", error);
     setAlert({ isAlert: true, alertmsg: error.message, type: "error" });

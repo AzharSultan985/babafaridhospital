@@ -81,7 +81,7 @@ const AdmissionInvoice = () => {
 
         <div className="flex justify-between mb-2">
           <div>
-            <p>Patient ID: {AdmissionInvoiceData.patientID || "N/A"}</p>
+            <p>MR No: {AdmissionInvoiceData.patientID || "N/A"}</p>
             <p>Date: {currentDate}</p>
             <p>Handle By: {AdmissionInvoiceData.admission.Operating_handledBy}</p>
           </div>

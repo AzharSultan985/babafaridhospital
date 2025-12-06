@@ -4,11 +4,12 @@ import { useEffect, useCallback, useState } from "react";
 import PhramacyEditModal from '../Pharmacy/Modals/phramacyEditModal'
 
 export default function HandlePharmacy() {
-  const { fetchPharmacyMed, setSearchTerm, filteredMed,
+  const { fetchPharmacyMed, 
           isEditModalOpen, setisEditModalOpen, FetchwitIdforEdit,
           DelPharmaMedByID } = usePharmacy();
 
   const [confirmDelete, setConfirmDelete] = useState({ open: false, id: null });
+  const [searchTerm, setSearchTerm] = useState('');
 
   const stableFetch = useCallback(() => {
     fetchPharmacyMed();
@@ -17,6 +18,14 @@ export default function HandlePharmacy() {
   useEffect(() => {
     stableFetch();
   }, [stableFetch]);
+
+
+const filteredMedicine = fetchPharmacyMed.filter((med) =>
+  med.PharmaMedname.toLowerCase().includes(searchTerm.toLowerCase())
+);
+
+
+
 
   const formatDateToEng = (dateString) => {
     if (!dateString) return "N/A";
@@ -106,7 +115,8 @@ export default function HandlePharmacy() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredMed.filter(med => med && med._id).map((med, index) => {
+                {(filteredMedicine.length > 0 ? filteredMedicine : fetchPharmacyMed).map((index,med) => {
+
                     const daysLeft = getDaysLeft(med.PharmaMedexpireDate);
                     const isSoonToExpire = daysLeft !== null && daysLeft <= 30;
 

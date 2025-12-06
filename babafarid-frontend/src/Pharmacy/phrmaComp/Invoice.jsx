@@ -185,11 +185,10 @@ const Invoice = () => {
       <div className="w-full flex gap-2 justify-center print:hidden mt-3">
        <button
           onClick={() => {
-        
+        window.print()
             HandlepharmaMedQuntity();
             SaveInvoiceData();
-
- setPatientID('')
+         setPatientID('')
 
           }}
           className="px-4 py-2 w-[30%] bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"

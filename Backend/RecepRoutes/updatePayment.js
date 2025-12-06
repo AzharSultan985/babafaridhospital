@@ -44,7 +44,7 @@ router.put("/update-payment/:patientID", async (req, res) => {
     res.status(200).json({
       success: true,
       message: "Payment details updated successfully.",
-      updatedPayment: patient.payment,
+      patient,
     });
   } catch (error) {
     ////console.error("❌ Error updating payment:", error);

@@ -29,11 +29,7 @@ const patientSchema = new mongoose.Schema({
     department: String,
     roomNumber: String,
 
-    operating_doctorName:{
-    type: String
-    
-  }, 
-
+    operating_doctorName:String,
 roomNo:Number,
 Admission_Type:String,
 Operating_handledBy:String,

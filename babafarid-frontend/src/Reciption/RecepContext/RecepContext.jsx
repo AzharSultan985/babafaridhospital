@@ -296,6 +296,10 @@ const UpdatePayment = async (paymentDetail) => {
     const result = await response.json();
     if (!result.success) throw new Error(result.message || "Failed to update payment");
     setAlert({ isAlert: true, alertmsg: "Payment Update succesfully", type: "success" });
+    setRecepInvoiceData(result.patient)
+
+    navigate("/clearnce-invoice");
+
 FetchAllPatient()
 
   } catch (error) {
@@ -327,6 +331,9 @@ const handleDischargePatient = async (dischargeData) => {
       const result = await response.json();
       if (!result.success) throw new Error(result.message);
       setAlert({ type: "success", msg: "Patient discharged successfully." });
+      setRecepInvoiceData(result.patient)
+    navigate("/discharge-invoice");
+
     } catch (error) {
       setAlert({ type: "error", msg: error.message });
     } finally {

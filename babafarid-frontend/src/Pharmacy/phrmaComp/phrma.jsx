@@ -24,6 +24,12 @@ export default function Pharmacy() {
     setBillingPriceRates,
     Logoutpharma
   } = usePharmacy();
+
+
+
+
+
+  
 const filteredMedicine = pharmacyMed.filter((med) =>
   med.PharmaMedname.toLowerCase().includes(searchTerm.toLowerCase())
 );

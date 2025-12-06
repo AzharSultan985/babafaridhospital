@@ -25,6 +25,8 @@ import RecepInvoice from "./Reciption/RecepComp/RecepInvoice";
 import AdmissionInvoice from "./Reciption/RecepComp/AdmssionInvoice";
 import RecepLogin from "./Reciption/RecepComp/RecepLogin";
 import RecepUserProtectedRoute from "./ProtectedRoutes/recepuserProtectRoute";
+import ClearnceInvoice from "./Reciption/RecepComp/clearnceInvoice";
+import DischargeInvoice from "./Reciption/RecepComp/dischargeslip";
 
 function App() {
   const {spiner } = usePharmacy();
@@ -108,6 +110,8 @@ function App() {
         <Route path="/pharmalogin" element={< PhramaLogin />} />
         <Route path="/recep-invoice" element={< RecepInvoice />} />
         <Route path="/admission-invoice" element={< AdmissionInvoice />} />
+        <Route path="/clearnce-invoice" element={< ClearnceInvoice />} />
+        <Route path="/discharge-invoice" element={< DischargeInvoice />} />
 
  
         {/* <Route path="*" element={<NotFound />} /> */}

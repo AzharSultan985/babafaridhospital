@@ -6,6 +6,31 @@ const Reception = () => {
   const [isModal, setModal] = useState(false);
  const [currentTime, setCurrentTime] = useState(""); // store current time in HH:mm
 
+
+ const getAdjustedFee = (baseFee) => {
+  if (Number(baseFee) !== 300) return baseFee;
+
+  const now = new Date();
+  const day = now.getDay(); // 0 = Sunday
+  const hours = now.getHours();
+  const minutes = now.getMinutes();
+
+  // Sunday special: 10:00 - 15:00 → 200
+  if (day === 0 && (hours > 10 || (hours === 10 && minutes >= 0)) && hours < 15) {
+    return 200;
+  }
+
+  // Every day: 18:00 - 24:00 → 500
+  if (hours >= 17 && hours < 24) {
+    return 500;
+  }
+
+  // Default for 300-fee doctors
+  return 300;
+};
+
+ 
+
   useEffect(() => {
     FetchAllReceptionUser();
     FetchAllDoctors()
@@ -25,20 +50,29 @@ const handleChange = (e) => {
     let updated = { ...prev, [name]: value };
 
     // When doctor is selected, set original fee and fees
-    if (name === "doctor") {
-      const selectedDoc = AllDoctors.find((doc) => doc.name === value);
-      if (selectedDoc) {
-        updated.originalFee = selectedDoc.fees || 0; // store original doctor's fee
-        updated.fees = selectedDoc.fees || 0;       // set initial fees
-      }
-    }
+if (name === "doctor") {
+  const selectedDoc = AllDoctors.find((doc) => doc.name === value);
+  if (selectedDoc) {
+    const baseFee = selectedDoc.fees || 0;
+    const adjustedFee = getAdjustedFee(baseFee);
+
+    updated.originalFee = adjustedFee; // important
+    updated.fees = adjustedFee;
+  }
+}
 
     // When discount changes, calculate from original fee
     if (name === "discount") {
       const discount = Number(value) || 0;
       const originalFee = Number(prev.originalFee) || 0;
-      const discountedFee = originalFee - (originalFee * discount) / 100;
-      updated.fees = Math.round(discountedFee); // round to nearest integer
+    let finalFee = originalFee - discount;
+
+      // Safety: fee can never be negative
+      if (finalFee < 0) finalFee = 0;
+
+      updated.fees = finalFee;
+
+      
     }
 
     return updated;
@@ -231,7 +265,7 @@ const isWithinShift = (shiftStart, shiftEnd) => {
                 />
               </div>
              <div>
-  <label className="block text-gray-700 mb-1">Discount %</label>
+  <label className="block text-gray-700 mb-1">Discount Rs</label>
   <input
     type="number"
     name="discount"

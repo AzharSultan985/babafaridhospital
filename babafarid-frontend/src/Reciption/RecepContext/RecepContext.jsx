@@ -602,7 +602,7 @@ const HandleReAppointment = async (data) => {
         ,FetchAllPatient,AllPatient
 ,HandleReceptionStaff,
         UpdatePayment,handleDischargePatient,recep_Login_Res,Recep_Login,LogoutRecepUSer,
-
+setRecepInvoiceData,
         FetchAllReceptionUser,AllReceptionUser,RemoveReceptionStaff,
         AllDoctors,FetchAllDoctors,HandleReAppointment
       }}

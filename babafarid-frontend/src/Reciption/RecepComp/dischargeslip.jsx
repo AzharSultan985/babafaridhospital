@@ -1,14 +1,27 @@
 
 import { Link } from "react-router-dom";
 import { useReception } from "../RecepContext/RecepContext";
+import { useNavigate } from "react-router-dom";
 
 const DischargeInvoice = () => {
-  const { RecepInvoiceData} = useReception();
+  const { RecepInvoiceData,setRecepInvoiceData} = useReception();
 ////console.log('patiet',RecepInvoiceData);
+  const navigate = useNavigate();
 
   if (!RecepInvoiceData) {
-    return <div>No Invoice Data Available</div>;
-  }
+  return (
+    <div className="flex flex-col items-center gap-4 mt-10">
+      <p>No Invoice Data Available</p>
+      <Link
+        to="/recepition"
+        className="px-4 py-2 bg-green-600 text-white rounded-lg"
+      >
+        Back
+      </Link>
+    </div>
+  );
+}
+
 
   // Auto generate Invoice number and date
   
@@ -142,7 +155,16 @@ const DischargeInvoice = () => {
 
       <div className="w-full flex gap-2 justify-center print:hidden mt-3">
         <button
-          onClick={() => window.print()}
+          onClick={() => {window.print(); 
+            setTimeout(() => {
+              
+              setRecepInvoiceData(null)
+
+    navigate("/recepition");
+
+            }, 2000);
+          
+          }}
           className="px-4 py-2 w-[30%] bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
         >
           Print Invoice

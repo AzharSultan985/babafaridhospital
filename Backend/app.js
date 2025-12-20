@@ -61,6 +61,7 @@ import updateAddmissionPayment from "./RecepRoutes/updatePayment.js";
 
 import fetchSinglePatientRoutes from "./RecepRoutes/fetchSinglePatient.js";
 import RemoveDoctor from "./routes/Removedoctor.js";
+import AuthDoctor from "./routes/AuthDoctor.js";
 
 
   const __filename = fileURLToPath(import.meta.url);
@@ -145,6 +146,7 @@ app.use("/api", InvoiceRoute);
   app.use("/api/",UpdatePharmaMed ); // ✅ update med pharma method
   // update invoice data
   app.use("/api/",UpdateInvoiceData ); // ✅ update med pharma method
+  app.use("/api/",AuthDoctor ); // ✅AuthDoctor
 
 
 

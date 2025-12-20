@@ -115,6 +115,18 @@ const FetchIndoorStockRecord = useCallback(async (startmonth, endmonth) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
   return (
     <StaffIndoorMedCotext.Provider value={{setUsername,setPassword ,LoginStaffIndoor, FetchIndoorStockRecord,loggedin_Indoor_Res,LogoutIndoor,HandleUsedMed,setUsedMEd,setUsedMedId,setCurrentMed,AlertResofCurMed,setAlertResofCurMed,IndoorStock_Record}}>
       {children}

@@ -100,13 +100,13 @@ const latestAppointment =
 </table>
 
 
-        <table className="w-full border mb-2 ">
-          <tbody>
         <div className="flex justify-center ml-6 p-2">
 
             <h1 className="text-xl">Clearance Slip</h1>
         </div>
           
+        <table className="w-full border mb-2 ">
+          <tbody>
              <tr>
               <td className="font-semibold">Payment Status:</td>
               <td> {RecepInvoiceData.payment.paymentstatus }</td>

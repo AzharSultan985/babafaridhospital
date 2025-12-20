@@ -47,6 +47,12 @@ Reciption            </Link>
             >
               Pharmacy
             </Link>
+            {/* <Link
+              className="text-white w-full flex justify-center bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-lg px-5 py-3 transition"
+              to={"/doctor_profile"}
+            >
+              Doctors Profile
+            </Link> */}
           </div>
 
           {/* Footer */}

@@ -5,7 +5,7 @@ import { useReception } from "../RecepContext/RecepContext";
 
 const ReceptionMain = () => {
 
-  const {FetchAllPatient,AllPatient ,AllDoctors,UpdatePayment,HandleReAppointment,AllReceptionUser} = useReception();
+  const {FetchAllPatient,AllDoctors,AllPatient ,UpdatePayment,HandleReAppointment,AllReceptionUser} = useReception();
 
  useEffect(() => {
   FetchAllPatient(); // initial fetch
@@ -17,6 +17,7 @@ const ReceptionMain = () => {
   return () => clearInterval(interval); // cleanup
 }, []);
 
+const [editingPayment, setEditingPayment] = useState(null);
 
   const [viewPatient, setViewPatient] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -26,13 +27,21 @@ const ReceptionMain = () => {
     status: "",
     received_payment: "",
   });
+// const getLastPayment = (patient) => {
+//   if (!patient.payment || patient.payment.length === 0) return null;
+//   return patient.payment[patient.payment.length - 1];
+// };
 
   const handleEditClick = (patient) => {
+     const lastPayment = getLastPayment(patient);
+  if (!lastPayment) return;
+
     setEditModal(patient);
+      setEditingPayment(lastPayment);
     setUpdatePayment({
       patientID: patient.patientID,
       status: patient.payment.paymentstatus || "",
-      // received_payment: patient.payment.received_payment || "",
+      received_payment: patient.payment.received_payment || "",
     });
   };
 
@@ -51,6 +60,7 @@ const [reAppModal, setReAppModal] = useState(null);
 const [reAppData, setReAppData] = useState({
   patientID: '',
   fees: '',
+  ReappDoctor: '',
   ReappHandleby: '',
 
 });
@@ -75,6 +85,7 @@ const handleReAppointment = (patient) => {
 
 const handleSaveReApp = async () => {
   // //console.log("RE-APPOINTMENT DATA:", reAppData);
+console.log('ReappDoctor',reAppData);
 
 
  await HandleReAppointment(reAppData)
@@ -107,6 +118,9 @@ const isWithinShift = (shiftStart, shiftEnd) => {
 
   return currTotal >= startTotal && currTotal <= endTotal;
 };
+
+
+
 
 const startOfToday = new Date();
 startOfToday.setHours(0, 0, 0, 0);
@@ -171,67 +185,63 @@ const filteredPatients = searchTerm.trim()
               <th className="border px-4 py-2 text-left">ID</th>
               <th className="border px-4 py-2 text-left">Name</th>
               <th className="border px-4 py-2 text-left">Father/Husband</th>
-           
+       
               <th className="border px-4 py-2 text-center">Action</th>
             </tr>
           </thead>
           <tbody>
-            {filteredPatients.length > 0 ? (
-             filteredPatients.map((p) => (
+         {filteredPatients.length > 0 ? (
+  filteredPatients.map((p) => {
+    const lastPayment = getLastPayment(p); // ✅ CORRECT PLACE
 
+    return (
+      <tr key={p.patientID} className="hover:bg-gray-50">
+        <td className="border px-4 py-2">{p.patientID}</td>
+        <td className="border px-4 py-2 font-medium">{p.name}</td>
+        <td className="border px-4 py-2">{p.F_H_Name}</td>
 
+        <td className="border px-4 py-2 text-center flex justify-start gap-2">
+          {/* VIEW */}
+          <button
+            onClick={() => setViewPatient(p)}
+            className="bg-blue-600 text-white px-3 py-1 ml-2 rounded-md hover:bg-blue-700 flex items-center justify-center"
+          >
+            <Eye size={16} />
+          </button>
 
+          {/* RE-APPOINTMENT */}
+          <button
+            onClick={() => handleReAppointment(p)}
+            className="bg-green-600 text-white px-3 py-1 rounded-md hover:bg-green-700 flex items-center justify-center"
+          >
+            <RefreshCw size={16} />
+          </button>
 
-                
-                <tr key={p.patientID} className="hover:bg-gray-50">
-                  <td className="border px-4 py-2">{p.patientID}</td>
-                  <td className="border px-4 py-2 font-medium">{p.name}</td>
-                  <td className="border px-4 py-2">{p.F_H_Name}</td>
-                  
-           <td className="border px-4 py-2 text-center  flex justify-start gap-2">
-  
-  {/* VIEW BUTTON */}
-  <button
-    onClick={() => setViewPatient(p)}
-    className="bg-blue-600 text-white px-3 py-1 ml-2 rounded-md hover:bg-blue-700 flex items-center justify-center"
-  >
-    <Eye size={16} />
-  </button>
+          {/* EDIT — ONLY IF PENDING */}
+         {lastPayment && (
+  lastPayment.paymentstatus === "Partial" ||
+  lastPayment.paymentstatus === "Pending"
+) && (
 
-
-
-  {/* RE-APPOINTMENT (REFRESH ICON) */}
-  <button
-    onClick={() => handleReAppointment(p)}
-    className="bg-green-600 text-white px-3 py-1 rounded-md hover:bg-green-700 flex items-center justify-center"
-  >
-    <RefreshCw size={16} />
-  </button>
-  {/* EDIT PAYMENT (EDIT ICON) */}
-{p.admission.isadmitted &&
- (p.payment.paymentstatus === "Partial" || p.payment.paymentstatus === "Pending") && (
-  <button
-    onClick={() => handleEditClick(p)}
-    className="bg-yellow-500 text-white px-3 py-1 rounded-md hover:bg-yellow-600 flex items-center justify-center"
-  >
-    <Edit size={16} />
-  </button>
+            <button
+              onClick={() => handleEditClick(p)}
+              className="bg-yellow-500 text-white px-3 py-1 rounded-md hover:bg-yellow-600 flex items-center justify-center"
+            >
+              <Edit size={16} />
+            </button>
+          )}
+        </td>
+      </tr>
+    );
+  })
+) : (
+  <tr>
+    <td colSpan="6" className="text-center py-6 text-gray-500 italic">
+      No patients found.
+    </td>
+  </tr>
 )}
 
-</td>
-
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td
-                  colSpan="6"
-                  className="text-center py-6 text-gray-500 italic"
-                >
-                  No patients found.
-                </td>
-              </tr>
-            )}
           </tbody>
         </table>
       </div>
@@ -287,7 +297,7 @@ const filteredPatients = searchTerm.trim()
                   </tr>
                   <tr>
                     <td className="font-semibold p-2 bg-gray-50">Check Up</td>
-                    <td className="p-2 text-gray-500">{viewPatient.doctor|| 'For New patients show doctor in blew section' }</td>
+                    <td className="p-2 text-gray-600">{viewPatient.doctor?viewPatient.doctor: 'Doctor show in Appointment section '} </td>
            
                   </tr>
 
@@ -313,8 +323,8 @@ const filteredPatients = searchTerm.trim()
         <td className="p-2">{app.handledBy }</td>
       </tr>
       <tr>
-        <td className="font-semibold p-2 bg-gray-50">CheckUp By</td>
-        <td className="p-2">{app.AppDoctor?'Dr. ' + app.AppDoctor:'For Old patients not show doctor here show above section' }</td>
+        <td className="font-semibold p-2 bg-gray-50">Checkup By </td>
+        <td className="p-2"> { app.AppDoctor?'Dr.'+ app.AppDoctor:  'Old Patient show doctor INFO Section'}</td>
       </tr>
    <tr>
   <td className="font-semibold p-2 bg-gray-50">Appointment Date</td>
@@ -362,64 +372,81 @@ const filteredPatients = searchTerm.trim()
                     </td>
                   </tr>
 
-                  <tr>
-                    <td className="font-semibold p-2 bg-gray-50">Admit</td>
-                    <td className="p-2">{viewPatient.admission.isadmitted?'Yes':'No'}</td>
-                  </tr>
-                 
-                  <tr>
-                    <td className="font-semibold p-2 bg-gray-50">Department</td>
-                    <td className="p-2">{viewPatient.admission.department}</td>
-                  </tr>
-                  <tr>
-                    <td className="font-semibold p-2 bg-gray-50">OPD Doctor</td>
-                    <td className="p-2">{viewPatient.admission.operating_doctorName}</td>
-                  </tr>
-                  <tr>
-                    <td className="font-semibold p-2 bg-gray-50">Room No</td>
-                    <td className="p-2">{viewPatient.admission.roomNo}</td>
-                  </tr>
-                  <tr>
-                    <td className="font-semibold p-2 bg-gray-50">
-                       Type</td>
-                    <td className="p-2">{viewPatient.admission.Admission_Type}</td>
-                  </tr>
-                
-                  <tr>
-                    <td className="font-semibold p-2 bg-gray-50">
-                       Handle By</td>
-                    <td className="p-2">{viewPatient.admission.Operating_handledBy}</td>
-                  </tr>
-                  <tr>
-                    <td className="font-semibold p-2 bg-gray-50">
-                       Admitted At</td>
-                    <td className="p-2"> {viewPatient.admission.admittedAt?new Date(viewPatient.admission.admittedAt).toLocaleString() :"Not Admit"}</td>
-                  </tr>
-                   <tr className="bg-gray-100">
-                    <td
-                      colSpan="2"
-                      className="font-semibold text-center p-2 text-blue-700"
-                    >
-                      Payment Info
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="font-semibold p-2 bg-gray-50">Total</td>
-                    <td className="p-2"> Rs {viewPatient.payment.total_payment?viewPatient.payment.total_payment:"0.0"} </td>
-                  </tr>
-                   <tr>
-                    <td className="font-semibold p-2 bg-gray-50">Status</td>
-                    <td className="p-2"> {viewPatient.payment.paymentstatus}</td>
-                  </tr>
-                  <tr>
-                    <td className="font-semibold p-2 bg-gray-50">Received</td>
-                    <td className="p-2">Rs {viewPatient.payment.received_payment?viewPatient.payment.received_payment:"0.0"}</td>
-                  </tr>
-                  <tr>
-                    <td className="font-semibold p-2 bg-gray-50">Pending</td>
-                    <td className="p-2">Rs {viewPatient.payment.pending_payment?viewPatient.payment.pending_payment:"0.0"}</td>
-                  </tr>
-                 
+  <React.Fragment key={adm._id}>
+    <tr className="bg-gray-100">
+      
+    </tr>
+
+    <tr>
+      <td className="font-semibold">Department</td>
+      <td>{adm.department}</td>
+    </tr>
+
+    <tr>
+      <td className="font-semibold">Room</td>
+      <td>{adm.roomNo}</td>
+    </tr>
+
+    <tr>
+      <td className="font-semibold">Doctor</td>
+      <td>Dr. {adm.operating_doctorName } </td>
+    </tr>
+
+    <tr>
+      <td className="font-semibold">Admitted At</td>
+      <td>{new Date(adm.admittedAt).toLocaleString("en-PK")}</td>
+    </tr>
+  </React.Fragment>
+))}
+
+
+               <tr className="bg-gray-100">
+  <td
+    colSpan="2"
+    className="font-semibold text-center p-2 text-blue-700"
+  >
+    Payment Info
+  </td>
+</tr>
+
+{viewPatient.payment && viewPatient.payment.length > 0 ? (
+  viewPatient.payment.map((pay, index) => (
+    <React.Fragment key={pay._id}>
+      <tr className="bg-gray-50">
+        <td colSpan="2" className="text-center font-semibold text-blue-700">
+          Payment #{index + 1}
+        </td>
+      </tr>
+
+      <tr>
+        <td className="font-semibold p-2 bg-gray-50">Total</td>
+        <td className="p-2">Rs {pay.total_payment ?? "0.0"}</td>
+      </tr>
+
+      <tr>
+        <td className="font-semibold p-2 bg-gray-50">Status</td>
+        <td className="p-2">{pay.paymentstatus}</td>
+      </tr>
+
+      <tr>
+        <td className="font-semibold p-2 bg-gray-50">Received</td>
+        <td className="p-2">Rs {pay.received_payment ?? "0.0"}</td>
+      </tr>
+
+      <tr>
+        <td className="font-semibold p-2 bg-gray-50">Pending</td>
+        <td className="p-2">Rs {pay.pending_payment ?? "0.0"}</td>
+      </tr>
+    </React.Fragment>
+  ))
+) : (
+  <tr>
+    <td colSpan="2" className="text-center text-gray-500 p-2">
+      No payment record
+    </td>
+  </tr>
+)}
+
                    <tr className="bg-gray-100">
                     <td
                       colSpan="2"
@@ -428,16 +455,44 @@ const filteredPatients = searchTerm.trim()
                       Discharge Info
                     </td>
                   </tr>
-                <tr>
-                    <td className="font-semibold p-2 bg-gray-50">Dicharge</td>
-               <td className="p-2">{viewPatient.discharge.isdischarge?'Yes':'No'}</td>
-
-                  </tr>
-                <tr>
-                    <td className="font-semibold p-2 bg-gray-50">Dicharge By</td>
-               <td className="p-2">{viewPatient.discharge.dischargedBy}</td>
-
-                  </tr>
+           {viewPatient.discharge && viewPatient.discharge.length > 0 ? (
+  (() => {
+    const latestDischarge = viewPatient.discharge[viewPatient.discharge.length - 1];
+    return (
+      <>
+        <tr>
+          <td className="font-semibold p-2 bg-gray-50">Discharged</td>
+          <td className="p-2">{latestDischarge.isdischarge ? "Yes" : "No"}</td>
+        </tr>
+        <tr>
+          <td className="font-semibold p-2 bg-gray-50">Discharged By</td>
+          <td className="p-2">{latestDischarge.dischargedBy || "N/A"}</td>
+        </tr>
+        <tr>
+          <td className="font-semibold p-2 bg-gray-50">Discharge Date</td>
+          <td className="p-2">
+            {latestDischarge.dischargedAt
+              ? new Date(latestDischarge.dischargedAt).toLocaleString("en-PK", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                })
+              : "N/A"}
+          </td>
+        </tr>
+      </>
+    );
+  })()
+) : (
+  <tr>
+    <td colSpan="2" className="text-center text-gray-500 p-2">
+      No discharge info
+    </td>
+  </tr>
+)}
                 </tbody>
               </table>
             </div>
@@ -474,11 +529,11 @@ const filteredPatients = searchTerm.trim()
               </p>
               <p>
                 <span className="font-semibold">Total Payment:</span>{" "}
-                {editModal.payment.total_payment}
+                {editingPayment.total_payment}
               </p>
               <p>
                 <span className="font-semibold">Received Payment:</span>{" "}
-                {editModal.payment.received_payment}
+                {editingPayment.received_payment}
               </p>
 
               <label className="block font-medium">Payment Status</label>
@@ -494,7 +549,7 @@ const filteredPatients = searchTerm.trim()
                 <option value="Partial">Partial</option>
               </select>
 
-              <label className="block font-medium">Receiving Amount (Rs)</label>
+              <label className="block font-medium">Total Receiving Amount (Rs)</label>
               <input
                 type="number"
                 name="received_payment"
@@ -540,9 +595,7 @@ const filteredPatients = searchTerm.trim()
   onChange={handleReAppChange}
   className="w-full border p-2 rounded-lg"
 />
-
-      </div>
-      {/* Doctor */}
+     {/* Doctor */}
               <div>
                 <label className="block text-gray-700 mb-1">Doctor</label>
              <select
@@ -562,7 +615,7 @@ const filteredPatients = searchTerm.trim()
 </select>
 
               </div>
-     
+      </div>
               <div>
                 <label className="block text-gray-700 mb-1">Handled By</label>
                <select name="ReappHandleby" value={reAppData.ReappHandleby} onChange={handleReAppChange} className="w-full ...">

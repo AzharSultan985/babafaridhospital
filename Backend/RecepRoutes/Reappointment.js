@@ -10,7 +10,7 @@ const router = express.Router();
 router.put("/reappointment-patient/:identifier", async (req, res) => {
   try {
     const { identifier } = req.params;
-    const { fees, reAppHandleby } = req.body;
+    const { fees, reAppHandleby ,AppDoctor} = req.body;
 
     if (!identifier) {
       return res.status(400).json({
@@ -49,6 +49,7 @@ router.put("/reappointment-patient/:identifier", async (req, res) => {
       NoofTime: nextNo,
       fees: Number(fees),
       handledBy: reAppHandleby || "Reception",
+      AppDoctor,
     });
 
     await patient.save();

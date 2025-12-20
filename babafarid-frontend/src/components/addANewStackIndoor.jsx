@@ -1,21 +1,39 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useRef, useState, useMemo } from "react";
 import { AppContext } from "../context/AppContext";
 
 export default function AddANewStockIndoor() {
-  const {  setListOFNewstack,AddNewstock_Indoor,  
-  FetcAllMed } = useContext(AppContext);
-//console.log("LastMonthindoorMed",LastMonthindoorMed);
+  const { 
+    setListOFNewstack, 
+    AddNewstock_Indoor, 
+    FetcAllMed,
+   
+  } = useContext(AppContext);
+const [searchTerm, setSearchTerm] = useState("");
 
-  // Refs to capture input values for each row
   const inputRefs = useRef([]);
-  // State to track selected rows
   const [selectedRows, setSelectedRows] = useState([]);
-  // State to control modal visibility
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // ✅ Client-side search filtering (same logic)
+  const filteredMedicines = useMemo(() => {
+    if (!FetcAllMed || !Array.isArray(FetcAllMed)) return [];
+    
+    const searchValue = (searchTerm || '').toLowerCase().trim();
+    
+    // Empty search = Show ALL medicines
+    if (searchValue === '') {
+      return FetcAllMed.filter(med => med && med._id);
+    }
+    
+    // Filter by medicine name or company
+    return FetcAllMed.filter(med => 
+      med && 
+      med._id && 
+      (med.Medname?.toLowerCase().includes(searchValue) ||
+       med.company?.toLowerCase().includes(searchValue))
+    );
+  }, [FetcAllMed, searchTerm]);
 
-
-  // Function to handle adding a medicine to the ListOFNewstack
   const AddANewStack = (index) => {
     const rowInputs = inputRefs.current[index];
     if (!rowInputs) return;
@@ -28,58 +46,74 @@ export default function AddANewStockIndoor() {
       remaining: rowInputs.remaining.value || "",
     };
 
-    // Only add if at least one field is filled to avoid empty entries
-    if (newMedicine.Medname  || newMedicine.expdate || newMedicine.quntity) {
+    if (newMedicine.Medname || newMedicine.expdate || newMedicine.quntity) {
       setListOFNewstack((prev) => [...prev, newMedicine]);
-      // Add the index to selectedRows to change the row color
       setSelectedRows((prev) => [...new Set([...prev, index])]);
     }
   };
 
-  // Function to open the modal
   const handleOpenModal = () => {
     setIsModalOpen(true);
   };
 
-  // Function to close the modal
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
 
-  // Function to handle saving the stack (to be implemented with API)
-  const handleSaveStack = async() => {
-    // Placeholder for API call
-    await AddNewstock_Indoor()
-    setListOFNewstack("")
-    // Close the modal after saving
+  const handleSaveStack = async () => {
+    await AddNewstock_Indoor();
+    setListOFNewstack([]);
     setIsModalOpen(false);
-    // Optionally reset the list and selected rows
-    // setListOFNewstack([]);
-    // setSelectedRows([]);
+    setSelectedRows([]);
   };
 
   return (
     <>
       <h2 className="text-3xl font-bold p-4 text-gray-800">Add a New Indoor Medicine Stock</h2>
 
+      {/* ✅ NEW SEARCH BAR - Same design */}
+      <div className="mb-6 p-4 bg-white rounded-lg shadow-sm border">
+        <div className="flex justify-between items-center mb-4">
+          <div className="text-sm text-gray-600">
+            {filteredMedicines.length} medicines found
+          </div>
+          <div className="flex px-4 h-10 rounded-md border-2 border-blue-500 overflow-hidden max-w-md">
+            <input
+              type="text"
+              placeholder="Search Medicine..."
+              value={searchTerm || ''}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full outline-none bg-transparent text-gray-600 text-sm"
+            />
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              viewBox="0 0 192.904 192.904" 
+              width="16px" 
+              className="fill-gray-600"
+            >
+              <path d="m190.707 180.101-47.078-47.077c11.702-14.072 18.752-32.142 18.752-51.831C162.381 36.423 125.959 0 81.191 0 36.422 0 0 36.423 0 81.193c0 44.767 36.422 81.187 81.191 81.187 19.688 0 37.759-7.049 51.831-18.751l47.079 47.078a7.474 7.474 0 0 0 5.303 2.197 7.498 7.498 0 0 0 5.303-12.803zM15 81.193C15 44.694 44.693 15 81.191 15c36.497 0 66.189 29.694 66.189 66.193 0 36.496-29.692 66.187-66.189 66.187C44.693 147.38 15 117.689 15 81.193z"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
       {/* Table */}
       <div className="rounded-lg shadow-md border border-gray-300 overflow-y-auto h-[70vh]">
-  <table className="w-full text-gray-700">
-
+        <table className="w-full text-gray-700">
           <thead className="bg-[#2B4DC9] text-white text-xs uppercase">
             <tr>
               <th className="py-3 px-4 border-r border-gray-300 text-center">Medicine</th>
               <th className="py-3 px-4 border-r border-gray-300 text-center">Company</th>
               <th className="py-3 px-4 border-r border-gray-300 text-center">Expire Date</th>
-              <th className="py-3 px-4 border-r border-gray-300 text-center">Quantity </th>
+              <th className="py-3 px-4 border-r border-gray-300 text-center">Quantity</th>
               <th className="py-3 px-4 border-r border-gray-300 text-center">Remaining</th>
               <th className="py-3 px-4 text-center">Action</th>
             </tr>
           </thead>
 
           <tbody>
-            {Array.isArray(FetcAllMed) && FetcAllMed.length > 0 ? (
-              FetcAllMed.map((data, index) => (
+            {filteredMedicines.length > 0 ? (
+              filteredMedicines.map((data, index) => (
                 <tr
                   key={data._id || index}
                   className={`border-b transition ${
@@ -88,10 +122,10 @@ export default function AddANewStockIndoor() {
                 >
                   <td className="py-2 px-4 text-center">
                     <input
-                      type="text" disabled
+                      type="text" 
+                      disabled
                       defaultValue={data.Medname || ""}
-                      className="w-full text-center bg-gray-100 border border-gray-300 text-gray-800 text-sm rounded-md 
-                                 focus:ring-blue-500 focus:border-blue-500 p-2"
+                      className="w-full text-center bg-gray-100 border border-gray-300 text-gray-800 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 p-2"
                       ref={(el) => (inputRefs.current[index] = { ...inputRefs.current[index], medname: el })}
                     />
                   </td>
@@ -100,8 +134,7 @@ export default function AddANewStockIndoor() {
                     <input 
                       type="text"
                       defaultValue={data.company || ""}
-                      className="w-full text-center bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md 
-                                 focus:ring-blue-500 focus:border-blue-500 p-2"
+                      className="w-full text-center bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 p-2"
                       ref={(el) => (inputRefs.current[index] = { ...inputRefs.current[index], company: el })}
                     />
                   </td>
@@ -110,8 +143,7 @@ export default function AddANewStockIndoor() {
                     <input
                       type="date"
                       defaultValue={data.expdate || ""}
-                      className="w-full text-center bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md 
-                                 focus:ring-blue-500 focus:border-blue-500 p-2"
+                      className="w-full text-center bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 p-2"
                       ref={(el) => (inputRefs.current[index] = { ...inputRefs.current[index], expdate: el })}
                     />
                   </td>
@@ -119,18 +151,18 @@ export default function AddANewStockIndoor() {
                   <td className="py-2 px-4 text-center">
                     <input
                       type="number" 
-                     placeholder="Enter Medicine"
-                      className="w-full text-center bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md 
-                                 focus:ring-blue-500 focus:border-blue-500 p-2"
+                      placeholder="Enter Medicine"
+                      className="w-full text-center bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 p-2"
                       ref={(el) => (inputRefs.current[index] = { ...inputRefs.current[index], quntity: el })}
                     />
                   </td>
+
                   <td className="py-2 px-4 text-center">
                     <input
-                      type="number" disabled
+                      type="number" 
+                      disabled
                       defaultValue={data.current || ""}
-                      className="w-full text-center bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md 
-                                 focus:ring-blue-500 focus:border-blue-500 p-2"
+                      className="w-full text-center bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 p-2"
                       ref={(el) => (inputRefs.current[index] = { ...inputRefs.current[index], remaining: el })}
                     />
                   </td>
@@ -147,8 +179,8 @@ export default function AddANewStockIndoor() {
               ))
             ) : (
               <tr>
-                <td colSpan="5" className="text-center py-6 text-gray-500">
-                  No medicines found.
+                <td colSpan="6" className="text-center py-6 text-gray-500">
+                  {searchTerm ? "No medicine found" : "No medicines available"}
                 </td>
               </tr>
             )}
@@ -156,26 +188,21 @@ export default function AddANewStockIndoor() {
         </table>
       </div>
 
-      {/* Save New Stack Button (Moved to Right Corner) */}
       <div className="flex justify-end mt-4">
         <button
           onClick={handleOpenModal}
-          className="bg-green-600  hover:bg-green-700 text-white font-medium m-6 px-6 py-2 rounded-md"
+          className="bg-green-600 hover:bg-green-700 text-white font-medium m-6 px-6 py-2 rounded-md"
         >
-          Save Now 
+          Save Now
         </button>
       </div>
 
-      {/* Confirmation Modal */}
+      {/* Modal - same as before */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">
-              Confirm Save
-            </h3>
-            <p className="text-gray-600 mb-6">
-              Are you sure you want to save the selected medicines?
-            </p>
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">Confirm Save</h3>
+            <p className="text-gray-600 mb-6">Are you sure you want to save the selected medicines?</p>
             <div className="flex justify-end gap-4">
               <button
                 onClick={handleCloseModal}

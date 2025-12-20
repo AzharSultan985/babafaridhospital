@@ -267,6 +267,7 @@ const InvoiceHandle = () => {
     medicines: summary, // selected medicines with qty/price
     date: new Date().toLocaleDateString(),
     BillData: BillingPriceRates,
+
   };
 
   setInvoiceData(invoiceObj);

@@ -111,8 +111,12 @@ const AdmissionInvoice = () => {
               <td> {AdmissionInvoiceData.payment.paymentstatus }</td>
             </tr>
             <tr>
-              <td className="font-semibold">Payment:</td>
+              <td className="font-semibold">Total Payment:</td>
               <td>Rs. {AdmissionInvoiceData.payment.total_payment || "0.00"}</td>
+            </tr>
+            <tr>
+              <td className="font-semibold">Received Payment:</td>
+              <td>Rs. {AdmissionInvoiceData.payment.received_payment || "0.00"}</td>
             </tr>
             <tr>
               <td className="font-semibold">Pending Payment :</td>

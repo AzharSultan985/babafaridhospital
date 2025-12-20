@@ -210,7 +210,7 @@ disabled
             </div>
 
             <div>
-              <label className="block text-gray-700 mb-1">Room No</label>
+              <label className="block text-gray-700 mb-1">Room No [ General (W1-B2) Private (P3) ] </label>
               <input required
                 name="roomNo"
                 value={Addmissiondata.roomNo || ""}

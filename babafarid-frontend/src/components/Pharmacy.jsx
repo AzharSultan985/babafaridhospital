@@ -1,15 +1,21 @@
 import { usePharmacy } from "../Pharmacy/ContextPharma/PharmaContext";
 import { Link } from "react-router-dom";
-import { useEffect, useCallback, useState } from "react";
+import { useEffect, useCallback, useState, useMemo } from "react";
 import PhramacyEditModal from '../Pharmacy/Modals/phramacyEditModal'
 
 export default function HandlePharmacy() {
-  const { fetchPharmacyMed, 
-          isEditModalOpen, setisEditModalOpen, FetchwitIdforEdit,
-          DelPharmaMedByID } = usePharmacy();
+  const { 
+    fetchPharmacyMed, 
+    // Use searchTerm instead of setSearchTerm
+        isEditModalOpen, 
+    setisEditModalOpen, 
+    FetchwitIdforEdit,
+    DelPharmaMedByID,
+    pharmacyMed // Add this all medicines array from context
+  } = usePharmacy();
 
   const [confirmDelete, setConfirmDelete] = useState({ open: false, id: null });
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState();
 
   const stableFetch = useCallback(() => {
     fetchPharmacyMed();
@@ -19,13 +25,25 @@ export default function HandlePharmacy() {
     stableFetch();
   }, [stableFetch]);
 
-
-const filteredMedicine = fetchPharmacyMed.filter((med) =>
-  med.PharmaMedname.toLowerCase().includes(searchTerm.toLowerCase())
-);
-
-
-
+  // Client-side filtering here
+  const filteredMed = useMemo(() => {
+  if (!pharmacyMed || pharmacyMed.length === 0) return [];
+  
+  const searchLower = (searchTerm || '').toLowerCase().trim();
+  
+  // ✅ If searchTerm is empty → Show ALL medicines
+  if (!searchLower) {
+    return pharmacyMed.filter(med => med && med._id); // ALL medicines
+  }
+  
+  // ✅ Otherwise filter by search term
+  return pharmacyMed.filter(med => 
+    med && 
+    med._id && 
+    (med.PharmaMedname?.toLowerCase().includes(searchLower) ||
+     med.PharmaMedcompany?.toLowerCase().includes(searchLower))
+  );
+}, [pharmacyMed, searchTerm]);
 
   const formatDateToEng = (dateString) => {
     if (!dateString) return "N/A";
@@ -81,6 +99,7 @@ const filteredMedicine = fetchPharmacyMed.filter((med) =>
                 <input
                   type="text"
                   placeholder="Search Medicine..."
+                  value={searchTerm} // Controlled input
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full outline-none bg-transparent text-gray-600 text-sm"
                 />
@@ -99,6 +118,11 @@ const filteredMedicine = fetchPharmacyMed.filter((med) =>
               </div>
             </div>
 
+            {/* Results count */}
+            <div className="mb-4 text-sm text-gray-600">
+              {filteredMed.length} medicines 
+            </div>
+
             {/* Medicine Table */}
             <div className="overflow-x-auto rounded-lg">
               <table className="w-full bg-white border mb-20">
@@ -115,47 +139,54 @@ const filteredMedicine = fetchPharmacyMed.filter((med) =>
                   </tr>
                 </thead>
                 <tbody>
-                {(filteredMedicine.length > 0 ? filteredMedicine : fetchPharmacyMed).map((index,med) => {
+                  {filteredMed.length > 0 ? (
+                    filteredMed.map((med, index) => {
+                      const daysLeft = getDaysLeft(med.PharmaMedexpireDate);
+                      const isSoonToExpire = daysLeft !== null && daysLeft <= 30;
 
-                    const daysLeft = getDaysLeft(med.PharmaMedexpireDate);
-                    const isSoonToExpire = daysLeft !== null && daysLeft <= 30;
-
-                    return (
-                      <tr key={med._id || index} className={`border-b text-xs md:text-sm text-center cursor-pointer text-gray-800 
-                        ${isSoonToExpire ? "bg-red-100 hover:bg-red-200" : "hover:bg-slate-100"}
-                      `}>
-                        <td className="p-2 md:p-4">{med.PharmaMedname}</td>
-                        <td className="p-2 md:p-4">{med.PharmaMedcompany}</td>
-                        <td className="p-2 md:p-4">{med.available}</td>
-                        <td className="p-2 md:p-4">{Number(med.PricePerMed).toFixed(2)}</td>
-                        <td className="p-2 md:p-4">{Number(med.PharmaMedprice).toFixed(2)}</td>
-                        <td className="p-2 md:p-4">{med.TotalTablets}</td>
-                        <td className="p-2 md:p-4 relative">
-                          {isSoonToExpire && (
-                            <span className={`absolute -top-[-2px] -right-[-2rem] text-[10px] px-1 py-0.5 rounded-full shadow 
-                              ${daysLeft <= 0 ? "bg-red-600" : "bg-orange-500"} text-white`}>
-                              {daysLeft <= 0 ? "Exp" : `${daysLeft}d`}
-                            </span>
-                          )}
-                          {formatDateToEng(med.PharmaMedexpireDate)}
-                        </td>
-                        <td className="p-2 md:p-4 flex justify-center gap-2">
-                          <button
-                            onClick={() => handleEdit(med._id)}
-                            className="bg-blue-600 text-white px-3 py-1 rounded-md text-xs md:text-sm hover:bg-blue-700"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => handleDelete(med._id)}
-                            className="bg-red-500 text-white px-3 py-1 rounded-md text-xs md:text-sm hover:bg-red-700"
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
+                      return (
+                        <tr key={med._id || index} className={`border-b text-xs md:text-sm text-center cursor-pointer text-gray-800 
+                          ${isSoonToExpire ? "bg-red-100 hover:bg-red-200" : "hover:bg-slate-100"}
+                        `}>
+                          <td className="p-2 md:p-4">{med.PharmaMedname}</td>
+                          <td className="p-2 md:p-4">{med.PharmaMedcompany}</td>
+                          <td className="p-2 md:p-4">{med.available}</td>
+                          <td className="p-2 md:p-4">{Number(med.PricePerMed).toFixed(2)}</td>
+                          <td className="p-2 md:p-4">{Number(med.PharmaMedprice).toFixed(2)}</td>
+                          <td className="p-2 md:p-4">{med.TotalTablets}</td>
+                          <td className="p-2 md:p-4 relative">
+                            {isSoonToExpire && (
+                              <span className={`absolute -top-[-2px] -right-[-2rem] text-[10px] px-1 py-0.5 rounded-full shadow 
+                                ${daysLeft <= 0 ? "bg-red-600" : "bg-orange-500"} text-white`}>
+                                {daysLeft <= 0 ? "Exp" : `${daysLeft}` + 'd'}
+                              </span>
+                            )}
+                            {formatDateToEng(med.PharmaMedexpireDate)}
+                          </td>
+                          <td className="p-2 md:p-4 flex justify-center gap-2">
+                            <button
+                              onClick={() => handleEdit(med._id)}
+                              className="bg-blue-600 text-white px-3 py-1 rounded-md text-xs md:text-sm hover:bg-blue-700"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDelete(med._id)}
+                              className="bg-red-500 text-white px-3 py-1 rounded-md text-xs md:text-sm hover:bg-red-700"
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan="8" className="p-8 text-center text-gray-500">
+                        {searchTerm ? "No medicine found" : "No medicines available"}
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>

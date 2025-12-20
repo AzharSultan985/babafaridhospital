@@ -9,6 +9,7 @@ import { AuthProvider }from './context/LoginContext';
 import { StaffIndoorMangmentProvider } from './StaffMangment/staffContext/StaffIndoorcontext';
 import { PharmacyProvider } from './Pharmacy/ContextPharma/PharmaContext';
 import { ReceptionProvider } from './Reciption/RecepContext/RecepContext';
+import { DoctorsMangementProvider } from './StaffMangment/staffContext/doctorsContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -19,8 +20,10 @@ root.render(
     
  <PharmacyProvider>
     <ReceptionProvider>
+    <DoctorsMangementProvider>
       
     <App />
+    </DoctorsMangementProvider>
     </ReceptionProvider>
  </PharmacyProvider>
  

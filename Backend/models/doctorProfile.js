@@ -21,7 +21,10 @@ const DoctorSchema = new mongoose.Schema({
     }
   ],
 
- 
+ Auth:{
+  username:String,
+  password:String
+ },
   createdAt: { type: Date, default: Date.now },
 });
 

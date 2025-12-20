@@ -9,13 +9,14 @@ const patientSchema = new mongoose.Schema({
   gender: String,
   phone: String,
   address: String,
-   doctor: {type: String},
+
      registerby: String,
   Appointment:[
 {
     NoofTime: Number,
     fees: Number, 
      handledBy: String,
+     AppDoctor: String,
 
     Appdate:{ type: Date, default: Date.now }
   },
@@ -28,18 +29,17 @@ const patientSchema = new mongoose.Schema({
     isadmitted: { type: Boolean, default: false },
     department: String,
     roomNumber: String,
-
     operating_doctorName:String,
-roomNo:Number,
-Admission_Type:String,
-Operating_handledBy:String,
-desc:String,
+    roomNo:String,
+    Admission_Type:String,
+    Operating_handledBy:String,
+    desc:String,
     admittedAt: Date,
     
   },
 discharge:{
 isdischarge:{ type: Boolean, default: false },
-    dischargedAt:{ type: Date, default: Date.now },
+    dischargedAt:{ type: Date },
 dischargedBy:String
 },
 

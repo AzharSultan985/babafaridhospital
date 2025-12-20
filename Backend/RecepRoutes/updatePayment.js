@@ -33,9 +33,11 @@ router.put("/update-payment/:patientID", async (req, res) => {
 
     if (received_payment !== undefined) {
       const received = Number(received_payment);
-      patient.payment.received_payment = received;
+const TotalRecivedPayment=(patient.payment.received_payment + received)
+
+      patient.payment.received_payment = TotalRecivedPayment;
       patient.payment.pending_payment =
-        patient.payment.total_payment - received;
+        patient.payment.total_payment - TotalRecivedPayment;
     }
 
     // Save the updates

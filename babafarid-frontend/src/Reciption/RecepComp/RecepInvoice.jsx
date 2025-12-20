@@ -115,7 +115,7 @@ const latestAppointment =
             </tr>
             <tr>
               <td className="font-semibold">Doctor:</td>
-              <td>{RecepInvoiceData.doctor || "N/A"}</td>
+              <td>{latestAppointment.AppDoctor || "N/A"}</td>
             </tr>
             
             <tr>

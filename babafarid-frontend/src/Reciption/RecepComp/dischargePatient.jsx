@@ -120,7 +120,7 @@ const isWithinShift = (shiftStart, shiftEnd) => {
             onClick={handleFetch}
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-1"
           >
-            <Search size={16} /> Fetch
+            <Search size={16} /> Submit
           </button>
         </div>
       </div>

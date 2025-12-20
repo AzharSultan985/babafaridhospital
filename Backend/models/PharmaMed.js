@@ -77,6 +77,7 @@ const PharmacySchema = new mongoose.Schema(
       },
       default: {},
     },
+user:String
   },
   { timestamps: true }
 );

@@ -16,6 +16,7 @@ import IndoorStockReocord from "./stockRecordComp/IndoorStockRecord";
 import ReceptionStaff from "../Reciption/RecepComp/ReceptionStaff";
 import DoctorManagement from "./Managedoctors";
 import AdminPatientDetails from "./patientINFO";
+import Lab from "./LabTest";
 
 const Dashboard = () => {
   const { LogoutAdmin } = useContext(AuthContext);
@@ -42,6 +43,7 @@ const Dashboard = () => {
   const [showReportMenu, setShowReportMenu] = useState(false);
   const [showRecordMenu, setShowRecordMenu] = useState(false);
   const [showStaff_Menu, setshowStaff_Menu] = useState(false);
+const [IsLab, setIsLab] = useState(false); // Add after other page states
 
   // --- Dashboard Detection ---
   const isDashboard =
@@ -55,8 +57,8 @@ const Dashboard = () => {
     !showPharmacyReport&&
     !showIndoor_Record&&
     !showRecepStaff&&
-  
-    !showDoctors
+    !showDoctors&&
+    !IsLab
 
   const resetAll = () => {
   // Hide all main content
@@ -71,6 +73,7 @@ const Dashboard = () => {
   setShowIndoor_Record(false);
   setShowRecepStaff(false);
   setShowDoctors(false);
+  setIsLab(false); // Add this line
 
 };
 
@@ -335,7 +338,20 @@ const Dashboard = () => {
 
 {/* {/* staff doctor manage */}
 
-
+  <li>
+              <button
+                onClick={() => {
+                  resetAll();
+                  setIsLab(true);
+                }}
+                className={navButtonClasses(IsLab)}
+              >
+                <svg className="w-5 h-5 ms-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
+                </svg>
+                <span className="ms-2">Laboratory</span>
+              </button>
+            </li>
 <li className="relative">
               <button
                 onClick={() => setshowStaff_Menu((prev) => !prev)}
@@ -441,6 +457,8 @@ const Dashboard = () => {
         { showRecepStaff&& <ReceptionStaff />}
       {showDoctors && <DoctorManagement/>}
       {IsPatient && <AdminPatientDetails/>}
+      {IsLab && <Lab />} {/* Add this line */}
+
       </div>
     </>
   );

@@ -62,6 +62,7 @@ import updateAddmissionPayment from "./RecepRoutes/updatePayment.js";
 import fetchSinglePatientRoutes from "./RecepRoutes/fetchSinglePatient.js";
 import RemoveDoctor from "./routes/Removedoctor.js";
 import AuthDoctor from "./routes/AuthDoctor.js";
+import LABTests from "./routes/labtest.js"; // Create this file
 
 
   const __filename = fileURLToPath(import.meta.url);
@@ -147,6 +148,7 @@ app.use("/api", InvoiceRoute);
   // update invoice data
   app.use("/api/",UpdateInvoiceData ); // ✅ update med pharma method
   app.use("/api/",AuthDoctor ); // ✅AuthDoctor
+app.use("/api/lab", LABTests); // ✅ FIXED: Proper route path
 
 
 

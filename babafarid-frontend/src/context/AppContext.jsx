@@ -36,6 +36,8 @@ const [ListOFNewstack,setListOFNewstack]=useState([])
   const [showAlert, setAlert] = useState({isAlert:false
      , msg: "", type: "info" });
   const [patientINFO, setPatientINFO] = useState(null);
+const [labTests, setLabTests] = useState([]);
+const [isLabLoading, setIsLabLoading] = useState(false);
 
   const IndoorMedSubmitHandle = async () => {
     try {
@@ -482,6 +484,79 @@ const handlePatientINFOFetch = async (patientID) => {
 
 
 
+// ✅ FETCH ALL LAB TESTS
+const fetchLabTests = useCallback(async () => {
+  try {
+    setloading(true);
+        setIsLabLoading(true);
+
+    const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/lab/fetch-tests`);
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
+    const data = await res.json();
+    if (Array.isArray(data.tests)) {
+      setLabTests(data.tests);
+    }
+  } catch (err) {
+    console.error("Error fetching lab tests:", err);
+  } finally {
+    setloading(false);
+        setIsLabLoading(false);
+
+  }
+}, []);
+
+// ✅ ADD NEW LAB TEST
+const addLabTest = async (testData) => {
+  try {
+    const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/lab/create-test`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(testData),
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      fetchLabTests(); // Refresh list
+      console.log("✅ New lab test added:", data.test);
+      return { success: true };
+    } else {
+      throw new Error(data.message || "Failed to add test");
+    }
+  } catch (err) {
+    console.error("Error adding lab test:", err);
+    return { success: false, error: err.message };
+  } finally {
+    setloading(false);
+
+  }
+};
+
+// ✅ DELETE LAB TEST
+const deleteLabTest = async (testId) => {
+  try {
+   const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/lab/${testId}`, {
+      method: "DELETE",
+    });
+
+    const data = await res.json();
+
+    if (data.success) {
+      fetchLabTests(); // Refresh list
+      console.log(`✅ Test with ID ${testId} deleted`);
+      return { success: true };
+    } else {
+      throw new Error(data.message || "Failed to delete test");
+    }
+  } catch (err) {
+    console.error("Error deleting lab test:", err);
+    return { success: false, error: err.message };
+  }
+};
+
 
   return (
     <AppContext.Provider
@@ -538,7 +613,10 @@ loading,setloading,
 
  handlePatientINFOFetch,
  patientINFO,
- HandleRemoveDoctor
+ HandleRemoveDoctor,labTests,
+      fetchLabTests,
+      addLabTest,
+      deleteLabTest,isLabLoading
       }}  
     >
       {children}

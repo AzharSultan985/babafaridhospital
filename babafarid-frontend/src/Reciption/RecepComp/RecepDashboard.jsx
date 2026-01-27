@@ -1,5 +1,5 @@
 import React, { useState ,useEffect} from "react";
-import { LogOut, UserPlus, FileText, CheckCircle ,Contact2 } from "lucide-react";
+import { LogOut, UserPlus, FileText, CheckCircle ,Contact2 ,TestTube} from "lucide-react";
 
 import RecepAlert from "./RecepAlert";
 import { useReception } from "../RecepContext/RecepContext";
@@ -8,6 +8,7 @@ import RegisterPatient from "./RegisterPatient"; // Your registration component
 import AdmissionForm from "./admissionform";
 import ReceptionMain from "./Recepition";
 import DischargePatient from "./dischargePatient";
+import LabInvoice from "./RecepLab";
 
 
 
@@ -35,8 +36,11 @@ const ReceptionDashboard = () => {
     setShowRegister(false);
     setShowAdmission(false);
     setShowDischarge(false);
-    setShowReception(false)
+    setShowReception(false);
+      setShowLabInvoice(false);
+
   };
+const [showLabInvoice, setShowLabInvoice] = useState(false);
 
   const navButtonClasses = (active) =>
     `flex items-center p-2 w-full rounded-lg transition-colors duration-200 ${
@@ -106,7 +110,18 @@ const ReceptionDashboard = () => {
                 <span className="ms-3">Discharge Patient</span>
               </button>
             </li>
-
+<li>
+  <button
+    onClick={() => {
+      resetAll();
+      setShowLabInvoice(true);
+    }}
+    className={navButtonClasses(showLabInvoice)}
+  >
+    <TestTube size={18} />
+    <span className="ms-3">Lab Invoice</span>
+  </button>
+</li>
             <li>
               <button
               onClick={LogoutRecepUSer}
@@ -121,7 +136,7 @@ const ReceptionDashboard = () => {
 
           <div className="absolute bottom-4 left-0 w-full px-3 text-center text-gray-400 text-sm">
             <p className="font-medium">
-              Built with ❤️ by <span className="font-semibold text-white">CodeTrust by Azhar</span>
+              Built with ❤️ by <span className="font-semibold text-white">Azhar Sultan</span>
             </p>
             <p className="text-xs mt-1">Version 4.2.5</p>
           </div>
@@ -134,6 +149,8 @@ const ReceptionDashboard = () => {
         {showAdmission && <AdmissionForm />}
         {showDischarge && <DischargePatient />}
         {showReception && <ReceptionMain />}
+       {showLabInvoice && <LabInvoice />} {/* Add this */}
+
       </main>
     </>
   );

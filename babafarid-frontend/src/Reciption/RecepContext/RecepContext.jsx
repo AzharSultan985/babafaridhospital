@@ -33,6 +33,7 @@ const [Addmissiondata, setAddmissiondata] = useState({
   const [AllDoctors, setAllDoctors] = useState([]);
 
   const [RecepInvoiceData, setRecepInvoiceData] = useState();
+  const [LabRecepInvoiceData, setLabRecepInvoiceData] = useState();
   const [AdmissionInvoiceData, setAdmissionInvoiceData] = useState();
   const [PatientData, setPatientData] = useState([]);
   const [AllPatient, setAllPatient] = useState([]);
@@ -43,6 +44,7 @@ const [Addmissiondata, setAddmissiondata] = useState({
   const [recep_Login_Res, setrecep_Login_Res] = useState(false);
   const [Alert, setAlert] = useState({ isAlert: false, alertmsg: "", type: "" });
   const [AllReceptionUser, setAllReceptionUser] = useState([]);
+  const [labTests, setLabTests] = useState([]);
 
   const navigate = useNavigate();
 
@@ -587,6 +589,59 @@ const HandleReAppointment = async (data) => {
     setLoading(false);
   }
 };
+
+
+const LAB_INVOICE_COUNTER_KEY = "labInvoiceCounter";
+const LAB_INVOICE_START = 1000;
+
+
+const getNextLabInvoiceId = () => {
+let counter = Number(localStorage.getItem(LAB_INVOICE_COUNTER_KEY));
+if (!Number.isFinite(counter) || counter < LAB_INVOICE_START) {
+counter = LAB_INVOICE_START;
+}
+// return current, then increment for next time
+localStorage.setItem(LAB_INVOICE_COUNTER_KEY, String(counter + 1));
+return counter;
+};
+const createLabInvoice = async (invoiceData) => {
+  setLoading(true);
+  try {
+    // ✅ generate invoiceId at time of creating invoice (recommended)
+const invoiceId = getNextLabInvoiceId();
+const invoiceDate = new Date().toLocaleDateString("en-GB");
+
+
+const payload = { ...invoiceData, invoiceId, invoiceDate };
+    const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/lab/lab-invoice`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json();
+    setLabRecepInvoiceData(payload);
+    console.log('data',invoiceData);
+      navigate("/lab-recepinvoice");
+    
+    return data;
+  } catch (error) {
+    setAlert({ isAlert: true, alertmsg: error.message, type: "error" });
+    return { success: false };
+  } finally {
+    setLoading(false);
+  }
+};
+
+ const fetchLabTests = async () => {
+    try {
+      const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/lab/fetch-tests`);
+      const data = await res.json();
+      setLabTests(data.tests || []);
+    } catch (err) {
+      console.error("Failed to fetch lab tests:", err);
+    }
+  };
+
   return (
     <ReciptionContext.Provider
       value={{
@@ -610,7 +665,7 @@ const HandleReAppointment = async (data) => {
         UpdatePayment,handleDischargePatient,recep_Login_Res,Recep_Login,LogoutRecepUSer,
 setRecepInvoiceData,
         FetchAllReceptionUser,AllReceptionUser,RemoveReceptionStaff,
-        AllDoctors,FetchAllDoctors,HandleReAppointment
+        AllDoctors,FetchAllDoctors,HandleReAppointment,createLabInvoice,labTests,fetchLabTests,LabRecepInvoiceData,setLabRecepInvoiceData
       }}
     >
       {children}

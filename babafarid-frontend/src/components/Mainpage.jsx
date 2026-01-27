@@ -26,6 +26,7 @@ const Mainpage = () => {
               className="text-white w-full flex justify-center bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-lg px-5 py-3 transition"
               to={"/recepition"}
             >
+              
 Reciption            </Link>
             <Link
               className="text-white w-full flex justify-center bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-lg px-5 py-3 transition"
@@ -59,8 +60,7 @@ Reciption            </Link>
           <p className="text-gray-500 text-xs mt-10 border-t pt-4 w-full">
             Powered by{" "}
             <span className="font-semibold text-blue-600">
-              CodeTrust by Azhar
-            </span>
+Azhar Sultan           </span>
           </p>
         </div>
       </section>

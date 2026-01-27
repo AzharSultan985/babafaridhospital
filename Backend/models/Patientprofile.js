@@ -23,7 +23,7 @@ const patientSchema = new mongoose.Schema({
   ]
 ,
 
-
+labInvoices:[],
   // --- Admission Information ---
   admission: {
     isadmitted: { type: Boolean, default: false },

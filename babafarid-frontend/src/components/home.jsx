@@ -38,7 +38,7 @@ const Home = () => {
 
           {/* Footer Note */}
           <p className="text-gray-400 text-xs mt-8">
-            Powered by <span className="font-semibold text-blue-600">CodeTrust by Azhar</span>
+            Powered by <span className="font-semibold text-blue-600">Azhar Sultan</span>
           </p>
         </div>
       </div>

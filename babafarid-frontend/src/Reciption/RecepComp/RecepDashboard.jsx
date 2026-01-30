@@ -9,11 +9,13 @@ import AdmissionForm from "./admissionform";
 import ReceptionMain from "./Recepition";
 import DischargePatient from "./dischargePatient";
 import LabInvoice from "./RecepLab";
+import ReceptionDoctorReport from "./ReceptionDoctorReport";
 
 
 
 const ReceptionDashboard = () => {
   const { LogoutRecepUSer} = useReception();
+const [showDoctorReport, setShowDoctorReport] = useState(false);
 
   
   // --- Page States ---
@@ -38,6 +40,7 @@ const ReceptionDashboard = () => {
     setShowDischarge(false);
     setShowReception(false);
       setShowLabInvoice(false);
+      setShowDoctorReport(false)
 
   };
 const [showLabInvoice, setShowLabInvoice] = useState(false);
@@ -122,6 +125,19 @@ const [showLabInvoice, setShowLabInvoice] = useState(false);
     <span className="ms-3">Lab Invoice</span>
   </button>
 </li>
+<li>
+  <button
+    onClick={() => {
+      resetAll();
+      setShowDoctorReport(true);
+    }}
+    className={navButtonClasses(showDoctorReport)}
+  >
+    <FileText size={18} />
+    <span className="ms-3">Doctor Report</span>
+  </button>
+</li>
+
             <li>
               <button
               onClick={LogoutRecepUSer}
@@ -150,6 +166,7 @@ const [showLabInvoice, setShowLabInvoice] = useState(false);
         {showDischarge && <DischargePatient />}
         {showReception && <ReceptionMain />}
        {showLabInvoice && <LabInvoice />} {/* Add this */}
+{showDoctorReport && <ReceptionDoctorReport />}
 
       </main>
     </>

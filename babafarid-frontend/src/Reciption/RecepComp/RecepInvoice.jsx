@@ -11,9 +11,23 @@ const RecepInvoice = () => {
   }
 
   // Auto generate Invoice number and date
-  
-  const currentDate = new Date().toLocaleDateString("en-GB");
-  
+  // ✅ Safe current date object
+const now = new Date();
+
+// ✅ Month-Year (1-26)
+const formattedMonthYear = `${now.getMonth() + 1}-${String(
+  now.getFullYear()
+).slice(-2)}`;
+
+// ✅ MR No
+const mrNo = RecepInvoiceData?.patientID || "N/A";
+
+// ✅ Final BFH ID
+const bfhId = `BFH-${formattedMonthYear}-${mrNo}`;
+
+// ✅ Current date for display
+const currentDate = now.toLocaleDateString("en-GB");
+
 const latestAppointment =
   RecepInvoiceData.Appointment[
     RecepInvoiceData.Appointment.length - 1
@@ -83,16 +97,16 @@ const latestAppointment =
         </h1>
         <hr className="border-black mb-2" />
 
-        <div className="flex justify-between mb-2">
-          <div>
-            <p> MR No: {RecepInvoiceData.patientID || "N/A"}</p>
-            <p>Date: {currentDate}</p>
+        <div className="flex justify-between mb-2  ">
+          <div className="mr-12">
+          <p >MR No: <span className="text-[12px]"> {bfhId}</span></p>
+  <p>Date: {currentDate}</p>
             <p>Print By: {latestAppointment?.handledBy }</p>
 
           </div>
 
           <div>
-            <h1 className="text-xl p-4" >Token No #  <span > {RecepInvoiceData.TokenNo} </span></h1>
+            <h1 className="text-[12px]  p-4" >Token No #  <span className="text-[14px]"> {RecepInvoiceData.TokenNo} </span></h1>
           </div>
          
         </div>

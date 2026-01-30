@@ -7,7 +7,17 @@ const DischargeInvoice = () => {
   const { RecepInvoiceData,setRecepInvoiceData} = useReception();
 ////console.log('patiet',RecepInvoiceData);
   const navigate = useNavigate();
+// ✅ Month-Year (1-26)
+const now = new Date();
+const formattedMonthYear = `${now.getMonth() + 1}-${String(now.getFullYear()).slice(-2)}`;
 
+// ✅ MR No (patientID)
+const mrNo = RecepInvoiceData?.patientID || "N/A";
+
+// ✅ Final BFH ID
+const bfhId = `BFH-${formattedMonthYear}-${mrNo}`;
+
+// ✅ Current Date (screen/print)
   if (!RecepInvoiceData) {
   return (
     <div className="flex flex-col items-center gap-4 mt-10">
@@ -94,10 +104,10 @@ const DischargeInvoice = () => {
 
       <table className="w-full border mb-2">
   <tbody>
-    <tr>
-      <td className="font-semibold w-1/2">MR No</td>
-      <td>{RecepInvoiceData.patientID || "N/A"}</td>
-    </tr>
+ <tr>
+  <td className="font-semibold w-1/2">MR No:</td>
+  <td>{bfhId}</td>
+</tr>
     <tr>
       <td className="font-semibold">Name</td>
       <td>{RecepInvoiceData.name || "N/A"}</td>

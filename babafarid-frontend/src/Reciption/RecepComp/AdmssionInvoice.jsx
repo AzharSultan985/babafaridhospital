@@ -12,8 +12,25 @@ const AdmissionInvoice = () => {
 
   // Auto generate Invoice number and date
   
-  const currentDate = new Date().toLocaleDateString("en-GB");
-  const qrValue = `Patient: ${AdmissionInvoiceData.patientID}`;
+ // ✅ Safe date object
+const now = new Date();
+
+// ✅ Month-Year (1-26)
+const formattedMonthYear = `${now.getMonth() + 1}-${String(
+  now.getFullYear()
+).slice(-2)}`;
+
+// ✅ MR No
+const mrNo = AdmissionInvoiceData?.patientID || "N/A";
+
+// ✅ Final BFH ID
+const bfhId = `BFH-${formattedMonthYear}-${mrNo}`;
+
+// ✅ Current date (screen / print)
+const currentDate = now.toLocaleDateString("en-GB");
+
+// ✅ QR value (BFH ID)
+const qrValue = bfhId;
 
   return (
     <>
@@ -81,8 +98,8 @@ const AdmissionInvoice = () => {
 
         <div className="flex justify-between mb-2">
           <div>
-            <p>MR No: {AdmissionInvoiceData.patientID || "N/A"}</p>
-            <p>Date: {currentDate}</p>
+           <p>MR No: {bfhId}</p>
+  <p>Date: {currentDate}</p>
             <p>Handle By: {AdmissionInvoiceData.admission.Operating_handledBy}</p>
           </div>
           <div>

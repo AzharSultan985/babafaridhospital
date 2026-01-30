@@ -619,8 +619,12 @@ const payload = { ...invoiceData, invoiceId, invoiceDate };
       body: JSON.stringify(payload),
     });
     const data = await res.json();
-    setLabRecepInvoiceData(payload);
-    console.log('data',invoiceData);
+    const merged = {
+  ...payload,
+  ...(data.patient), // backend kabhi {data:{}} deta hai, kabhi direct object
+};
+    setLabRecepInvoiceData(merged);
+    // console.log('data',merged);
       navigate("/lab-recepinvoice");
     
     return data;

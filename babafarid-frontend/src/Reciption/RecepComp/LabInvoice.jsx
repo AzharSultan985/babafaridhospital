@@ -21,6 +21,18 @@ const LabRecepInvoice = () => {
 
   // ✅ Invoice ID from localStorage (1000, 1001, 1002...)
   const [invoiceId, setInvoiceId] = useState(null);
+const displayInvoiceId = LabRecepInvoiceData?.invoiceId ?? invoiceId ?? "—";
+const formattedDateShort = useMemo(() => {
+  const d = new Date(currentDate);
+  const mm = d.getMonth() + 1;       // 1
+  const yy = String(d.getFullYear()).slice(-2); // 26
+  return `${mm}-${yy}`;        // 28-1-26
+}, [currentDate]);
+
+const bfhPatientId = useMemo(() => {
+  const idPart = String(displayInvoiceId ?? "—");
+  return `BFH-${formattedDateShort}-${idPart}`;
+}, [formattedDateShort, displayInvoiceId]);
 
   useEffect(() => {
     // if no data, no need to generate invoice number
@@ -43,6 +55,8 @@ const LabRecepInvoice = () => {
       return { ...prev, invoiceId: counter, invoiceDate: formattedDate };
     });
 
+
+
     // IMPORTANT:
     // Increment counter ONLY ONCE per invoice screen load.
     // So next invoice will be counter+1
@@ -54,7 +68,6 @@ const LabRecepInvoice = () => {
   }
 
   // ✅ Use stored invoiceId from data if present (preferred)
-  const displayInvoiceId = LabRecepInvoiceData.invoiceId ?? invoiceId ?? "—";
 
   return (
     <>
@@ -104,7 +117,7 @@ const LabRecepInvoice = () => {
       `}</style>
 
       <div className="bg-white border rounded-md shadow-md px-4 py-2 max-w-md mx-auto mt-2 printable text-black font-bold">
-        <h1 className="font-bold text-xl text-center mb-1">BABA FARID Medical Store</h1>
+        <h1 className="font-bold text-xl text-center mb-1">BABA FARID CLINICAl LAB</h1>
         <hr className="border-black mb-1" />
 
         <div className="flex justify-between mb-2">
@@ -112,8 +125,10 @@ const LabRecepInvoice = () => {
             {/* ✅ invoice id from local */}
             <p>Invoice #: {displayInvoiceId}</p>
 
-            <p>Patient ID: {LabRecepInvoiceData.patientId}</p>
-
+<p>Patient ID: {bfhPatientId}</p>
+<p>Name: {LabRecepInvoiceData.name}</p>
+<p>F/H Name: {LabRecepInvoiceData.F_H_Name}</p>
+<p>Age: {LabRecepInvoiceData.age}</p>
             {/* ✅ current date */}
             <p>Date: {LabRecepInvoiceData.invoiceDate || formattedDate}</p>
 

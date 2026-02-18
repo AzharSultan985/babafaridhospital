@@ -154,7 +154,7 @@ const [IsLab, setIsLab] = useState(false); // Add after other page states
             </li>
 
             {/* Add New Stock */}
-            <li className="relative">
+            {/* <li className="relative">
               <button
                 onClick={() => setShowAddStockMenu((prev) => !prev)}
                 className="flex justify-between items-center w-full p-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white"
@@ -201,7 +201,7 @@ const [IsLab, setIsLab] = useState(false); // Add after other page states
                   </li>
                 </ul>
               )}
-            </li>
+            </li> */}
 
             {/* Update Stock */}
             <li className="relative">

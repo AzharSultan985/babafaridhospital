@@ -420,39 +420,42 @@ const FetchwitIdforEdit=async (id)=>{
 }
 
 }
-const UpdatePharmaEditModal=async ()=>{
+// ✅ Add this function in PharmaContext
+const updatePharmacyMed = useCallback(async (data) => {
+  try {
+    const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/updatepharmamed/${data._id}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        updateMedname: data.PharmaMedname,
+        updateMedcompany: data.PharmaMedcompany,
+        updatequntity: data.TotalTablets,
+        updateavailable: data.available,
+        updateunitprice: data.PricePerMed,
+        updateboxprice: data.PharmaMedprice,
+        updateexpdate: data.PharmaMedexpireDate
+      }),
+    });
 
- const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/updatepharmamed/${forupdatemedid}`,{
-    method:"post",
-      headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-         updateMedname: EditPharmMed_Medname,
-         updateMedcompany: EditPharmMed_company,
-         updatequntity: EditPharmMed_quntity,
-         updateavailable: EditPharmMed_available,
-         updateunitprice: Unitprice,
-         updateboxprice: boxprice,
-         updateexpdate: EditPharmMed_expdate
-        }),
+    const result = await res.json();
     
-  })
-   const updatedata =await res.json()
-   ////////console.log.log(updatedata);
-   
-   if (updatedata.success) {
-    fetchPharmacyMed()
-     setAlertMsg("Medicine Updated Succesfully");
-    setAlertType("success");
-     // Auto hide after 2 seconds
-  setTimeout(() => {
-    setAlertMsg("");
-    setAlertType("");
-  }, 2000);
-   }
+    if (result.success) {
+      fetchPharmacyMed(); // Refresh list
+      setAlertMsg("✅ Medicine updated successfully!");
+      setAlertType("success");
+      setTimeout(() => {
+        setAlertMsg("");
+        setAlertType("");
+      }, 2000);
+      return true;
+    }
+  } catch (error) {
+    console.error("Update failed:", error);
+    setAlertMsg("❌ Failed to update medicine");
+    setAlertType("error");
+  }
+}, [fetchPharmacyMed]);
 
-}
 
 const DelPharmaMedByID= async(id)=>{
   try {
@@ -769,7 +772,7 @@ setEditPharmMed_unitprice,
 FetchwitIdforEdit,
 setEditPharmMed_Boxprice,
 pharmaeditMedData,
-UpdatePharmaEditModal,
+updatePharmacyMed,
 DelPharmaMedByID,
 
 

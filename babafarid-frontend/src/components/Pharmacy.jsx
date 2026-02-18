@@ -1,21 +1,32 @@
 import { usePharmacy } from "../Pharmacy/ContextPharma/PharmaContext";
 import { Link } from "react-router-dom";
 import { useEffect, useCallback, useState, useMemo } from "react";
-import PhramacyEditModal from '../Pharmacy/Modals/phramacyEditModal'
+// ✅ Remove separate modal import - inline modal banaya
 
 export default function HandlePharmacy() {
   const { 
     fetchPharmacyMed, 
-    // Use searchTerm instead of setSearchTerm
-        isEditModalOpen, 
-    setisEditModalOpen, 
-    FetchwitIdforEdit,
     DelPharmaMedByID,
-    pharmacyMed // Add this all medicines array from context
+    updatePharmacyMed, // ✅ Add this for submit
+    pharmacyMed 
   } = usePharmacy();
 
   const [confirmDelete, setConfirmDelete] = useState({ open: false, id: null });
   const [searchTerm, setSearchTerm] = useState();
+  
+  // ✅ Local form state - IndoorMed جیسا
+  const [editFormData, setEditFormData] = useState({
+    _id: null,
+    PharmaMedname: "",
+    PharmaMedcompany: "",
+    available: "",
+    PricePerMed: "",
+    PharmaMedprice: "",
+    TotalTablets: "",
+    PharmaMedexpireDate: ""
+  });
+  
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const stableFetch = useCallback(() => {
     fetchPharmacyMed();
@@ -25,25 +36,23 @@ export default function HandlePharmacy() {
     stableFetch();
   }, [stableFetch]);
 
-  // Client-side filtering here
+  // Client-side filtering
   const filteredMed = useMemo(() => {
-  if (!pharmacyMed || pharmacyMed.length === 0) return [];
-  
-  const searchLower = (searchTerm || '').toLowerCase().trim();
-  
-  // ✅ If searchTerm is empty → Show ALL medicines
-  if (!searchLower) {
-    return pharmacyMed.filter(med => med && med._id); // ALL medicines
-  }
-  
-  // ✅ Otherwise filter by search term
-  return pharmacyMed.filter(med => 
-    med && 
-    med._id && 
-    (med.PharmaMedname?.toLowerCase().includes(searchLower) ||
-     med.PharmaMedcompany?.toLowerCase().includes(searchLower))
-  );
-}, [pharmacyMed, searchTerm]);
+    if (!pharmacyMed || pharmacyMed.length === 0) return [];
+    
+    const searchLower = (searchTerm || '').toLowerCase().trim();
+    
+    if (!searchLower) {
+      return pharmacyMed.filter(med => med && med._id);
+    }
+    
+    return pharmacyMed.filter(med => 
+      med && 
+      med._id && 
+      (med.PharmaMedname?.toLowerCase().includes(searchLower) ||
+       med.PharmaMedcompany?.toLowerCase().includes(searchLower))
+    );
+  }, [pharmacyMed, searchTerm]);
 
   const formatDateToEng = (dateString) => {
     if (!dateString) return "N/A";
@@ -62,10 +71,24 @@ export default function HandlePharmacy() {
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   };
 
-  const handleEdit = (id) => {
-    FetchwitIdforEdit(id);
-    setisEditModalOpen(true);
-  };
+  // ✅ EXACT IndoorMed جیسا handleEdit - NO FetchwitIdforEdit!
+  const handleEdit = useCallback((id) => {
+    const medToEdit = pharmacyMed.find(med => med._id === id);
+    
+    if (medToEdit) {
+      setEditFormData({
+        _id: medToEdit._id,
+        PharmaMedname: medToEdit.PharmaMedname || "",
+        PharmaMedcompany: medToEdit.PharmaMedcompany || "",
+        available: medToEdit.available || "",
+        PricePerMed: medToEdit.PricePerMed || "",
+        PharmaMedprice: medToEdit.PharmaMedprice || "",
+        TotalTablets: medToEdit.TotalTablets || "",
+        PharmaMedexpireDate: medToEdit.PharmaMedexpireDate ? medToEdit.PharmaMedexpireDate.split('T')[0] : ""
+      });
+      setIsEditModalOpen(true);
+    }
+  }, [pharmacyMed]);
 
   const handleDelete = (id) => {
     setConfirmDelete({ open: true, id });
@@ -78,6 +101,50 @@ export default function HandlePharmacy() {
 
   const cancelDelete = () => {
     setConfirmDelete({ open: false, id: null });
+  };
+
+  // ✅ Form handlers - IndoorMed جیسا
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // ✅ Form submit
+  const handleEditSubmit = () => {
+    if (editFormData._id && editFormData.PharmaMedname) {
+      updatePharmacyMed(editFormData);
+      setIsEditModalOpen(false);
+      
+      // ✅ Clear form
+      setEditFormData({
+        _id: null,
+        PharmaMedname: "",
+        PharmaMedcompany: "",
+        available: "",
+        PricePerMed: "",
+        PharmaMedprice: "",
+        TotalTablets: "",
+        PharmaMedexpireDate: ""
+      });
+    }
+  };
+
+  const handleEditClose = () => {
+    setIsEditModalOpen(false);
+    // ✅ Clear form on close
+    setEditFormData({
+      _id: null,
+      PharmaMedname: "",
+      PharmaMedcompany: "",
+      available: "",
+      PricePerMed: "",
+      PharmaMedprice: "",
+      TotalTablets: "",
+      PharmaMedexpireDate: ""
+    });
   };
 
   return (
@@ -99,21 +166,12 @@ export default function HandlePharmacy() {
                 <input
                   type="text"
                   placeholder="Search Medicine..."
-                  value={searchTerm} // Controlled input
+                  value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full outline-none bg-transparent text-gray-600 text-sm"
                 />
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192.904 192.904" width="16px" className="fill-gray-600">
-                  <path d="m190.707 180.101-47.078-47.077c11.702-14.072 
-                    18.752-32.142 18.752-51.831C162.381 36.423 125.959 
-                    0 81.191 0 36.422 0 0 36.423 0 81.193c0 44.767 
-                    36.422 81.187 81.191 81.187 19.688 0 37.759-7.049 
-                    51.831-18.751l47.079 47.078a7.474 7.474 0 0 0 
-                    5.303 2.197 7.498 7.498 0 0 0 5.303-12.803zM15 81.193C15 44.694 44.693 15 
-                    81.191 15c36.497 0 66.189 29.694 
-                    66.189 66.193 0 36.496-29.692 
-                    66.187-66.189 66.187C44.693 147.38 
-                    15 117.689 15 81.193z"></path>
+                  <path d="m190.707 180.101-47.078-47.077c11.702-14.072..."/>
                 </svg>
               </div>
             </div>
@@ -146,8 +204,7 @@ export default function HandlePharmacy() {
 
                       return (
                         <tr key={med._id || index} className={`border-b text-xs md:text-sm text-center cursor-pointer text-gray-800 
-                          ${isSoonToExpire ? "bg-red-100 hover:bg-red-200" : "hover:bg-slate-100"}
-                        `}>
+                          ${isSoonToExpire ? "bg-red-100 hover:bg-red-200" : "hover:bg-slate-100"}`}>
                           <td className="p-2 md:p-4">{med.PharmaMedname}</td>
                           <td className="p-2 md:p-4">{med.PharmaMedcompany}</td>
                           <td className="p-2 md:p-4">{med.available}</td>
@@ -194,8 +251,126 @@ export default function HandlePharmacy() {
         </section>
       </div>
 
-      {/* Edit Modal */}
-      {isEditModalOpen && <PhramacyEditModal />}
+      {/* ✅ INLINE EDIT MODAL - IndoorMed جیسا */}
+      {isEditModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4">
+          <div className="bg-white p-6 rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold text-gray-800">Edit Medicine</h2>
+              <button 
+                onClick={handleEditClose}
+                className="text-gray-500 hover:text-gray-700 text-3xl font-bold"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Medicine Name */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Medicine Name *</label>
+                <input
+                  type="text"
+                  name="PharmaMedname"
+                  value={editFormData.PharmaMedname}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  required
+                />
+              </div>
+
+              {/* Company */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Company</label>
+                <input
+                  type="text"
+                  name="PharmaMedcompany"
+                  value={editFormData.PharmaMedcompany}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              {/* Available */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Available</label>
+                <input
+                  type="number"
+                  name="available"
+                  value={editFormData.available}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              {/* Price Per Unit */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Price/Unit</label>
+                <input
+                  type="number"
+                  name="PricePerMed"
+                  value={editFormData.PricePerMed}
+                  onChange={handleInputChange}
+                  step="0.01"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              {/* Box Price */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Box Price</label>
+                <input
+                  type="number"
+                  name="PharmaMedprice"
+                  value={editFormData.PharmaMedprice}
+                  onChange={handleInputChange}
+                  step="0.01"
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              {/* Total Tablets */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Total Units</label>
+                <input
+                  type="number"
+                  name="TotalTablets"
+                  value={editFormData.TotalTablets}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+
+              {/* Expiry Date */}
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Expiry Date</label>
+                <input
+                  type="date"
+                  name="PharmaMedexpireDate"
+                  value={editFormData.PharmaMedexpireDate}
+                  onChange={handleInputChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-4 pt-8 justify-end">
+              <button
+                onClick={handleEditClose}
+                className="px-8 py-3 bg-gray-300 text-gray-800 rounded-xl hover:bg-gray-400 font-semibold transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleEditSubmit}
+                className="px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-xl hover:from-blue-600 hover:to-blue-800 font-semibold transition-all shadow-lg"
+              >
+                Update Medicine
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Confirm Delete Modal */}
       {confirmDelete.open && (
